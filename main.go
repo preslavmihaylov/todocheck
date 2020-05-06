@@ -6,6 +6,7 @@ import (
 
 	"github.com/preslavmihaylov/todocheck/checker"
 	"github.com/preslavmihaylov/todocheck/config"
+	"github.com/preslavmihaylov/todocheck/matchers"
 	"github.com/preslavmihaylov/todocheck/taskstatus"
 	"github.com/preslavmihaylov/todocheck/traverser"
 )
@@ -26,7 +27,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	chk := checker.New(taskstatus.NewFetcher(rcConfig.Origin, authToken))
+	chk := checker.New(taskstatus.NewFetcher(rcConfig.Origin, authToken), matchers.Standard())
 	todoErrs := []error{}
 	err = traverser.TraversePath(".", func(filename, line string, linecnt int) error {
 		if !chk.IsTODO(line) {
