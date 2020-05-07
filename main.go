@@ -6,8 +6,9 @@ import (
 
 	"github.com/preslavmihaylov/todocheck/checker"
 	"github.com/preslavmihaylov/todocheck/config"
+	"github.com/preslavmihaylov/todocheck/fetcher"
+	"github.com/preslavmihaylov/todocheck/issuetracker"
 	"github.com/preslavmihaylov/todocheck/matchers"
-	"github.com/preslavmihaylov/todocheck/taskstatus"
 	"github.com/preslavmihaylov/todocheck/traverser"
 )
 
@@ -17,9 +18,9 @@ var authToken = "SECRET"
 // * Extract auth token to ~/.config/todocheck/auth.yaml
 // * Handle multi-line comments
 // * Handle comment on current line
-// * Extract extensions into separate go file with mappings
 // * specify basepath via a parameter
 // * Add github integration
+// * Add caching for task statuses
 func main() {
 	rcConfig, err := config.NewTodocheckRC(".todocheckrc")
 	if err != nil {
@@ -27,9 +28,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	chk := checker.New(taskstatus.NewFetcher(rcConfig.Origin, authToken), matchers.Standard())
 	todoErrs := []error{}
+	chk := checker.New(
+		fetcher.NewFetcher(rcConfig.Origin, authToken, issuetracker.FromString(rcConfig.Type)))
 	err = traverser.TraversePath(".", func(filename, line string, linecnt int) error {
+		chk.SetMatcher(matchers.ForFile(filename))
 		if !chk.IsTODO(line) {
 			return nil
 		}

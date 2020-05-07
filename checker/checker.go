@@ -4,19 +4,25 @@ import (
 	"fmt"
 
 	checkererrors "github.com/preslavmihaylov/todocheck/checker/errors"
+	"github.com/preslavmihaylov/todocheck/fetcher"
 	"github.com/preslavmihaylov/todocheck/matchers"
 	"github.com/preslavmihaylov/todocheck/taskstatus"
 )
 
 // Checker for todo lines
 type Checker struct {
-	statusFetcher *taskstatus.Fetcher
+	statusFetcher *fetcher.Fetcher
 	todoMatcher   matchers.TodoMatcher
 }
 
 // New checker
-func New(statusFetcher *taskstatus.Fetcher, todoMatcher matchers.TodoMatcher) *Checker {
-	return &Checker{statusFetcher, todoMatcher}
+func New(statusFetcher *fetcher.Fetcher) *Checker {
+	return &Checker{statusFetcher, nil}
+}
+
+// SetMatcher sets the todo matcher
+func (c *Checker) SetMatcher(todoMatcher matchers.TodoMatcher) {
+	c.todoMatcher = todoMatcher
 }
 
 // IsTODO line, without performing any validity checks
