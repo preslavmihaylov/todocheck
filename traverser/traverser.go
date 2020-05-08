@@ -37,9 +37,7 @@ func traverseFile(filename string, callback lineCallback) error {
 	var line string
 	linecnt := 0
 
-	// chk := checker.New(origin, authToken)
 	reader := bufio.NewReader(bytes.NewReader(buf))
-	// todoErrs := []error{}
 	for {
 		linecnt++
 		line, err = reader.ReadString('\n')
@@ -51,16 +49,6 @@ func traverseFile(filename string, callback lineCallback) error {
 		if err != nil {
 			return err
 		}
-		// if !chk.IsTODO(line) {
-		// 	continue
-		// }
-
-		// todoErr, err := chk.Check(filename, line, linecnt)
-		// if err != nil {
-		// 	return nil, fmt.Errorf("couldn't check TODO line: %w", err)
-		// } else if todoErr != nil {
-		// 	todoErrs = append(todoErrs, todoErr)
-		// }
 	}
 
 	if err != io.EOF {
