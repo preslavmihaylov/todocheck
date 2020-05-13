@@ -9,17 +9,17 @@ import (
 	"github.com/preslavmihaylov/todocheck/fetcher"
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 	"github.com/preslavmihaylov/todocheck/matchers"
-	"github.com/preslavmihaylov/todocheck/traverser"
+	"github.com/preslavmihaylov/todocheck/traverser/comments"
 )
 
 var authToken = "SECRET"
 
 // TODO:
+// * Check multi-line TODO comments
 // * Extract auth token to ~/.config/todocheck/auth.yaml
-// * Handle multi-line comments
-// * Handle comment on current line
-// * specify basepath via a parameter
+// * Add a --close option which indicates that an issue is to be closed as a result of a PR
 // * Add github integration
+// * specify basepath via a parameter
 // * Add caching for task statuses
 func main() {
 	rcConfig, err := config.NewTodocheckRC(".todocheckrc")
@@ -31,13 +31,14 @@ func main() {
 	todoErrs := []error{}
 	chk := checker.New(
 		fetcher.NewFetcher(rcConfig.Origin, authToken, issuetracker.FromString(rcConfig.Type)))
-	err = traverser.TraversePath(".", func(filename, line string, linecnt int) error {
-		chk.SetMatcher(matchers.ForFile(filename))
-		if !chk.IsTODO(line) {
+
+	commentsTraverser := comments.New(func(comment, filepath string, lines []string, linecnt int) error {
+		chk.SetMatcher(matchers.ForFile(filepath))
+		if !chk.IsTODO(comment) {
 			return nil
 		}
 
-		todoErr, err := chk.Check(filename, line, linecnt)
+		todoErr, err := chk.Check(comment, filepath, lines, linecnt)
 		if err != nil {
 			return fmt.Errorf("couldn't check todo line: %w", err)
 		} else if todoErr != nil {
@@ -46,6 +47,8 @@ func main() {
 
 		return nil
 	})
+
+	err = commentsTraverser.TraversePath(".")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

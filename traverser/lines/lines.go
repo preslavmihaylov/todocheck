@@ -1,4 +1,4 @@
-package traverser
+package lines
 
 import (
 	"bufio"
@@ -35,6 +35,7 @@ func traverseFile(filename string, callback lineCallback) error {
 	}
 
 	var line string
+	var linesRead int
 	linecnt := 0
 
 	reader := bufio.NewReader(bytes.NewReader(buf))
@@ -45,7 +46,8 @@ func traverseFile(filename string, callback lineCallback) error {
 			break
 		}
 
-		err := callback(filename, line, linecnt)
+		linecnt += linesRead
+		err = callback(filename, line, linecnt)
 		if err != nil {
 			return err
 		}

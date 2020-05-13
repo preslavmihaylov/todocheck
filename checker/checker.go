@@ -31,12 +31,12 @@ func (c *Checker) IsTODO(line string) bool {
 }
 
 // Check if todo line is valid
-func (c *Checker) Check(filename, line string, linecnt int) (error, error) {
-	if !c.todoMatcher.IsValid(line) {
-		return checkererrors.MalformedTODOErr(filename, line, linecnt), nil
+func (c *Checker) Check(comment, filename string, lines []string, linecnt int) (error, error) {
+	if !c.todoMatcher.IsValid(comment) {
+		return checkererrors.MalformedTODOErr(filename, lines, linecnt), nil
 	}
 
-	taskID, err := c.todoMatcher.ExtractIssueRef(line)
+	taskID, err := c.todoMatcher.ExtractIssueRef(comment)
 	if err != nil {
 		// should never happen after validating todo line
 		panic(err)
@@ -49,9 +49,9 @@ func (c *Checker) Check(filename, line string, linecnt int) (error, error) {
 
 	switch status {
 	case taskstatus.Closed:
-		return checkererrors.IssueClosedErr(filename, line, linecnt), nil
+		return checkererrors.IssueClosedErr(filename, lines, linecnt), nil
 	case taskstatus.NonExistent:
-		return checkererrors.IssueNonExistentErr(filename, line, linecnt), nil
+		return checkererrors.IssueNonExistentErr(filename, lines, linecnt), nil
 	}
 
 	return nil, nil
