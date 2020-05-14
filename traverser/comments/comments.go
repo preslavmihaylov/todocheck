@@ -130,7 +130,6 @@ func (t *Traverser) singleLineCommentState(filepath, line string, linecnt int, p
 func (t *Traverser) multiLineCommentState(filepath, line string, linecnt int, prevToken, currToken, nextToken rune) state.CommentState {
 	t.buffer += string(currToken)
 	if prevToken == '*' && currToken == '/' {
-		t.buffer += string(currToken)
 		err := t.callback(t.buffer, filepath, t.lines, t.linecnt)
 		if err != nil {
 			t.callbackErr = err
