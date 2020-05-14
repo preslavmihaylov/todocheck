@@ -15,9 +15,8 @@ import (
 var authToken = "SECRET"
 
 // TODO:
-// * Check multi-line TODO comments
 // * Extract auth token to ~/.config/todocheck/auth.yaml
-// * Add a --close option which indicates that an issue is to be closed as a result of a PR
+// * Add a --closes option which indicates that an issue is to be closed as a result of a PR
 // * Add github integration
 // * specify basepath via a parameter
 // * Add caching for task statuses

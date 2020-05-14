@@ -11,7 +11,7 @@ import (
 func MalformedTODOErr(filename string, lines []string, linecnt int) error {
 	msg := color.RedString("ERROR: Malformed todo.\n") +
 		printSourceLocation(filename, lines, linecnt) +
-		color.CyanString("\t> TODO should match pattern - \"// TODO [TASK_ID]: comment\"\n")
+		color.CyanString("\t> TODO should match pattern - \"TODO [TASK_ID]:\"\n")
 
 	return errors.New(msg)
 }
