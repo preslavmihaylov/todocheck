@@ -68,6 +68,8 @@ func (t *Traverser) handleStateChange(filepath, line string, linecnt int, prevTo
 		newState = t.singleLineCommentState(filepath, line, linecnt, prevToken, currToken, nextToken)
 	case state.MultiLineComment:
 		newState = t.multiLineCommentState(filepath, line, linecnt, prevToken, currToken, nextToken)
+	default:
+		panic("unknown comment state")
 	}
 
 	t.state = newState
@@ -85,7 +87,7 @@ func (t *Traverser) nonCommentState(filepath, line string, linecnt int, prevToke
 		t.linecnt = linecnt
 
 		return state.MultiLineComment
-	} else if currToken == '"' || currToken == '\'' {
+	} else if currToken == '"' || currToken == '\'' || currToken == '`' {
 		t.stringToken = currToken
 
 		return state.String
@@ -116,9 +118,8 @@ func (t *Traverser) singleLineCommentState(filepath, line string, linecnt int, p
 }
 
 func (t *Traverser) multiLineCommentState(filepath, line string, linecnt int, prevToken, currToken, nextToken rune) state.CommentState {
+	t.buffer += string(currToken)
 	if prevToken == '*' && currToken == '/' {
-		t.buffer += string(currToken)
-
 		t.callback(t.buffer, filepath, t.lines, t.linecnt)
 		t.resetState()
 
@@ -129,12 +130,11 @@ func (t *Traverser) multiLineCommentState(filepath, line string, linecnt int, pr
 		t.lines = append(t.lines, line)
 	}
 
-	t.buffer += string(currToken)
-
 	return state.MultiLineComment
 }
 
 func (t *Traverser) resetState() {
+	t.stringToken = 0
 	t.buffer = ""
 	t.filepath = ""
 	t.lines = nil
