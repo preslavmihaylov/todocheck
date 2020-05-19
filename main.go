@@ -21,7 +21,7 @@ var authToken = "SECRET"
 // * specify basepath via a parameter
 // * Add caching for task statuses
 func main() {
-	rcConfig, err := config.NewTodocheckRC(".todocheckrc")
+	localCfg, err := config.NewLocal(config.DefaultLocal)
 	if err != nil {
 		fmt.Printf("couldn't open .todocheckrc file: %s\n", err)
 		os.Exit(1)
@@ -29,7 +29,7 @@ func main() {
 
 	todoErrs := []error{}
 	chk := checker.New(
-		fetcher.NewFetcher(rcConfig.Origin, authToken, issuetracker.FromString(rcConfig.Type)))
+		fetcher.NewFetcher(localCfg.Origin, authToken, issuetracker.FromString(localCfg.IssueTrackerType)))
 
 	commentsTraverser := comments.New(func(comment, filepath string, lines []string, linecnt int) error {
 		chk.SetMatcher(matchers.ForFile(filepath))

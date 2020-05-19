@@ -12,27 +12,27 @@ import (
 // ErrNotFound when the specified file is not found
 var ErrNotFound = errors.New("file not found")
 
-// TodocheckRC configuration
-type TodocheckRC struct {
-	Origin string `yaml:"origin"`
-	Type   string `yaml:"type"`
+// Local todocheck configuration struct definition
+type Local struct {
+	Origin           string `yaml:"origin"`
+	IssueTrackerType string `yaml:"issue_tracker"`
 }
 
-// NewTodocheckRC configuration from a given file path
-func NewTodocheckRC(filepath string) (*TodocheckRC, error) {
+// NewLocal configuration from a given file path
+func NewLocal(filepath string) (*Local, error) {
 	if !exists(filepath) {
 		return nil, ErrNotFound
 	}
 
 	bs, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return nil, fmt.Errorf("couldn't open .todocheckrc file (%s): %w", filepath, err)
+		return nil, fmt.Errorf("couldn't open %s file (%s): %w", DefaultLocal, filepath, err)
 	}
 
-	var cfg *TodocheckRC
+	var cfg *Local
 	err = yaml.Unmarshal(bs, &cfg)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal .todocheckrc (%s): %w", filepath, err)
+		return nil, fmt.Errorf("failed to unmarshal %s (%s): %w", DefaultLocal, filepath, err)
 	}
 
 	return cfg, nil
