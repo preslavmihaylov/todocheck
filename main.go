@@ -12,8 +12,6 @@ import (
 	"github.com/preslavmihaylov/todocheck/traverser/comments"
 )
 
-var authToken = "SECRET"
-
 // TODO:
 // * Extract auth token to ~/.config/todocheck/auth.yaml
 // * Add a --closes option which indicates that an issue is to be closed as a result of a PR
@@ -27,9 +25,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	err = localCfg.AcquireToken()
+	if err != nil {
+		fmt.Printf("couldn't acquire token from config: %s\n", err)
+		os.Exit(1)
+	}
+
 	todoErrs := []error{}
 	chk := checker.New(
-		fetcher.NewFetcher(localCfg.Origin, authToken, issuetracker.FromString(localCfg.IssueTrackerType)))
+		fetcher.NewFetcher(localCfg.Origin, localCfg.Auth.Token, issuetracker.FromString(localCfg.IssueTrackerType)))
 
 	commentsTraverser := comments.New(func(comment, filepath string, lines []string, linecnt int) error {
 		chk.SetMatcher(matchers.ForFile(filepath))

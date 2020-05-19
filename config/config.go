@@ -16,6 +16,7 @@ var ErrNotFound = errors.New("file not found")
 type Local struct {
 	Origin           string `yaml:"origin"`
 	IssueTrackerType string `yaml:"issue_tracker"`
+	Auth             *Auth  `yaml:"auth"`
 }
 
 // NewLocal configuration from a given file path
