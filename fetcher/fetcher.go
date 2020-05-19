@@ -28,7 +28,10 @@ func (f *Fetcher) Fetch(taskID string) (taskstatus.TaskStatus, error) {
 		return taskstatus.None, fmt.Errorf("failed creating new GET request: %w", err)
 	}
 
-	req.Header.Add("Authorization", "Bearer "+f.authToken)
+	if f.authToken != "" {
+		req.Header.Add("Authorization", "Bearer "+f.authToken)
+	}
+
 	hclient := &http.Client{}
 	resp, err := hclient.Do(req)
 	if err != nil {
