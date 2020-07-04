@@ -17,9 +17,10 @@ var ErrNotFound = errors.New("file not found")
 
 // Local todocheck configuration struct definition
 type Local struct {
-	Origin           string `yaml:"origin"`
-	IssueTrackerType string `yaml:"issue_tracker"`
-	Auth             *Auth  `yaml:"auth"`
+	Origin           string   `yaml:"origin"`
+	IssueTrackerType string   `yaml:"issue_tracker"`
+	IgnoredPaths     []string `yaml:"ignored"`
+	Auth             *Auth    `yaml:"auth"`
 }
 
 // NewLocal configuration from a given file path

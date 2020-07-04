@@ -34,7 +34,7 @@ func main() {
 	chk := checker.New(
 		fetcher.NewFetcher(localCfg.Origin, localCfg.Auth.Token, issuetracker.FromString(localCfg.IssueTrackerType)))
 
-	commentsTraverser := comments.New(func(comment, filepath string, lines []string, linecnt int) error {
+	commentsTraverser := comments.New(localCfg.IgnoredPaths, func(comment, filepath string, lines []string, linecnt int) error {
 		chk.SetMatcher(matchers.ForFile(filepath))
 		if !chk.IsTODO(comment) {
 			return nil

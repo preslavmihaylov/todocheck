@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -13,9 +14,12 @@ import (
 type lineCallback func(filename, line string, linecnt int) error
 
 // TraversePath and perform a callback on each line in each file
-func TraversePath(path string, callback lineCallback) error {
+func TraversePath(path string, ignoredPaths []string, callback lineCallback) error {
 	return filepath.Walk(path, func(file string, info os.FileInfo, err error) error {
-		if info.IsDir() || isIgnored(file) || filepath.Ext(file) != ".go" {
+		if info.IsDir() && isIgnored(ignoredPaths, file) {
+			fmt.Println("Skipping ignored dir", file)
+			return filepath.SkipDir
+		} else if info.IsDir() || filepath.Ext(file) != ".go" {
 			return nil
 		}
 
@@ -60,6 +64,21 @@ func traverseFile(filename string, callback lineCallback) error {
 	return nil
 }
 
-func isIgnored(path string) bool {
-	return path[0] == byte('.')
+func isIgnored(ignoredPaths []string, path string) bool {
+	if len(path) > 1 && path[0] == byte('.') {
+		return true
+	}
+
+	for _, ignoredPath := range ignoredPaths {
+		isMatch, err := filepath.Match(ignoredPath, path)
+		if err != nil {
+			log.Fatalf("Couldn't process glob pattern %s for path %s: %s", ignoredPath, path, err)
+		}
+
+		if isMatch {
+			return true
+		}
+	}
+
+	return false
 }
