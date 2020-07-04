@@ -20,6 +20,8 @@ type JiraTask struct {
 func (t *JiraTask) GetStatus() taskstatus.TaskStatus {
 	switch t.Fields.Status.Name {
 	case "Done":
+		fallthrough
+	case "Closed":
 		return taskstatus.Closed
 	default:
 		return taskstatus.Open
