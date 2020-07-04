@@ -1,8 +1,9 @@
 package matchers
 
 import (
-	"errors"
 	"path/filepath"
+
+	"github.com/preslavmihaylov/todocheck/matchers/standard"
 )
 
 // TodoMatcher for todo comments
@@ -12,20 +13,34 @@ type TodoMatcher interface {
 	ExtractIssueRef(expr string) (string, error)
 }
 
-// ErrInvalidTODO when passed todo expression is invalid
-var ErrInvalidTODO = errors.New("invalid todo")
-
-// Supported file types
-const (
-	Go = ".go"
+var (
+	standardMatcher = standard.NewMatcher()
 )
+
+var supportedMatchers = map[string]TodoMatcher{
+	".go":   standardMatcher,
+	".java": standardMatcher,
+	".c":    standardMatcher,
+	".cpp":  standardMatcher,
+	".cs":   standardMatcher,
+}
 
 // ForFile gets the correct matcher for the given filename
 func ForFile(filename string) TodoMatcher {
-	switch filepath.Ext(filename) {
-	case Go:
-		return Standard()
-	default:
-		return nil
+	extension := filepath.Ext(filename)
+	if matcher, ok := supportedMatchers[extension]; ok {
+		return matcher
 	}
+
+	return nil
+}
+
+// SupportedFileExtensions for which there is a todo matcher
+func SupportedFileExtensions() []string {
+	var exts []string
+	for ext := range supportedMatchers {
+		exts = append(exts, ext)
+	}
+
+	return exts
 }

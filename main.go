@@ -34,21 +34,22 @@ func main() {
 	chk := checker.New(
 		fetcher.NewFetcher(localCfg.Origin, localCfg.Auth.Token, issuetracker.FromString(localCfg.IssueTrackerType)))
 
-	commentsTraverser := comments.New(localCfg.IgnoredPaths, func(comment, filepath string, lines []string, linecnt int) error {
-		chk.SetMatcher(matchers.ForFile(filepath))
-		if !chk.IsTODO(comment) {
+	commentsTraverser := comments.New(localCfg.IgnoredPaths, matchers.SupportedFileExtensions(),
+		func(comment, filepath string, lines []string, linecnt int) error {
+			chk.SetMatcher(matchers.ForFile(filepath))
+			if !chk.IsTODO(comment) {
+				return nil
+			}
+
+			todoErr, err := chk.Check(comment, filepath, lines, linecnt)
+			if err != nil {
+				return fmt.Errorf("couldn't check todo line: %w", err)
+			} else if todoErr != nil {
+				todoErrs = append(todoErrs, todoErr)
+			}
+
 			return nil
-		}
-
-		todoErr, err := chk.Check(comment, filepath, lines, linecnt)
-		if err != nil {
-			return fmt.Errorf("couldn't check todo line: %w", err)
-		} else if todoErr != nil {
-			todoErrs = append(todoErrs, todoErr)
-		}
-
-		return nil
-	})
+		})
 
 	err = commentsTraverser.TraversePath(".")
 	if err != nil {

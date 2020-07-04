@@ -9,20 +9,22 @@ import (
 type CommentCallback func(comment, filepath string, lines []string, linecnt int) error
 
 // New comment traverser initialization
-func New(ignoredPaths []string, callback CommentCallback) *Traverser {
+func New(ignoredPaths []string, supportedFileExtensions []string, callback CommentCallback) *Traverser {
 	return &Traverser{
-		ignoredPaths: ignoredPaths,
-		state:        state.NonComment,
-		callback:     callback,
+		ignoredPaths:            ignoredPaths,
+		supportedFileExtensions: supportedFileExtensions,
+		state:                   state.NonComment,
+		callback:                callback,
 	}
 }
 
 // Traverser for comments in a given filepath
 type Traverser struct {
-	ignoredPaths []string
-	callback     CommentCallback
-	callbackErr  error
-	state        state.CommentState
+	ignoredPaths            []string
+	supportedFileExtensions []string
+	callback                CommentCallback
+	callbackErr             error
+	state                   state.CommentState
 
 	stringToken rune
 	buffer      string
@@ -34,7 +36,7 @@ type Traverser struct {
 // TraversePath and perform a callback on each line in each file
 func (t *Traverser) TraversePath(path string) error {
 	var prev, curr, next rune
-	return lines.TraversePath(path, t.ignoredPaths, func(filepath, line string, linecnt int) error {
+	return lines.TraversePath(path, t.ignoredPaths, t.supportedFileExtensions, func(filepath, line string, linecnt int) error {
 		for _, b := range line {
 			curr = next
 			next = b

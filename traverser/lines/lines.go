@@ -14,12 +14,12 @@ import (
 type lineCallback func(filename, line string, linecnt int) error
 
 // TraversePath and perform a callback on each line in each file
-func TraversePath(path string, ignoredPaths []string, callback lineCallback) error {
+func TraversePath(path string, ignoredPaths, supportedFileExtensions []string, callback lineCallback) error {
 	return filepath.Walk(path, func(file string, info os.FileInfo, err error) error {
 		if info.IsDir() && isIgnored(ignoredPaths, file) {
 			fmt.Println("Skipping ignored dir", file)
 			return filepath.SkipDir
-		} else if info.IsDir() || filepath.Ext(file) != ".go" {
+		} else if info.IsDir() || !isSupported(supportedFileExtensions, file) {
 			return nil
 		}
 
@@ -76,6 +76,16 @@ func isIgnored(ignoredPaths []string, path string) bool {
 		}
 
 		if isMatch {
+			return true
+		}
+	}
+
+	return false
+}
+
+func isSupported(supportedExtensions []string, file string) bool {
+	for _, ext := range supportedExtensions {
+		if filepath.Ext(file) == ext {
 			return true
 		}
 	}
