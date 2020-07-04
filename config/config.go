@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 )
@@ -40,6 +41,7 @@ func NewLocal(filepath string) (*Local, error) {
 		return nil, fmt.Errorf("failed to unmarshal local configuration (%s): %w", filepath, err)
 	}
 
+	trimTrailingSlashesFromDirs(cfg.IgnoredPaths)
 	return cfg, nil
 }
 
@@ -49,4 +51,10 @@ func exists(filepath string) bool {
 		return false
 	}
 	return !info.IsDir()
+}
+
+func trimTrailingSlashesFromDirs(dirs []string) {
+	for i, dir := range dirs {
+		dirs[i] = strings.TrimRight(dir, "/")
+	}
 }
