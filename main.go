@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/preslavmihaylov/todocheck/checker"
@@ -15,19 +17,20 @@ import (
 // TODO:
 // * Add a --closes option which indicates that an issue is to be closed as a result of a PR
 // * Add github integration
-// * specify basepath via a parameter
 // * Add caching for task statuses
 func main() {
-	localCfg, err := config.NewLocal(config.DefaultLocal)
+	var basepath = flag.String("basepath", ".", "The path for the project to todocheck. Defaults to current directory")
+	var cfgPath = flag.String("config", config.DefaultLocal, "The project configuration file to use")
+	flag.Parse()
+
+	localCfg, err := config.NewLocal(*cfgPath, *basepath)
 	if err != nil {
-		fmt.Printf("couldn't open .todocheckrc file: %s\n", err)
-		os.Exit(1)
+		log.Fatalf("couldn't open configuration file: %s\n", err)
 	}
 
 	err = localCfg.Auth.AcquireToken()
 	if err != nil {
-		fmt.Printf("couldn't acquire token from config: %s\n", err)
-		os.Exit(1)
+		log.Fatalf("couldn't acquire token from config: %s\n", err)
 	}
 
 	todoErrs := []error{}
@@ -51,7 +54,7 @@ func main() {
 			return nil
 		})
 
-	err = commentsTraverser.TraversePath(".")
+	err = commentsTraverser.TraversePath(*basepath)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
