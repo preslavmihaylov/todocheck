@@ -6,20 +6,28 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/mitchellh/go-homedir"
 	"gopkg.in/yaml.v2"
 )
 
 var (
-	// DefaultConfigFile where auth tokens are stored
-	DefaultConfigFile = "~/.config/todocheck/authtokens.yaml"
-
 	// DefaultConfigPermissions the config file is created with
-	DefaultConfigPermissions = os.FileMode(0600)
+	DefaultConfigPermissions = os.FileMode(0700)
 )
+
+// DefaultConfigFile where auth tokens are stored by default
+func DefaultConfigFile() string {
+	dir, err := homedir.Dir()
+	if err != nil {
+		panic("couldn't read user home directory: " + err.Error())
+	}
+
+	return dir + "/.todocheck/authtokens.yaml"
+}
 
 // Config for storing user tokens for all todocheck origins
 type Config struct {
-	tokens map[string]string `yaml:"tokens"`
+	Tokens map[string]string `yaml:"tokens"`
 }
 
 // FromFile extracts the tokens configuration from the given file
@@ -84,6 +92,6 @@ func CreateIfNotExists(filename string, perms os.FileMode) (*Config, error) {
 
 func emptyConfig() *Config {
 	return &Config{
-		tokens: map[string]string{},
+		Tokens: map[string]string{},
 	}
 }

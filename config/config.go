@@ -9,6 +9,9 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// DefaultLocal contains the default filepath to the local todocheck config for the current repository
+const DefaultLocal = ".todocheck.yaml"
+
 // ErrNotFound when the specified file is not found
 var ErrNotFound = errors.New("file not found")
 
@@ -27,13 +30,13 @@ func NewLocal(filepath string) (*Local, error) {
 
 	bs, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return nil, fmt.Errorf("couldn't open %s file (%s): %w", DefaultLocal, filepath, err)
+		return nil, fmt.Errorf("couldn't open local configuration (%s): %w", filepath, err)
 	}
 
 	var cfg *Local
 	err = yaml.Unmarshal(bs, &cfg)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal %s (%s): %w", DefaultLocal, filepath, err)
+		return nil, fmt.Errorf("failed to unmarshal local configuration (%s): %w", filepath, err)
 	}
 
 	return cfg, nil
