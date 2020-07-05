@@ -35,7 +35,7 @@ func main() {
 
 	baseURL, err := issuetracker.BaseURLFor(issuetracker.FromString(localCfg.IssueTrackerType), localCfg.Origin)
 	if err != nil {
-		log.Fatalf("couldn't get base url from origin %s & issue tracker %s: %s\n",
+		log.Fatalf("couldn't get base url for origin %s & issue tracker %s: %s\n",
 			localCfg.Origin, localCfg.IssueTrackerType, err)
 	}
 
