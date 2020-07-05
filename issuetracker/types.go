@@ -1,6 +1,10 @@
 package issuetracker
 
-import "github.com/preslavmihaylov/todocheck/issuetracker/models"
+import (
+	"errors"
+
+	"github.com/preslavmihaylov/todocheck/issuetracker/models"
+)
 
 // Type of issue tracker enum
 type Type string
@@ -21,10 +25,20 @@ func TaskFor(issueTracker Type) models.Task {
 	}
 }
 
+// BaseURLFor returns the task-fetching base url given the issue tracker type and the site origin
+func BaseURLFor(issueTracker Type, origin string) (string, error) {
+	switch issueTracker {
+	case Jira:
+		return origin + "/rest/api/latest/issue/", nil
+	default:
+		return "", errors.New("unknown issue tracker type")
+	}
+}
+
 // FromString converts a string-enoded issue tracker type to correct type
 func FromString(str string) Type {
 	switch str {
-	case string(Jira):
+	case Jira:
 		return Jira
 	default:
 		return Invalid

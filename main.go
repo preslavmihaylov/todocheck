@@ -33,9 +33,15 @@ func main() {
 		log.Fatalf("couldn't acquire token from config: %s\n", err)
 	}
 
+	baseURL, err := issuetracker.BaseURLFor(issuetracker.FromString(localCfg.IssueTrackerType), localCfg.Origin)
+	if err != nil {
+		log.Fatalf("couldn't get base url from origin %s & issue tracker %s: %s\n",
+			localCfg.Origin, localCfg.IssueTrackerType, err)
+	}
+
 	todoErrs := []error{}
 	chk := checker.New(
-		fetcher.NewFetcher(localCfg.Origin, localCfg.Auth.Token, issuetracker.FromString(localCfg.IssueTrackerType)))
+		fetcher.NewFetcher(baseURL, localCfg.Auth.Token, issuetracker.FromString(localCfg.IssueTrackerType)))
 
 	commentsTraverser := comments.New(localCfg.IgnoredPaths, matchers.SupportedFileExtensions(),
 		func(comment, filepath string, lines []string, linecnt int) error {
