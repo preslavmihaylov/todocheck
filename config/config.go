@@ -35,7 +35,7 @@ func NewLocal(cfgPath, basepath string) (*Local, error) {
 		return nil, fmt.Errorf("couldn't open local configuration (%s): %w", cfgPath, err)
 	}
 
-	var cfg *Local
+	cfg := &Local{Auth: defaultAuthCfg()}
 	err = yaml.Unmarshal(bs, &cfg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal local configuration (%s): %w", cfgPath, err)

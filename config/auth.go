@@ -18,11 +18,18 @@ const (
 	AuthTypeOffline AuthType = "offline"
 )
 
+func defaultAuthCfg() *Auth {
+	return &Auth{
+		TokensCache: authtokens.DefaultConfigFile(),
+	}
+}
+
 // Auth configuration section for specifying issue tracker auth options
 type Auth struct {
-	Type       AuthType `yaml:"type"`
-	OfflineURL string   `yaml:"offline_url"`
-	Token      string   `yaml:"-"`
+	Type        AuthType `yaml:"type"`
+	OfflineURL  string   `yaml:"offline_url"`
+	TokensCache string   `yaml:"tokens_cache,omitempty"`
+	Token       string   `yaml:"-"`
 }
 
 // AcquireToken stores the issue tracker's auth token based on the auth type specified
@@ -38,7 +45,7 @@ func (a *Auth) AcquireToken() error {
 }
 
 func (a *Auth) acquireOfflineToken() error {
-	tokensCfg, err := authtokens.CreateIfNotExists(authtokens.DefaultConfigFile(), authtokens.DefaultConfigPermissions)
+	tokensCfg, err := authtokens.CreateIfNotExists(a.TokensCache, authtokens.DefaultConfigPermissions)
 	if err != nil {
 		return fmt.Errorf("couldn't read auth tokens config: %w", err)
 	}
@@ -56,7 +63,7 @@ func (a *Auth) acquireOfflineToken() error {
 
 	a.Token = strings.TrimSpace(string(tokenBs))
 	tokensCfg.Tokens[a.OfflineURL] = a.Token
-	tokensCfg.Save(authtokens.DefaultConfigFile())
+	tokensCfg.Save(a.TokensCache)
 
 	return nil
 }
