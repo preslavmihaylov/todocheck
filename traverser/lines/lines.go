@@ -65,7 +65,7 @@ func traverseFile(filename string, callback lineCallback) error {
 }
 
 func isIgnored(ignoredPaths []string, path string) bool {
-	if len(path) > 1 && path[0] == byte('.') {
+	if len(path) > 1 && path[0] == byte('.') && path[1] != byte('/') {
 		return true
 	}
 
