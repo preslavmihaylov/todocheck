@@ -68,6 +68,6 @@ func main() {
 
 func printTodoErrs(errs []error) {
 	for _, err := range errs {
-		fmt.Println(err.Error())
+		fmt.Fprintln(os.Stderr, err.Error())
 	}
 }
