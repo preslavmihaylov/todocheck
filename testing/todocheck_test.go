@@ -43,6 +43,6 @@ func TestSingleLineMalformedTodos(t *testing.T) {
 				ExpectLine("// This is a TODO comment at the middle of it")).
 		Run()
 	if err != nil {
-		t.Errorf("todocheck scenario failed: %s", err)
+		t.Errorf("%s", err)
 	}
 }
