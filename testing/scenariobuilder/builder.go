@@ -5,7 +5,6 @@ package scenariobuilder
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"os/exec"
 	"strings"
@@ -86,12 +85,13 @@ func validateTodoErrs(programOutput string, scenarios []*TodoErrScenario) error 
 	}
 
 	for i := range chunks {
-		if chunks[i] != scenarios[i].String() {
-			out := fmt.Sprintf("Invalid todo error detected\n\nExpected:\n%s\n\nActual:\n%s",
-				scenarios[i].String(), chunks[i])
-
-			return errors.New(out)
+		j := indexOfMatchingTodoScenario(scenarios, chunks[i])
+		if j == -1 {
+			return fmt.Errorf("No matching todo detected in any of the scenarios\n\nActual:\n%s\n\nRemaining scenarios:\n%s",
+				chunks[i], printScenarios(scenarios))
 		}
+
+		scenarios = removeScenario(scenarios, j)
 	}
 
 	return nil
@@ -106,4 +106,27 @@ func removeEmptyTokens(ss []string) []string {
 	}
 
 	return res
+}
+
+func indexOfMatchingTodoScenario(scenarios []*TodoErrScenario, target string) int {
+	for i := range scenarios {
+		if scenarios[i].String() == target {
+			return i
+		}
+	}
+
+	return -1
+}
+
+func printScenarios(ss []*TodoErrScenario) string {
+	res := ""
+	for i, s := range ss {
+		res += fmt.Sprintf("(scenario #%d)\n%s\n\n", i+1, s.String())
+	}
+
+	return res
+}
+
+func removeScenario(scenarios []*TodoErrScenario, i int) []*TodoErrScenario {
+	return append(scenarios[:i], scenarios[i+1:]...)
 }

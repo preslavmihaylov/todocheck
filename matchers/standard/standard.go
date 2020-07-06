@@ -6,7 +6,7 @@ import (
 	"github.com/preslavmihaylov/todocheck/matchers/errors"
 )
 
-var singleLineTodoPattern = regexp.MustCompile("^\\s*//\\s*TODO[ :]")
+var singleLineTodoPattern = regexp.MustCompile("^\\s*//.*TODO")
 var singleLineValidTodoPattern = regexp.MustCompile("^\\s*// TODO ([a-zA-Z0-9\\-]+):.*")
 
 var multiLineTodoPattern = regexp.MustCompile("(?s)^\\s*/\\*.*TODO")
