@@ -55,13 +55,13 @@ func (s *TodoErrScenario) ExpectLine(line string) *TodoErrScenario {
 }
 
 func (s *TodoErrScenario) String() string {
-	str := fmt.Sprintf("%s\n", s.TodoErrType)
+	str := fmt.Sprintf("%s", s.TodoErrType)
 	for i := 0; i < len(s.contents); i++ {
-		str += fmt.Sprintf("%s:%d: %s\n", s.sourceFile, i+s.sourceLineNum, s.contents[i])
+		str += fmt.Sprintf("\n%s:%d: %s", s.sourceFile, i+s.sourceLineNum, s.contents[i])
 	}
 
 	if s.TodoErrType == TodoErrTypeMalformed {
-		str += "\t> TODO should match pattern - \"TODO [TASK_ID]:\""
+		str += "\n\t> TODO should match pattern - \"TODO [TASK_ID]:\""
 	}
 
 	return str

@@ -6,9 +6,16 @@ package scenariobuilder
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
 	"os/exec"
-	"strings"
+	"regexp"
+
+	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder/issuetracker"
 )
+
+type teardownFunc func()
 
 // TodocheckScenario encapsulates the scenario the program is expected to execute.
 // This let's you specify what are the program inputs & what is the expected outputs.
@@ -17,6 +24,8 @@ type TodocheckScenario struct {
 	basepath         string
 	cfgPath          string
 	expectedExitCode int
+	issueTracker     issuetracker.Type
+	issues           map[string]issuetracker.Status
 	todoErrScenarios []*TodoErrScenario
 }
 
@@ -26,6 +35,7 @@ func NewScenario() *TodocheckScenario {
 		binaryLoc:        "./todocheck",
 		basepath:         ".",
 		cfgPath:          ".todocheck.yaml",
+		issues:           map[string]issuetracker.Status{},
 		expectedExitCode: 0,
 	}
 }
@@ -48,6 +58,18 @@ func (s *TodocheckScenario) WithConfig(cfgPath string) *TodocheckScenario {
 	return s
 }
 
+// WithIssueTracker let's you specify what issue tracker to execute the scenario with
+func (s *TodocheckScenario) WithIssueTracker(issueTracker issuetracker.Type) *TodocheckScenario {
+	s.issueTracker = issueTracker
+	return s
+}
+
+// WithIssue sets up a mock issue in your issue tracker with the given status
+func (s *TodocheckScenario) WithIssue(issueID string, status issuetracker.Status) *TodocheckScenario {
+	s.issues[issueID] = status
+	return s
+}
+
 // ExpectTodoErr appends a new todo err scenario to expect from the program execution
 func (s *TodocheckScenario) ExpectTodoErr(sc *TodoErrScenario) *TodocheckScenario {
 	s.expectedExitCode = 1
@@ -57,13 +79,19 @@ func (s *TodocheckScenario) ExpectTodoErr(sc *TodoErrScenario) *TodocheckScenari
 
 // Run sets up the environment & executes the configured scenario
 func (s *TodocheckScenario) Run() error {
+	teardown, err := s.setupTestEnvironment()
+	if err != nil {
+		return fmt.Errorf("couldn't setup test environment: %s", err)
+	}
+	defer teardown()
+
 	cmd := exec.Command(s.binaryLoc, "--basepath", s.basepath, "--config", s.cfgPath)
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); !ok || exitError.ExitCode() != s.expectedExitCode {
 			return fmt.Errorf("program exited with an unexpected exit code: %s", err)
@@ -76,57 +104,50 @@ func (s *TodocheckScenario) Run() error {
 	return validateTodoErrs(stderr.String(), s.todoErrScenarios)
 }
 
-func validateTodoErrs(programOutput string, scenarios []*TodoErrScenario) error {
-	chunks := removeEmptyTokens(strings.Split(programOutput, "\n\n"))
-	if len(chunks) != len(scenarios) {
-		return fmt.Errorf("Invalid amount of todo errors detected.\nExpected: %d, Actual: %d\n\n"+
-			"(program output follows...)\n%s",
-			len(scenarios), len(chunks), programOutput)
+func (s *TodocheckScenario) setupTestEnvironment() (teardownFunc, error) {
+	mockSrv := s.setupMockIssueTrackerServer()
+	teardownIssueTrackerCfg, err := setupMockIssueTrackerCfg(s.cfgPath, mockSrv.URL)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't setup mock issue tracker: %w", err)
 	}
 
-	for i := range chunks {
-		j := indexOfMatchingTodoScenario(scenarios, chunks[i])
-		if j == -1 {
-			return fmt.Errorf("No matching todo detected in any of the scenarios\n\nActual:\n%s\n\nRemaining scenarios:\n%s",
-				chunks[i], printScenarios(scenarios))
+	return func() {
+		teardownIssueTrackerCfg()
+		mockSrv.Close()
+	}, nil
+}
+
+func (s *TodocheckScenario) setupMockIssueTrackerServer() *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		for issue := range s.issues {
+			if r.URL.Path == issuetracker.IssueURLFrom(s.issueTracker, issue) {
+				w.Write(issuetracker.BuildResponseFor(s.issueTracker, issue, s.issues[issue]))
+				return
+			}
 		}
 
-		scenarios = removeScenario(scenarios, j)
-	}
-
-	return nil
+		w.WriteHeader(http.StatusNotFound)
+	}))
 }
 
-func removeEmptyTokens(ss []string) []string {
-	res := []string{}
-	for _, s := range ss {
-		if s != "" {
-			res = append(res, s)
+func setupMockIssueTrackerCfg(cfgPath string, mockOrigin string) (teardownFunc, error) {
+	patt := regexp.MustCompile("origin: \"?[a-zA-Z0-9._:/]+\"?")
+	origBs, err := ioutil.ReadFile(cfgPath)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't read config file %s: %w", cfgPath, err)
+	}
+
+	mockBs := patt.ReplaceAll(origBs, []byte(fmt.Sprintf("origin: %s", mockOrigin)))
+
+	err = ioutil.WriteFile(cfgPath, mockBs, 0755)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't writeback mock issue tracker origin in file %s: %w", cfgPath, err)
+	}
+
+	return func() {
+		err := ioutil.WriteFile(cfgPath, origBs, 0755)
+		if err != nil {
+			panic("couldn't teardown mock issue tracker: " + err.Error())
 		}
-	}
-
-	return res
-}
-
-func indexOfMatchingTodoScenario(scenarios []*TodoErrScenario, target string) int {
-	for i := range scenarios {
-		if scenarios[i].String() == target {
-			return i
-		}
-	}
-
-	return -1
-}
-
-func printScenarios(ss []*TodoErrScenario) string {
-	res := ""
-	for i, s := range ss {
-		res += fmt.Sprintf("(scenario #%d)\n%s\n\n", i+1, s.String())
-	}
-
-	return res
-}
-
-func removeScenario(scenarios []*TodoErrScenario, i int) []*TodoErrScenario {
-	return append(scenarios[:i], scenarios[i+1:]...)
+	}, nil
 }

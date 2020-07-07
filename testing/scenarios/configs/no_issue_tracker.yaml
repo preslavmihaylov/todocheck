@@ -1,4 +1,4 @@
-origin: "some_jira_url"
+origin: "no_issue_tracker"
 issue_tracker: JIRA
 auth: 
   type: none

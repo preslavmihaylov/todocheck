@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder"
+	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder/issuetracker"
 )
 
 func TestSingleLineMalformedTodos(t *testing.T) {
@@ -73,6 +74,30 @@ func TestMultiLineMalformedTodos(t *testing.T) {
 				WithType(scenariobuilder.TodoErrTypeMalformed).
 				WithLocation("scenarios/multiline_todos/main.go", 18).
 				ExpectLine("/* This is a single-line multi-line TODO comment */")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestAnnotatedTodos(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/annotated_todos").
+		WithConfig("./scenarios/configs/no_issue_tracker.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("J123", issuetracker.StatusClosed).
+		WithIssue("J321", issuetracker.StatusOpen).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithLocation("scenarios/annotated_todos/main.go", 3).
+				ExpectLine("// TODO J123: This is a todo, annotated with a closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeIssueNonExistent).
+				WithLocation("scenarios/annotated_todos/main.go", 7).
+				ExpectLine("// TODO J456: This is an invalid todo, annotated with a non-existent issue")).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
