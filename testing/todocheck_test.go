@@ -134,6 +134,21 @@ func TestAuthTokensCache(t *testing.T) {
 	}
 }
 
+func TestOfflineToken(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/offline_token").
+		WithConfig("./test_configs/offline_token.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("J123", issuetracker.StatusOpen).
+		RequireAuthToken("123456").
+		SetOfflineTokenWhenRequested("123456").
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestIgnoredDirectories(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
@@ -165,5 +180,3 @@ func TestIgnoredDirectoriesWithDotDot(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
-
-// TODO: Add tests about offline auth

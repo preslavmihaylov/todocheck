@@ -45,7 +45,7 @@ func (f *Fetcher) Fetch(taskID string) (taskstatus.TaskStatus, error) {
 	} else if resp.StatusCode == http.StatusNotFound {
 		return taskstatus.NonExistent, nil
 	} else if resp.StatusCode != http.StatusOK {
-		return taskstatus.None, fmt.Errorf("bad status code upon fetching task: %w", err)
+		return taskstatus.None, fmt.Errorf("bad status code upon fetching task: %d", resp.StatusCode)
 	}
 
 	task := issuetracker.TaskFor(f.tracker)

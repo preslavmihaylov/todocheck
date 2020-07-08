@@ -1,7 +1,9 @@
 package config
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strings"
 	"syscall"
 
@@ -56,7 +58,7 @@ func (a *Auth) acquireOfflineToken() error {
 	}
 
 	fmt.Printf("Please go to %v and paste the offline token below:\nToken: ", a.OfflineURL)
-	tokenBs, err := terminal.ReadPassword(int(syscall.Stdin))
+	tokenBs, err := readPassword()
 	if err != nil {
 		return fmt.Errorf("couldn't acquire offline token: %w", err)
 	}
@@ -66,4 +68,15 @@ func (a *Auth) acquireOfflineToken() error {
 	tokensCfg.Save(a.TokensCache)
 
 	return nil
+}
+
+// Make token input scriptable, while preserving the hidden prompt behavior for users
+// https://github.com/golang/go/issues/19909#issuecomment-399409958
+func readPassword() ([]byte, error) {
+	if terminal.IsTerminal(syscall.Stdin) {
+		return terminal.ReadPassword(syscall.Stdin)
+	}
+
+	reader := bufio.NewReader(os.Stdin)
+	return reader.ReadBytes('\n')
 }

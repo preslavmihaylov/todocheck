@@ -20,14 +20,15 @@ type teardownFunc func()
 // TodocheckScenario encapsulates the scenario the program is expected to execute.
 // This let's you specify what are the program inputs & what is the expected outputs.
 type TodocheckScenario struct {
-	binaryLoc        string
-	basepath         string
-	cfgPath          string
-	authToken        string
-	expectedExitCode int
-	issueTracker     issuetracker.Type
-	issues           map[string]issuetracker.Status
-	todoErrScenarios []*TodoErrScenario
+	binaryLoc         string
+	basepath          string
+	cfgPath           string
+	expectedAuthToken string
+	userOfflineToken  string
+	expectedExitCode  int
+	issueTracker      issuetracker.Type
+	issues            map[string]issuetracker.Status
+	todoErrScenarios  []*TodoErrScenario
 }
 
 // NewScenario to execute against the todocheck program
@@ -67,13 +68,19 @@ func (s *TodocheckScenario) WithIssueTracker(issueTracker issuetracker.Type) *To
 
 // RequireAuthToken on each issue lookup
 func (s *TodocheckScenario) RequireAuthToken(token string) *TodocheckScenario {
-	s.authToken = token
+	s.expectedAuthToken = token
 	return s
 }
 
 // WithIssue sets up a mock issue in your issue tracker with the given status
 func (s *TodocheckScenario) WithIssue(issueID string, status issuetracker.Status) *TodocheckScenario {
 	s.issues[issueID] = status
+	return s
+}
+
+// SetOfflineTokenWhenRequested by sending the specified token to the program's standard input
+func (s *TodocheckScenario) SetOfflineTokenWhenRequested(token string) *TodocheckScenario {
+	s.userOfflineToken = token
 	return s
 }
 
@@ -94,19 +101,23 @@ func (s *TodocheckScenario) Run() error {
 
 	cmd := exec.Command(s.binaryLoc, "--basepath", s.basepath, "--config", s.cfgPath)
 
-	var stdout, stderr bytes.Buffer
+	var stdin, stdout, stderr bytes.Buffer
+	if s.userOfflineToken != "" {
+		stdin.Write([]byte(s.userOfflineToken + "\n"))
+	}
+
+	cmd.Stdin = &stdin
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 
 	err = cmd.Run()
+	fmt.Println("(standard output follows. Standard output is ignored & not validated...)")
+	fmt.Println(stdout.String())
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); !ok || exitError.ExitCode() != s.expectedExitCode {
 			return fmt.Errorf("program exited with an unexpected exit code: %s", err)
 		}
 	}
-
-	fmt.Println("(standard output follows. Standard output is ignored & not validated...)")
-	fmt.Println(stdout.String())
 
 	return validateTodoErrs(stderr.String(), s.todoErrScenarios)
 }
@@ -126,7 +137,7 @@ func (s *TodocheckScenario) setupTestEnvironment() (teardownFunc, error) {
 
 func (s *TodocheckScenario) setupMockIssueTrackerServer() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if s.authToken != "" && r.Header.Get("Authorization") != "Bearer "+s.authToken {
+		if s.expectedAuthToken != "" && r.Header.Get("Authorization") != "Bearer "+s.expectedAuthToken {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
