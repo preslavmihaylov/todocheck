@@ -98,6 +98,22 @@ func TestAnnotatedTodos(t *testing.T) {
 				WithType(scenariobuilder.TodoErrTypeIssueNonExistent).
 				WithLocation("scenarios/annotated_todos/main.go", 7).
 				ExpectLine("// TODO J456: This is an invalid todo, annotated with a non-existent issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithLocation("scenarios/annotated_todos/main.go", 14).
+				ExpectLine("/*").
+				ExpectLine(" * This is an invalid TODO J123:").
+				ExpectLine(" * as the issue is closed").
+				ExpectLine(" */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeIssueNonExistent).
+				WithLocation("scenarios/annotated_todos/main.go", 19).
+				ExpectLine("/*").
+				ExpectLine(" * TODO J456:").
+				ExpectLine(" * This issue doesn't exist").
+				ExpectLine(" */")).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
