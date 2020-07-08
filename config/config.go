@@ -41,8 +41,10 @@ func NewLocal(cfgPath, basepath string) (*Local, error) {
 		return nil, fmt.Errorf("failed to unmarshal local configuration (%s): %w", cfgPath, err)
 	}
 
+	cfg.Auth.TokensCache = prependBasepath(cfg.Auth.TokensCache, basepath)
+
+	prependBasepathDirs(cfg.IgnoredPaths, basepath)
 	trimTrailingSlashesFromDirs(cfg.IgnoredPaths)
-	prependBasepath(cfg.IgnoredPaths, basepath)
 	removeCurrentDirReference(cfg.IgnoredPaths)
 
 	return cfg, nil
@@ -62,14 +64,22 @@ func trimTrailingSlashesFromDirs(dirs []string) {
 	}
 }
 
-func prependBasepath(dirs []string, basepath string) {
+func prependBasepathDirs(dirs []string, basepath string) {
+	for i := range dirs {
+		dirs[i] = prependBasepath(dirs[i], basepath)
+	}
+}
+
+func prependBasepath(path, basepath string) string {
+	if !isRelativePath(path) {
+		return path
+	}
+
 	if basepath[len(basepath)-1] != '/' {
 		basepath = basepath + "/"
 	}
 
-	for i := range dirs {
-		dirs[i] = basepath + dirs[i]
-	}
+	return basepath + path
 }
 
 func removeCurrentDirReference(dirs []string) {
@@ -78,4 +88,8 @@ func removeCurrentDirReference(dirs []string) {
 			dirs[i] = dirs[i][2:]
 		}
 	}
+}
+
+func isRelativePath(path string) bool {
+	return path[0] != '/' && path[0] != '~'
 }

@@ -23,6 +23,7 @@ type TodocheckScenario struct {
 	binaryLoc        string
 	basepath         string
 	cfgPath          string
+	authToken        string
 	expectedExitCode int
 	issueTracker     issuetracker.Type
 	issues           map[string]issuetracker.Status
@@ -61,6 +62,12 @@ func (s *TodocheckScenario) WithConfig(cfgPath string) *TodocheckScenario {
 // WithIssueTracker let's you specify what issue tracker to execute the scenario with
 func (s *TodocheckScenario) WithIssueTracker(issueTracker issuetracker.Type) *TodocheckScenario {
 	s.issueTracker = issueTracker
+	return s
+}
+
+// RequireAuthToken on each issue lookup
+func (s *TodocheckScenario) RequireAuthToken(token string) *TodocheckScenario {
+	s.authToken = token
 	return s
 }
 
@@ -119,6 +126,11 @@ func (s *TodocheckScenario) setupTestEnvironment() (teardownFunc, error) {
 
 func (s *TodocheckScenario) setupMockIssueTrackerServer() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if s.authToken != "" && r.Header.Get("Authorization") != "Bearer "+s.authToken {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
 		for issue := range s.issues {
 			if r.URL.Path == issuetracker.IssueURLFrom(s.issueTracker, issue) {
 				w.Write(issuetracker.BuildResponseFor(s.issueTracker, issue, s.issues[issue]))

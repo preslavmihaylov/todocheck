@@ -11,7 +11,7 @@ func TestSingleLineMalformedTodos(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/singleline_todos").
-		WithConfig("./scenarios/configs/no_issue_tracker.yaml").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(scenariobuilder.TodoErrTypeMalformed).
@@ -52,7 +52,7 @@ func TestMultiLineMalformedTodos(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/multiline_todos").
-		WithConfig("./scenarios/configs/no_issue_tracker.yaml").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(scenariobuilder.TodoErrTypeMalformed).
@@ -84,7 +84,7 @@ func TestAnnotatedTodos(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/annotated_todos").
-		WithConfig("./scenarios/configs/no_issue_tracker.yaml").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
 		WithIssueTracker(issuetracker.Jira).
 		WithIssue("J123", issuetracker.StatusClosed).
 		WithIssue("J321", issuetracker.StatusOpen).
@@ -120,11 +120,25 @@ func TestAnnotatedTodos(t *testing.T) {
 	}
 }
 
+func TestAuthTokensCache(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/auth_tokens_cache").
+		WithConfig("./test_configs/auth_tokens.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		RequireAuthToken("123456").
+		WithIssue("J123", issuetracker.StatusOpen).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestIgnoredDirectories(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/ignored_dirs").
-		WithConfig("./scenarios/configs/ignored_dirs.yaml").
+		WithConfig("./test_configs/ignored_dirs.yaml").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(scenariobuilder.TodoErrTypeMalformed).
@@ -140,7 +154,7 @@ func TestIgnoredDirectoriesWithDotDot(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
 		WithBasepath("../testing/scenarios/ignored_dirs").
-		WithConfig("./scenarios/configs/ignored_dirs.yaml").
+		WithConfig("./test_configs/ignored_dirs.yaml").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(scenariobuilder.TodoErrTypeMalformed).
@@ -153,4 +167,3 @@ func TestIgnoredDirectoriesWithDotDot(t *testing.T) {
 }
 
 // TODO: Add tests about offline auth
-// TODO: Add tests about auth tokens cache
