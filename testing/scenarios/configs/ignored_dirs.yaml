@@ -1,0 +1,7 @@
+origin: "no_issue_tracker"
+issue_tracker: JIRA
+ignored:
+  - ignored_dir1/
+  - ignored_dir2/
+auth: 
+  type: none

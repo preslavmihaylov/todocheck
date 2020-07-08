@@ -43,6 +43,7 @@ func NewLocal(cfgPath, basepath string) (*Local, error) {
 
 	trimTrailingSlashesFromDirs(cfg.IgnoredPaths)
 	prependBasepath(cfg.IgnoredPaths, basepath)
+	removeCurrentDirReference(cfg.IgnoredPaths)
 
 	return cfg, nil
 }
@@ -68,5 +69,13 @@ func prependBasepath(dirs []string, basepath string) {
 
 	for i := range dirs {
 		dirs[i] = basepath + dirs[i]
+	}
+}
+
+func removeCurrentDirReference(dirs []string) {
+	for i := range dirs {
+		if dirs[i][:2] == "./" {
+			dirs[i] = dirs[i][2:]
+		}
 	}
 }

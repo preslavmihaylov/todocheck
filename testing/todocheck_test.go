@@ -119,3 +119,35 @@ func TestAnnotatedTodos(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+func TestIgnoredDirectories(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/ignored_dirs").
+		WithConfig("./scenarios/configs/ignored_dirs.yaml").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("scenarios/ignored_dirs/main.go", 3).
+				ExpectLine("// This is a malformed TODO")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestIgnoredDirectoriesWithDotDot(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("../testing/scenarios/ignored_dirs").
+		WithConfig("./scenarios/configs/ignored_dirs.yaml").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("../testing/scenarios/ignored_dirs/main.go", 3).
+				ExpectLine("// This is a malformed TODO")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
