@@ -151,3 +151,6 @@ func TestIgnoredDirectoriesWithDotDot(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+// TODO: Add tests about offline auth
+// TODO: Add tests about auth tokens cache
