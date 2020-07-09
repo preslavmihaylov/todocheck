@@ -3,3 +3,4 @@ issue_tracker: JIRA
 auth: 
   type: offline
   offline_url: http://localhost:8080/offline
+  tokens_cache: .authtokens.yaml

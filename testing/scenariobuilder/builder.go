@@ -9,26 +9,32 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"os/exec"
 	"regexp"
 
+	"github.com/preslavmihaylov/todocheck/config"
+	"github.com/preslavmihaylov/todocheck/config/authtokens"
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder/issuetracker"
 )
 
 type teardownFunc func()
+type validateFunc func() error
 
 // TodocheckScenario encapsulates the scenario the program is expected to execute.
 // This let's you specify what are the program inputs & what is the expected outputs.
 type TodocheckScenario struct {
-	binaryLoc         string
-	basepath          string
-	cfgPath           string
-	expectedAuthToken string
-	userOfflineToken  string
-	expectedExitCode  int
-	issueTracker      issuetracker.Type
-	issues            map[string]issuetracker.Status
-	todoErrScenarios  []*TodoErrScenario
+	binaryLoc              string
+	basepath               string
+	cfgPath                string
+	cfg                    *config.Local
+	expectedAuthToken      string
+	userOfflineToken       string
+	deleteTokensCacheAfter bool
+	expectedExitCode       int
+	issueTracker           issuetracker.Type
+	issues                 map[string]issuetracker.Status
+	todoErrScenarios       []*TodoErrScenario
 }
 
 // NewScenario to execute against the todocheck program
@@ -84,6 +90,12 @@ func (s *TodocheckScenario) SetOfflineTokenWhenRequested(token string) *Todochec
 	return s
 }
 
+// DeleteTokensCacheAfter the test completes. The tokens cache is derived from the given config file
+func (s *TodocheckScenario) DeleteTokensCacheAfter() *TodocheckScenario {
+	s.deleteTokensCacheAfter = true
+	return s
+}
+
 // ExpectTodoErr appends a new todo err scenario to expect from the program execution
 func (s *TodocheckScenario) ExpectTodoErr(sc *TodoErrScenario) *TodocheckScenario {
 	s.expectedExitCode = 1
@@ -93,6 +105,12 @@ func (s *TodocheckScenario) ExpectTodoErr(sc *TodoErrScenario) *TodocheckScenari
 
 // Run sets up the environment & executes the configured scenario
 func (s *TodocheckScenario) Run() error {
+	var err error
+	s.cfg, err = config.NewLocal(s.cfgPath, s.basepath)
+	if err != nil {
+		return fmt.Errorf("couldn't initialize todocheck config: %w", err)
+	}
+
 	teardown, err := s.setupTestEnvironment()
 	if err != nil {
 		return fmt.Errorf("couldn't setup test environment: %s", err)
@@ -119,7 +137,20 @@ func (s *TodocheckScenario) Run() error {
 		}
 	}
 
-	return validateTodoErrs(stderr.String(), s.todoErrScenarios)
+	return validationPipeline(
+		validateTodoErrs(stderr.String(), s.todoErrScenarios),
+		validateAuthTokensCache(s.cfg.Auth.TokensCache, s.cfg.Auth.OfflineURL, s.expectedAuthToken),
+	)
+}
+
+func validationPipeline(fs ...validateFunc) error {
+	for _, f := range fs {
+		if err := f(); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (s *TodocheckScenario) setupTestEnvironment() (teardownFunc, error) {
@@ -130,8 +161,12 @@ func (s *TodocheckScenario) setupTestEnvironment() (teardownFunc, error) {
 	}
 
 	return func() {
-		teardownIssueTrackerCfg()
-		mockSrv.Close()
+		if s.deleteTokensCacheAfter {
+			defer deleteTokensCache(s.cfg.Auth.TokensCache)
+		}
+
+		defer teardownIssueTrackerCfg()
+		defer mockSrv.Close()
 	}, nil
 }
 
@@ -173,4 +208,15 @@ func setupMockIssueTrackerCfg(cfgPath string, mockOrigin string) (teardownFunc, 
 			panic("couldn't teardown mock issue tracker: " + err.Error())
 		}
 	}, nil
+}
+
+func deleteTokensCache(tokensCache string) {
+	if tokensCache == authtokens.DefaultConfigFile() {
+		return
+	}
+
+	err := os.Remove(tokensCache)
+	if err != nil {
+		panic("couldn't teardown test environment: failed to delete tokens cache " + tokensCache)
+	}
 }

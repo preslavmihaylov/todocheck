@@ -143,6 +143,7 @@ func TestOfflineToken(t *testing.T) {
 		WithIssue("J123", issuetracker.StatusOpen).
 		RequireAuthToken("123456").
 		SetOfflineTokenWhenRequested("123456").
+		DeleteTokensCacheAfter().
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
