@@ -3,11 +3,13 @@ package scenariobuilder
 import (
 	"fmt"
 	"strings"
+
+	"github.com/preslavmihaylov/todocheck/common"
 )
 
 func validateTodoErrs(programOutput string, scenarios []*TodoErrScenario) validateFunc {
 	return func() error {
-		chunks := removeEmptyTokens(strings.Split(programOutput, "\n\n"))
+		chunks := common.RemoveEmptyTokens(strings.Split(programOutput, "\n\n"))
 		if len(chunks) != len(scenarios) {
 			return fmt.Errorf("Invalid amount of todo errors detected.\nExpected: %d, Actual: %d\n\n"+
 				"(program output follows...)\n%s",
@@ -28,17 +30,6 @@ func validateTodoErrs(programOutput string, scenarios []*TodoErrScenario) valida
 
 		return nil
 	}
-}
-
-func removeEmptyTokens(ss []string) []string {
-	res := []string{}
-	for _, s := range ss {
-		if s != "" {
-			res = append(res, s)
-		}
-	}
-
-	return res
 }
 
 func indexOfMatchingTodoScenario(scenarios []*TodoErrScenario, target string) int {
