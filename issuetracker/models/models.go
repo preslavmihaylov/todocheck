@@ -7,13 +7,19 @@ type Task interface {
 	GetStatus() taskstatus.TaskStatus
 }
 
+// Status for Jira tasks
+type Status struct {
+	Name string `json:"name"`
+}
+
+// Fields for Jira tasks
+type Fields struct {
+	Status `json:"status"`
+}
+
 // JiraTask JSON model as returned by Rest API
 type JiraTask struct {
-	Fields struct {
-		Status struct {
-			Name string `json:"name"`
-		} `json:"status"`
-	} `json:"fields"`
+	Fields `json:"fields"`
 }
 
 // GetStatus of jira task, based on underlying structure
