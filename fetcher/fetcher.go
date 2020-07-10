@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/preslavmihaylov/todocheck/issuetracker"
-	"github.com/preslavmihaylov/todocheck/taskstatus"
+	"github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 )
 
 // Fetcher for task statuses by contacting task management web apps' rest api

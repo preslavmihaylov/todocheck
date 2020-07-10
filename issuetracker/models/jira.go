@@ -1,6 +1,6 @@
 package models
 
-import "github.com/preslavmihaylov/todocheck/taskstatus"
+import "github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 
 // Status for Jira tasks
 type Status struct {

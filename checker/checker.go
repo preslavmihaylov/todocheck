@@ -5,8 +5,8 @@ import (
 
 	checkererrors "github.com/preslavmihaylov/todocheck/checker/errors"
 	"github.com/preslavmihaylov/todocheck/fetcher"
+	"github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 	"github.com/preslavmihaylov/todocheck/matchers"
-	"github.com/preslavmihaylov/todocheck/taskstatus"
 )
 
 // Checker for todo lines
