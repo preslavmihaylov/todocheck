@@ -22,6 +22,7 @@ const (
 
 func defaultAuthCfg() *Auth {
 	return &Auth{
+		Type:        AuthTypeNone,
 		TokensCache: authtokens.DefaultConfigFile(),
 	}
 }

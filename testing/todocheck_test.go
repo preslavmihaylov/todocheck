@@ -181,3 +181,31 @@ func TestIgnoredDirectoriesWithDotDot(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+func TestTraversingNonExistentDirectory(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("../testing/scenarios/non_existent_dir").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		ExpectError(1).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestDefaultAuthInConfig(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/no_auth_section").
+		WithConfig("./test_configs/no_auth_section.yaml").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("scenarios/no_auth_section/main.go", 3).
+				ExpectLine("// TODO - malformed todo")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}

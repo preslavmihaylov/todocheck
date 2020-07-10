@@ -103,6 +103,12 @@ func (s *TodocheckScenario) ExpectTodoErr(sc *TodoErrScenario) *TodocheckScenari
 	return s
 }
 
+// ExpectError on program execution
+func (s *TodocheckScenario) ExpectError(exitcode int) *TodocheckScenario {
+	s.expectedExitCode = exitcode
+	return s
+}
+
 // Run sets up the environment & executes the configured scenario
 func (s *TodocheckScenario) Run() error {
 	var err error
