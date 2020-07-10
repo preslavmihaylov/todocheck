@@ -3,6 +3,7 @@ package issuetracker
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/preslavmihaylov/todocheck/common"
@@ -17,6 +18,7 @@ const (
 	Invalid      Type = ""
 	Jira              = "JIRA"
 	GithubPublic      = "GITHUB_PUBLIC"
+	GitlabPublic      = "GITLAB_PUBLIC"
 )
 
 // TaskFor gets the corresponding task model, based on the issue tracker type
@@ -26,6 +28,8 @@ func TaskFor(issueTracker Type) models.Task {
 		return &models.JiraTask{}
 	case GithubPublic:
 		return &models.GithubTask{}
+	case GitlabPublic:
+		return &models.GitlabTask{}
 	default:
 		return nil
 	}
@@ -44,6 +48,15 @@ func BaseURLFor(issueTracker Type, origin string) (string, error) {
 
 		scheme, owner, repo := tokens[0], tokens[2], tokens[3]
 		return fmt.Sprintf("%s//api.github.com/repos/%s/%s/issues/", scheme, owner, repo), nil
+	case GitlabPublic:
+		tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
+		if tokens[0] == "gitlab.com" {
+			tokens = append([]string{"https:"}, tokens...)
+		}
+
+		scheme, owner, repo := tokens[0], tokens[2], tokens[3]
+		urlEncodedProject := url.QueryEscape(fmt.Sprintf("%s/%s", owner, repo))
+		return fmt.Sprintf("%s//gitlab.com/api/v4/projects/%s/issues/", scheme, urlEncodedProject), nil
 	default:
 		return "", errors.New("unknown issue tracker type")
 	}
@@ -56,6 +69,8 @@ func FromString(str string) Type {
 		return Jira
 	case GithubPublic:
 		return GithubPublic
+	case GitlabPublic:
+		return GitlabPublic
 	default:
 		return Invalid
 	}
