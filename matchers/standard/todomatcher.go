@@ -12,25 +12,25 @@ var singleLineValidTodoPattern = regexp.MustCompile("^\\s*// TODO ([a-zA-Z0-9\\-
 var multiLineTodoPattern = regexp.MustCompile("(?s)^\\s*/\\*.*TODO")
 var multiLineValidTodoPattern = regexp.MustCompile("(?s)^\\s*/\\*.*TODO ([a-zA-Z0-9\\-]+):.*")
 
-// NewMatcher comment matcher for java-like comments
-func NewMatcher() *Matcher { return &Matcher{} }
+// NewTodoMatcher for standard comments
+func NewTodoMatcher() *TodoMatcher { return &TodoMatcher{} }
 
-// Matcher for standard java-like comments
-type Matcher struct{}
+// TodoMatcher for standard comments
+type TodoMatcher struct{}
 
 // IsMatch checks if the current expression matches a standard comment
-func (m *Matcher) IsMatch(expr string) bool {
+func (m *TodoMatcher) IsMatch(expr string) bool {
 	return singleLineTodoPattern.Match([]byte(expr)) || multiLineTodoPattern.Match([]byte(expr))
 }
 
 // IsValid checks if the expression is a valid todo comment
-func (m *Matcher) IsValid(expr string) bool {
+func (m *TodoMatcher) IsValid(expr string) bool {
 	return singleLineValidTodoPattern.Match([]byte(expr)) || multiLineValidTodoPattern.Match([]byte(expr))
 }
 
 // ExtractIssueRef from the given expression.
 // If the expression is invalid, an ErrInvalidTODO is returned
-func (m *Matcher) ExtractIssueRef(expr string) (string, error) {
+func (m *TodoMatcher) ExtractIssueRef(expr string) (string, error) {
 	if !m.IsValid(expr) {
 		return "", errors.ErrInvalidTODO
 	}

@@ -1,6 +1,7 @@
 package checker
 
 import (
+	"errors"
 	"fmt"
 
 	checkererrors "github.com/preslavmihaylov/todocheck/checker/errors"
@@ -23,6 +24,10 @@ func New(statusFetcher *fetcher.Fetcher) *Checker {
 func (c *Checker) Check(
 	matcher matchers.TodoMatcher, comment, filename string, lines []string, linecnt int,
 ) (error, error) {
+	if matcher == nil {
+		return nil, errors.New("matcher is nil")
+	}
+
 	if !matcher.IsMatch(comment) {
 		return nil, nil
 	}

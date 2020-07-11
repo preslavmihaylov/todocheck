@@ -6,6 +6,7 @@ import (
 	"github.com/preslavmihaylov/todocheck/checker"
 	"github.com/preslavmihaylov/todocheck/fetcher"
 	"github.com/preslavmihaylov/todocheck/matchers"
+	"github.com/preslavmihaylov/todocheck/matchers/state"
 	"github.com/preslavmihaylov/todocheck/traverser/comments"
 )
 
@@ -14,9 +15,8 @@ type TodoErrCallback func(todoerr error) error
 
 // NewTraverser for todo errors
 func NewTraverser(f *fetcher.Fetcher, ignoredPaths []string, callback TodoErrCallback) *Traverser {
-	chk := checker.New(f)
 	return &Traverser{
-		comments.NewTraverser(ignoredPaths, commentsCallback(chk, callback)),
+		comments.NewTraverser(ignoredPaths, commentsCallback(checker.New(f), callback)),
 	}
 }
 
@@ -25,9 +25,9 @@ type Traverser struct {
 	commentsTraverser *comments.Traverser
 }
 
-func commentsCallback(chk *checker.Checker, todoErrCallback TodoErrCallback) comments.CommentCallback {
+func commentsCallback(chk *checker.Checker, todoErrCallback TodoErrCallback) state.CommentCallback {
 	return func(comment, filepath string, lines []string, linecnt int) error {
-		todoErr, err := chk.Check(matchers.ForFile(filepath), comment, filepath, lines, linecnt)
+		todoErr, err := chk.Check(matchers.TodoMatcherForFile(filepath), comment, filepath, lines, linecnt)
 		if err != nil {
 			return fmt.Errorf("couldn't check todo line: %w", err)
 		} else if todoErr != nil {

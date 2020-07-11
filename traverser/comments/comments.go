@@ -2,15 +2,12 @@ package comments
 
 import (
 	"github.com/preslavmihaylov/todocheck/matchers"
-	"github.com/preslavmihaylov/todocheck/traverser/comments/state"
+	"github.com/preslavmihaylov/todocheck/matchers/state"
 	"github.com/preslavmihaylov/todocheck/traverser/lines"
 )
 
-// CommentCallback is a function which acts on an encountered comment
-type CommentCallback func(comment, filepath string, lines []string, linecnt int) error
-
 // NewTraverser for comments
-func NewTraverser(ignoredPaths []string, callback CommentCallback) *Traverser {
+func NewTraverser(ignoredPaths []string, callback state.CommentCallback) *Traverser {
 	return &Traverser{
 		ignoredPaths:            ignoredPaths,
 		supportedFileExtensions: matchers.SupportedFileExtensions(),
@@ -19,36 +16,34 @@ func NewTraverser(ignoredPaths []string, callback CommentCallback) *Traverser {
 	}
 }
 
-// Traverser for comments in a given filepath
+// Traverser for comments in a given filename
 type Traverser struct {
 	ignoredPaths            []string
 	supportedFileExtensions []string
-	callback                CommentCallback
-	callbackErr             error
-	state                   state.CommentState
 
-	stringToken rune
-	buffer      string
-	filepath    string
-	lines       []string
-	linecnt     int
+	matcher  matchers.CommentMatcher
+	filename string
+	callback state.CommentCallback
+
+	callbackErr error
+	state       state.CommentState
 }
 
 // TraversePath and perform a callback on each line in each file
 func (t *Traverser) TraversePath(path string) error {
 	var prev, curr, next rune
-	return lines.TraversePath(path, t.ignoredPaths, t.supportedFileExtensions, func(filepath, line string, linecnt int) error {
+	return lines.TraversePath(path, t.ignoredPaths, t.supportedFileExtensions, func(filename, line string, linecnt int) error {
 		for _, b := range line {
 			curr = next
 			next = b
-			t.handleStateChange(filepath, line, linecnt, prev, curr, next)
+			t.handleStateChange(filename, line, linecnt, prev, curr, next)
 
 			prev = curr
 		}
 
 		curr = next
 		next = 0
-		t.handleStateChange(filepath, line, linecnt, prev, curr, next)
+		t.handleStateChange(filename, line, linecnt, prev, curr, next)
 
 		prev = curr
 
@@ -56,12 +51,13 @@ func (t *Traverser) TraversePath(path string) error {
 	})
 }
 
-func (t *Traverser) handleStateChange(filepath, line string, linecnt int, prevToken, currToken, nextToken rune) error {
+func (t *Traverser) handleStateChange(filename, line string, linecnt int, prevToken, currToken, nextToken rune) error {
 	if t.callbackErr != nil {
 		return t.callbackErr
-	} else if t.filepath != "" && filepath != t.filepath {
-		t.resetState()
+	} else if filename != t.filename {
+		t.matcher = matchers.CommentMatcherForFile(filename, t.callback)
 		t.state = state.NonComment
+		t.filename = filename
 
 		return nil
 	}
@@ -69,13 +65,13 @@ func (t *Traverser) handleStateChange(filepath, line string, linecnt int, prevTo
 	var newState state.CommentState
 	switch t.state {
 	case state.NonComment:
-		newState = t.nonCommentState(filepath, line, linecnt, prevToken, currToken, nextToken)
+		newState, t.callbackErr = t.matcher.NonCommentState(filename, line, linecnt, prevToken, currToken, nextToken)
 	case state.String:
-		newState = t.stringState(filepath, line, linecnt, prevToken, currToken, nextToken)
+		newState, t.callbackErr = t.matcher.StringState(filename, line, linecnt, prevToken, currToken, nextToken)
 	case state.SingleLineComment:
-		newState = t.singleLineCommentState(filepath, line, linecnt, prevToken, currToken, nextToken)
+		newState, t.callbackErr = t.matcher.SingleLineCommentState(filename, line, linecnt, prevToken, currToken, nextToken)
 	case state.MultiLineComment:
-		newState = t.multiLineCommentState(filepath, line, linecnt, prevToken, currToken, nextToken)
+		newState, t.callbackErr = t.matcher.MultiLineCommentState(filename, line, linecnt, prevToken, currToken, nextToken)
 	default:
 		panic("unknown comment state")
 	}
@@ -83,81 +79,4 @@ func (t *Traverser) handleStateChange(filepath, line string, linecnt int, prevTo
 	t.state = newState
 
 	return t.callbackErr
-}
-
-func (t *Traverser) nonCommentState(filepath, line string, linecnt int, prevToken, currToken, nextToken rune) state.CommentState {
-	if currToken == '/' && nextToken == '/' {
-		t.buffer += string(currToken)
-
-		return state.SingleLineComment
-	} else if currToken == '/' && nextToken == '*' {
-		t.buffer += string(currToken)
-		t.filepath = filepath
-		t.lines = []string{line}
-		t.linecnt = linecnt
-
-		return state.MultiLineComment
-	} else if currToken == '"' || currToken == '\'' || currToken == '`' {
-		t.stringToken = currToken
-
-		return state.String
-	}
-
-	return state.NonComment
-}
-
-func (t *Traverser) stringState(filepath, line string, linecnt int, prevToken, currToken, nextToken rune) state.CommentState {
-	if prevToken != '\\' && currToken == t.stringToken {
-		return state.NonComment
-	}
-
-	return state.String
-}
-
-func (t *Traverser) singleLineCommentState(filepath, line string, linecnt int, prevToken, currToken, nextToken rune) state.CommentState {
-	if currToken == '\n' {
-		err := t.callback(t.buffer, filepath, []string{line}, linecnt)
-		if err != nil {
-			t.callbackErr = err
-			return state.NonComment
-		}
-
-		t.resetState()
-
-		return state.NonComment
-	}
-
-	t.buffer += string(currToken)
-
-	return state.SingleLineComment
-}
-
-func (t *Traverser) multiLineCommentState(filepath, line string, linecnt int, prevToken, currToken, nextToken rune) state.CommentState {
-	t.buffer += string(currToken)
-	if prevToken == '*' && currToken == '/' {
-		err := t.callback(t.buffer, filepath, t.lines, t.linecnt)
-		if err != nil {
-			t.callbackErr = err
-			return state.NonComment
-		}
-
-		t.resetState()
-
-		return state.NonComment
-	}
-
-	if prevToken == '\n' {
-		t.lines = append(t.lines, line)
-	}
-
-	return state.MultiLineComment
-}
-
-func (t *Traverser) resetState() {
-	t.callbackErr = nil
-	t.stringToken = 0
-	t.buffer = ""
-	t.filepath = ""
-	t.lines = nil
-	t.linecnt = 0
 }
