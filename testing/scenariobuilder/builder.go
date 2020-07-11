@@ -98,14 +98,14 @@ func (s *TodocheckScenario) DeleteTokensCacheAfter() *TodocheckScenario {
 
 // ExpectTodoErr appends a new todo err scenario to expect from the program execution
 func (s *TodocheckScenario) ExpectTodoErr(sc *TodoErrScenario) *TodocheckScenario {
-	s.expectedExitCode = 1
+	s.expectedExitCode = 2
 	s.todoErrScenarios = append(s.todoErrScenarios, sc)
 	return s
 }
 
-// ExpectError on program execution
-func (s *TodocheckScenario) ExpectError(exitcode int) *TodocheckScenario {
-	s.expectedExitCode = exitcode
+// ExpectExecutionError on program execution
+func (s *TodocheckScenario) ExpectExecutionError() *TodocheckScenario {
+	s.expectedExitCode = 1
 	return s
 }
 
@@ -143,10 +143,17 @@ func (s *TodocheckScenario) Run() error {
 		}
 	}
 
-	return validationPipeline(
+	validateFuncs := []validateFunc{
 		validateTodoErrs(stderr.String(), s.todoErrScenarios),
 		validateAuthTokensCache(s.cfg.Auth.TokensCache, s.cfg.Auth.OfflineURL, s.expectedAuthToken),
-	)
+	}
+
+	if s.expectedExitCode == 1 {
+		// skip todo err validation on execution error
+		validateFuncs = validateFuncs[1:]
+	}
+
+	return validationPipeline(validateFuncs...)
 }
 
 func validationPipeline(fs ...validateFunc) error {

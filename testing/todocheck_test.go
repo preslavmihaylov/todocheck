@@ -187,7 +187,7 @@ func TestTraversingNonExistentDirectory(t *testing.T) {
 		WithBinary("../todocheck").
 		WithBasepath("../testing/scenarios/non_existent_dir").
 		WithConfig("./test_configs/no_issue_tracker.yaml").
-		ExpectError(1).
+		ExpectExecutionError().
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
