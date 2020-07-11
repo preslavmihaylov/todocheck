@@ -48,6 +48,27 @@ func TestSingleLineMalformedTodos(t *testing.T) {
 	}
 }
 
+func TestFirstlineMalformedTodo(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/firstline_comment").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("scenarios/firstline_comment/main.cpp", 1).
+				ExpectLine("// This is an invalid TODO on the very first line of the file")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("scenarios/firstline_comment/other.cpp", 1).
+				ExpectLine("// This is another first-line TODO comment in a second file")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestMultiLineMalformedTodos(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").

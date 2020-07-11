@@ -59,6 +59,8 @@ func (t *Traverser) handleStateChange(filename, line string, linecnt int, prevTo
 		t.state = state.NonComment
 		t.filename = filename
 
+		// Our token traversal is actually one step behind the actual file,
+		// so the very first time we start a new file, we need to skip the token
 		return nil
 	}
 
