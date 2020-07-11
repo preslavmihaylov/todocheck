@@ -16,7 +16,6 @@ import (
 
 // TODO:
 // * Add a --closes option which indicates that an issue is to be closed as a result of a PR
-// * Add github integration
 // * Add caching for task statuses
 func main() {
 	var basepath = flag.String("basepath", ".", "The path for the project to todocheck. Defaults to current directory")
@@ -43,7 +42,7 @@ func main() {
 	chk := checker.New(
 		fetcher.NewFetcher(baseURL, localCfg.Auth.Token, issuetracker.FromString(localCfg.IssueTrackerType)))
 
-	commentsTraverser := comments.New(localCfg.IgnoredPaths, matchers.SupportedFileExtensions(),
+	traverser := comments.NewTraverser(localCfg.IgnoredPaths, matchers.SupportedFileExtensions(),
 		func(comment, filepath string, lines []string, linecnt int) error {
 			chk.SetMatcher(matchers.ForFile(filepath))
 			if !chk.IsTODO(comment) {
@@ -60,9 +59,9 @@ func main() {
 			return nil
 		})
 
-	err = commentsTraverser.TraversePath(*basepath)
+	err = traverser.TraversePath(*basepath)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatalf("couldn't traverse basepath: %s", err)
 		os.Exit(1)
 	}
 

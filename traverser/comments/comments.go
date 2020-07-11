@@ -8,8 +8,8 @@ import (
 // CommentCallback is a function which acts on an encountered comment
 type CommentCallback func(comment, filepath string, lines []string, linecnt int) error
 
-// New comment traverser initialization
-func New(ignoredPaths []string, supportedFileExtensions []string, callback CommentCallback) *Traverser {
+// NewTraverser for comments
+func NewTraverser(ignoredPaths []string, supportedFileExtensions []string, callback CommentCallback) *Traverser {
 	return &Traverser{
 		ignoredPaths:            ignoredPaths,
 		supportedFileExtensions: supportedFileExtensions,
