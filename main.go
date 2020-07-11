@@ -6,12 +6,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/preslavmihaylov/todocheck/checker"
 	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/fetcher"
 	"github.com/preslavmihaylov/todocheck/issuetracker"
-	"github.com/preslavmihaylov/todocheck/matchers"
-	"github.com/preslavmihaylov/todocheck/traverser/comments"
+	"github.com/preslavmihaylov/todocheck/traverser/todoerrs"
 )
 
 // TODO:
@@ -39,35 +37,20 @@ func main() {
 	}
 
 	todoErrs := []error{}
-	chk := checker.New(
-		fetcher.NewFetcher(baseURL, localCfg.Auth.Token, issuetracker.FromString(localCfg.IssueTrackerType)))
-
-	traverser := comments.NewTraverser(localCfg.IgnoredPaths, matchers.SupportedFileExtensions(),
-		func(comment, filepath string, lines []string, linecnt int) error {
-			chk.SetMatcher(matchers.ForFile(filepath))
-			if !chk.IsTODO(comment) {
-				return nil
-			}
-
-			todoErr, err := chk.Check(comment, filepath, lines, linecnt)
-			if err != nil {
-				return fmt.Errorf("couldn't check todo line: %w", err)
-			} else if todoErr != nil {
-				todoErrs = append(todoErrs, todoErr)
-			}
-
-			return nil
-		})
+	f := fetcher.NewFetcher(baseURL, localCfg.Auth.Token, issuetracker.FromString(localCfg.IssueTrackerType))
+	traverser := todoerrs.NewTraverser(f, localCfg.IgnoredPaths, func(todoErr error) error {
+		todoErrs = append(todoErrs, todoErr)
+		return nil
+	})
 
 	err = traverser.TraversePath(*basepath)
 	if err != nil {
 		log.Fatalf("couldn't traverse basepath: %s", err)
-		os.Exit(1)
 	}
 
 	if len(todoErrs) > 0 {
 		printTodoErrs(todoErrs)
-		os.Exit(1)
+		os.Exit(2)
 	}
 }
 

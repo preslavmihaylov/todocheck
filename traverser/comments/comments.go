@@ -1,6 +1,7 @@
 package comments
 
 import (
+	"github.com/preslavmihaylov/todocheck/matchers"
 	"github.com/preslavmihaylov/todocheck/traverser/comments/state"
 	"github.com/preslavmihaylov/todocheck/traverser/lines"
 )
@@ -9,10 +10,10 @@ import (
 type CommentCallback func(comment, filepath string, lines []string, linecnt int) error
 
 // NewTraverser for comments
-func NewTraverser(ignoredPaths []string, supportedFileExtensions []string, callback CommentCallback) *Traverser {
+func NewTraverser(ignoredPaths []string, callback CommentCallback) *Traverser {
 	return &Traverser{
 		ignoredPaths:            ignoredPaths,
-		supportedFileExtensions: supportedFileExtensions,
+		supportedFileExtensions: matchers.SupportedFileExtensions(),
 		state:                   state.NonComment,
 		callback:                callback,
 	}

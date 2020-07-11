@@ -12,31 +12,26 @@ import (
 // Checker for todo lines
 type Checker struct {
 	statusFetcher *fetcher.Fetcher
-	todoMatcher   matchers.TodoMatcher
 }
 
 // New checker
 func New(statusFetcher *fetcher.Fetcher) *Checker {
-	return &Checker{statusFetcher, nil}
-}
-
-// SetMatcher sets the todo matcher
-func (c *Checker) SetMatcher(todoMatcher matchers.TodoMatcher) {
-	c.todoMatcher = todoMatcher
-}
-
-// IsTODO line, without performing any validity checks
-func (c *Checker) IsTODO(line string) bool {
-	return c.todoMatcher.IsMatch(line)
+	return &Checker{statusFetcher}
 }
 
 // Check if todo line is valid
-func (c *Checker) Check(comment, filename string, lines []string, linecnt int) (error, error) {
-	if !c.todoMatcher.IsValid(comment) {
+func (c *Checker) Check(
+	matcher matchers.TodoMatcher, comment, filename string, lines []string, linecnt int,
+) (error, error) {
+	if !matcher.IsMatch(comment) {
+		return nil, nil
+	}
+
+	if !matcher.IsValid(comment) {
 		return checkererrors.MalformedTODOErr(filename, lines, linecnt), nil
 	}
 
-	taskID, err := c.todoMatcher.ExtractIssueRef(comment)
+	taskID, err := matcher.ExtractIssueRef(comment)
 	if err != nil {
 		// should never happen after validating todo line
 		panic(err)
