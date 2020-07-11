@@ -3,6 +3,7 @@ package matchers
 import (
 	"path/filepath"
 
+	"github.com/preslavmihaylov/todocheck/matchers/scripts"
 	"github.com/preslavmihaylov/todocheck/matchers/standard"
 	"github.com/preslavmihaylov/todocheck/matchers/state"
 )
@@ -37,14 +38,28 @@ var (
 			return standard.NewCommentMatcher(callback)
 		},
 	}
+	scriptsMatcherFactory = &matcherFactory{
+		func() TodoMatcher {
+			return scripts.NewTodoMatcher()
+		},
+		func(callback state.CommentCallback) CommentMatcher {
+			return scripts.NewCommentMatcher(callback)
+		},
+	}
 )
 
 var supportedMatchers = map[string]*matcherFactory{
+	// file types, supporting standard comments
 	".go":   standardMatcherFactory,
 	".java": standardMatcherFactory,
 	".c":    standardMatcherFactory,
 	".cpp":  standardMatcherFactory,
 	".cs":   standardMatcherFactory,
+
+	// file types, supporting scripts comments
+	".sh":   scriptsMatcherFactory,
+	".bash": scriptsMatcherFactory,
+	".zsh":  scriptsMatcherFactory,
 }
 
 // TodoMatcherForFile gets the correct todo matcher for the given filename

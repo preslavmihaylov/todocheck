@@ -141,6 +141,45 @@ func TestAnnotatedTodos(t *testing.T) {
 	}
 }
 
+func TestScriptsTodos(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/scripts").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("123", issuetracker.StatusOpen).
+		WithIssue("321", issuetracker.StatusClosed).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("scenarios/scripts/script.sh", 1).
+				ExpectLine("# This is a malformed TODO")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("scenarios/scripts/script.sh", 5).
+				ExpectLine("curl \"localhost:8080\" # This is a TODO comment at the end of the line")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("scenarios/scripts/script.bash", 3).
+				ExpectLine("# A malformed TODO comment")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithLocation("scenarios/scripts/script.bash", 7).
+				ExpectLine("# TODO 321: This is an invalid todo, marked against a closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeIssueNonExistent).
+				WithLocation("scenarios/scripts/script.bash", 9).
+				ExpectLine("curl \"localhost:8080\" # TODO 567: This is an invalid todo, marked against a non-existent issue")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestAuthTokensCache(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
