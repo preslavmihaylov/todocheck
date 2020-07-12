@@ -180,6 +180,66 @@ func TestScriptsTodos(t *testing.T) {
 	}
 }
 
+func TestPythonTodos(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/python").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("1", issuetracker.StatusOpen).
+		WithIssue("234", issuetracker.StatusClosed).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("scenarios/python/main.py", 3).
+				ExpectLine("# This is a single-line malformed TODO")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("scenarios/python/main.py", 5).
+				ExpectLine("\"\"\"").
+				ExpectLine("And this is a multiline malformed TODO").
+				ExpectLine("It should be parsed properly").
+				ExpectLine("\"\"\"")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("scenarios/python/main.py", 10).
+				ExpectLine("'''").
+				ExpectLine("This is the same multiline malformed TODO").
+				ExpectLine("but with single-quotes").
+				ExpectLine("'''")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("scenarios/python/main.py", 15).
+				ExpectLine("myvar = 5 # This is a malformed TODO at the end of a line")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithLocation("scenarios/python/main.py", 19).
+				ExpectLine("hello = \"hello\" # TODO 234: This is an invalid todo, with a closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithLocation("scenarios/python/main.py", 21).
+				ExpectLine("\"\"\"").
+				ExpectLine("TODO 234: This is an invalid todo, marked against a closed issue").
+				ExpectLine("\"\"\"")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithLocation("scenarios/python/main.py", 25).
+				ExpectLine("'''").
+				ExpectLine("TODO 234: This is an invalid todo,").
+				ExpectLine("marked against a closed issue with single quotes").
+				ExpectLine("'''")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestAuthTokensCache(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").

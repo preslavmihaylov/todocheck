@@ -3,6 +3,7 @@ package matchers
 import (
 	"path/filepath"
 
+	"github.com/preslavmihaylov/todocheck/matchers/python"
 	"github.com/preslavmihaylov/todocheck/matchers/scripts"
 	"github.com/preslavmihaylov/todocheck/matchers/standard"
 	"github.com/preslavmihaylov/todocheck/matchers/state"
@@ -46,6 +47,14 @@ var (
 			return scripts.NewCommentMatcher(callback)
 		},
 	}
+	pythonMatcherFactory = &matcherFactory{
+		func() TodoMatcher {
+			return python.NewTodoMatcher()
+		},
+		func(callback state.CommentCallback) CommentMatcher {
+			return python.NewCommentMatcher(callback)
+		},
+	}
 )
 
 var supportedMatchers = map[string]*matcherFactory{
@@ -60,6 +69,9 @@ var supportedMatchers = map[string]*matcherFactory{
 	".sh":   scriptsMatcherFactory,
 	".bash": scriptsMatcherFactory,
 	".zsh":  scriptsMatcherFactory,
+
+	// file types, supporting python comments
+	".py": pythonMatcherFactory,
 }
 
 // TodoMatcherForFile gets the correct todo matcher for the given filename

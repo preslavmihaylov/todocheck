@@ -26,7 +26,7 @@ type CommentMatcher struct {
 func (m *CommentMatcher) NonCommentState(
 	filename, line string, linecnt int, prevToken, currToken, nextToken rune,
 ) (state.CommentState, error) {
-	if currToken == '#' {
+	if currToken == '#' && prevToken != '\\' {
 		m.buffer += string(currToken)
 
 		return state.SingleLineComment, nil
