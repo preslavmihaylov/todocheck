@@ -14,7 +14,6 @@ import (
 	"regexp"
 
 	"github.com/preslavmihaylov/todocheck/config"
-	"github.com/preslavmihaylov/todocheck/config/authtokens"
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder/issuetracker"
 )
 
@@ -224,7 +223,7 @@ func setupMockIssueTrackerCfg(cfgPath string, mockOrigin string) (teardownFunc, 
 }
 
 func deleteTokensCache(tokensCache string) {
-	if tokensCache == authtokens.DefaultConfigFile() {
+	if tokensCache == config.DefaultTokensCache() {
 		return
 	}
 

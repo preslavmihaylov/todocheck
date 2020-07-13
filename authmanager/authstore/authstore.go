@@ -1,4 +1,4 @@
-package authtokens
+package authstore
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/mitchellh/go-homedir"
 	"gopkg.in/yaml.v2"
 )
 
@@ -14,16 +13,6 @@ var (
 	// DefaultConfigPermissions the config file is created with
 	DefaultConfigPermissions = os.FileMode(0700)
 )
-
-// DefaultConfigFile where auth tokens are stored by default
-func DefaultConfigFile() string {
-	dir, err := homedir.Dir()
-	if err != nil {
-		panic("couldn't read user home directory: " + err.Error())
-	}
-
-	return dir + "/.todocheck/authtokens.yaml"
-}
 
 // Config for storing user tokens for all todocheck origins
 type Config struct {

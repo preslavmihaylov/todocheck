@@ -6,8 +6,9 @@ import (
 	"io/ioutil"
 	"strings"
 
+	"github.com/preslavmihaylov/todocheck/authmanager/authstore"
 	"github.com/preslavmihaylov/todocheck/common"
-	"github.com/preslavmihaylov/todocheck/config/authtokens"
+	"github.com/preslavmihaylov/todocheck/config"
 	"gopkg.in/yaml.v2"
 )
 
@@ -40,7 +41,7 @@ func validateAuthTokensCache(tokensCache string, url, expectedToken string) vali
 	return func() error {
 		if expectedToken == "" {
 			return nil
-		} else if tokensCache == authtokens.DefaultConfigFile() {
+		} else if tokensCache == config.DefaultTokensCache() {
 			return errors.New("tokens_cache is not set in the configuration. It must be set for auth token scenarios")
 		}
 
@@ -49,7 +50,7 @@ func validateAuthTokensCache(tokensCache string, url, expectedToken string) vali
 			return fmt.Errorf("couldn't read auth tokens config file %s: %w", tokensCache, err)
 		}
 
-		var authTokensCfg *authtokens.Config
+		var authTokensCfg *authstore.Config
 		err = yaml.Unmarshal(authTokensBs, &authTokensCfg)
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal auth tokens cfg %s: %w", tokensCache, err)

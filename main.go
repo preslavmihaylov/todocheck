@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/preslavmihaylov/todocheck/authmanager"
+	"github.com/preslavmihaylov/todocheck/authmanager/authmiddleware"
 	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/fetcher"
 	"github.com/preslavmihaylov/todocheck/issuetracker"
@@ -25,7 +27,7 @@ func main() {
 		log.Fatalf("couldn't open configuration file: %s\n", err)
 	}
 
-	err = localCfg.Auth.AcquireToken()
+	err = authmanager.AcquireToken(localCfg)
 	if err != nil {
 		log.Fatalf("couldn't acquire token from config: %s\n", err)
 	}
@@ -36,8 +38,9 @@ func main() {
 			localCfg.Origin, localCfg.IssueTrackerType, err)
 	}
 
+	f := fetcher.NewFetcher(
+		baseURL, issuetracker.FromString(localCfg.IssueTrackerType), authmiddleware.For(localCfg))
 	todoErrs := []error{}
-	f := fetcher.NewFetcher(baseURL, localCfg.Auth.Token, issuetracker.FromString(localCfg.IssueTrackerType))
 	traverser := todoerrs.NewTraverser(f, localCfg.IgnoredPaths, func(todoErr error) error {
 		todoErrs = append(todoErrs, todoErr)
 		return nil
