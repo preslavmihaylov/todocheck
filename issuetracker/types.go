@@ -18,7 +18,7 @@ const (
 	Invalid      Type = ""
 	Jira              = "JIRA"
 	GithubPublic      = "GITHUB_PUBLIC"
-	GitlabPublic      = "GITLAB_PUBLIC"
+	Gitlab            = "GITLAB"
 )
 
 // TaskFor gets the corresponding task model, based on the issue tracker type
@@ -28,7 +28,7 @@ func TaskFor(issueTracker Type) models.Task {
 		return &models.JiraTask{}
 	case GithubPublic:
 		return &models.GithubTask{}
-	case GitlabPublic:
+	case Gitlab:
 		return &models.GitlabTask{}
 	default:
 		return nil
@@ -48,7 +48,7 @@ func BaseURLFor(issueTracker Type, origin string) (string, error) {
 
 		scheme, owner, repo := tokens[0], tokens[2], tokens[3]
 		return fmt.Sprintf("%s//api.github.com/repos/%s/%s/issues/", scheme, owner, repo), nil
-	case GitlabPublic:
+	case Gitlab:
 		tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
 		if tokens[0] == "gitlab.com" {
 			tokens = append([]string{"https:"}, tokens...)
@@ -69,8 +69,8 @@ func FromString(str string) Type {
 		return Jira
 	case GithubPublic:
 		return GithubPublic
-	case GitlabPublic:
-		return GitlabPublic
+	case Gitlab:
+		return Gitlab
 	default:
 		return Invalid
 	}
