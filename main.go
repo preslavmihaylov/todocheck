@@ -32,14 +32,13 @@ func main() {
 		log.Fatalf("couldn't acquire token from config: %s\n", err)
 	}
 
-	baseURL, err := issuetracker.BaseURLFor(issuetracker.FromString(localCfg.IssueTrackerType), localCfg.Origin)
+	baseURL, err := issuetracker.BaseURLFor(localCfg.IssueTracker, localCfg.Origin)
 	if err != nil {
 		log.Fatalf("couldn't get base url for origin %s & issue tracker %s: %s\n",
-			localCfg.Origin, localCfg.IssueTrackerType, err)
+			localCfg.Origin, localCfg.IssueTracker, err)
 	}
 
-	f := fetcher.NewFetcher(
-		baseURL, issuetracker.FromString(localCfg.IssueTrackerType), authmiddleware.For(localCfg))
+	f := fetcher.NewFetcher(baseURL, localCfg.IssueTracker, authmiddleware.For(localCfg))
 	todoErrs := []error{}
 	traverser := todoerrs.NewTraverser(f, localCfg.IgnoredPaths, func(todoErr error) error {
 		todoErrs = append(todoErrs, todoErr)

@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/preslavmihaylov/todocheck/authmanager/authmiddleware"
+	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 	"github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 )
@@ -14,12 +15,12 @@ import (
 // Fetcher for task statuses by contacting task management web apps' rest api
 type Fetcher struct {
 	origin         string
-	tracker        issuetracker.Type
+	tracker        config.IssueTracker
 	authMiddleware authmiddleware.Func
 }
 
 // NewFetcher instance
-func NewFetcher(origin string, tracker issuetracker.Type, authMw authmiddleware.Func) *Fetcher {
+func NewFetcher(origin string, tracker config.IssueTracker, authMw authmiddleware.Func) *Fetcher {
 	return &Fetcher{origin, tracker, authMw}
 }
 

@@ -16,12 +16,23 @@ const DefaultLocal = ".todocheck.yaml"
 // ErrNotFound when the specified file is not found
 var ErrNotFound = errors.New("file not found")
 
+// IssueTracker enum
+type IssueTracker string
+
+// Issue tracker types
+const (
+	IssueTrackerInvalid IssueTracker = ""
+	IssueTrackerJira                 = "JIRA"
+	IssueTrackerGithub               = "GITHUB"
+	IssueTrackerGitlab               = "GITLAB"
+)
+
 // Local todocheck configuration struct definition
 type Local struct {
-	Origin           string   `yaml:"origin"`
-	IssueTrackerType string   `yaml:"issue_tracker"`
-	IgnoredPaths     []string `yaml:"ignored"`
-	Auth             *Auth    `yaml:"auth"`
+	Origin       string       `yaml:"origin"`
+	IssueTracker IssueTracker `yaml:"issue_tracker"`
+	IgnoredPaths []string     `yaml:"ignored"`
+	Auth         *Auth        `yaml:"auth"`
 }
 
 // NewLocal configuration from a given file path

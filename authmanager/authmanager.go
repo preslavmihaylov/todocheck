@@ -9,7 +9,6 @@ import (
 
 	"github.com/preslavmihaylov/todocheck/authmanager/authstore"
 	"github.com/preslavmihaylov/todocheck/config"
-	"github.com/preslavmihaylov/todocheck/issuetracker"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
@@ -35,7 +34,7 @@ func AcquireToken(cfg *config.Local) error {
 func acquireAPIToken(cfg *config.Local) error {
 	return acquireToken(cfg.Auth, cfg.Origin, func() ([]byte, error) {
 		var targetPage string
-		if cfg.IssueTrackerType == issuetracker.Github {
+		if cfg.IssueTracker == config.IssueTrackerGithub {
 			targetPage = githubAPITokenPage
 		} else {
 			targetPage = gitlabAPITokenPage

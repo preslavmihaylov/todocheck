@@ -7,28 +7,18 @@ import (
 	"strings"
 
 	"github.com/preslavmihaylov/todocheck/common"
+	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/issuetracker/models"
 )
 
-// Type of issue tracker enum
-type Type string
-
-// Issue tracker types
-const (
-	Invalid Type = ""
-	Jira         = "JIRA"
-	Github       = "GITHUB"
-	Gitlab       = "GITLAB"
-)
-
 // TaskFor gets the corresponding task model, based on the issue tracker type
-func TaskFor(issueTracker Type) models.Task {
+func TaskFor(issueTracker config.IssueTracker) models.Task {
 	switch issueTracker {
-	case Jira:
+	case config.IssueTrackerJira:
 		return &models.JiraTask{}
-	case Github:
+	case config.IssueTrackerGithub:
 		return &models.GithubTask{}
-	case Gitlab:
+	case config.IssueTrackerGitlab:
 		return &models.GitlabTask{}
 	default:
 		return nil
@@ -36,11 +26,11 @@ func TaskFor(issueTracker Type) models.Task {
 }
 
 // BaseURLFor returns the task-fetching base url given the issue tracker type and the site origin
-func BaseURLFor(issueTracker Type, origin string) (string, error) {
+func BaseURLFor(issueTracker config.IssueTracker, origin string) (string, error) {
 	switch issueTracker {
-	case Jira:
+	case config.IssueTrackerJira:
 		return origin + "/rest/api/latest/issue/", nil
-	case Github:
+	case config.IssueTrackerGithub:
 		tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
 		if tokens[0] == "github.com" {
 			tokens = append([]string{"https:"}, tokens...)
@@ -48,7 +38,7 @@ func BaseURLFor(issueTracker Type, origin string) (string, error) {
 
 		scheme, owner, repo := tokens[0], tokens[2], tokens[3]
 		return fmt.Sprintf("%s//api.github.com/repos/%s/%s/issues/", scheme, owner, repo), nil
-	case Gitlab:
+	case config.IssueTrackerGitlab:
 		tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
 		if tokens[0] == "gitlab.com" {
 			tokens = append([]string{"https:"}, tokens...)
@@ -58,20 +48,6 @@ func BaseURLFor(issueTracker Type, origin string) (string, error) {
 		urlEncodedProject := url.QueryEscape(fmt.Sprintf("%s/%s", owner, repo))
 		return fmt.Sprintf("%s//gitlab.com/api/v4/projects/%s/issues/", scheme, urlEncodedProject), nil
 	default:
-		return "", errors.New("unknown issue tracker type")
-	}
-}
-
-// FromString converts a string-encoded issue tracker type to the correct type
-func FromString(str string) Type {
-	switch str {
-	case Jira:
-		return Jira
-	case Github:
-		return Github
-	case Gitlab:
-		return Gitlab
-	default:
-		return Invalid
+		return "", errors.New("unknown issue tracker " + string(issueTracker))
 	}
 }
