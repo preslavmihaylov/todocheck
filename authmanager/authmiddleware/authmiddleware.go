@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/preslavmihaylov/todocheck/config"
+	"github.com/preslavmihaylov/todocheck/issuetracker"
 )
 
 // Func used as callback to plug-in necessary auth headers
@@ -17,8 +18,10 @@ func For(cfg *config.Local) Func {
 
 	assertInvariant(cfg.Auth.Token != "", "invariant violated. No token found for auth middleware")
 	if cfg.Auth.Type == config.AuthTypeOffline {
-		return offlineTokenMiddleware(cfg.Auth.Token)
-	} else if cfg.Auth.Type == config.AuthTypeAPIToken {
+		return authorizationTokenMiddleware(cfg.Auth.Token)
+	} else if cfg.IssueTrackerType == issuetracker.Github && cfg.Auth.Type == config.AuthTypeAPIToken {
+		return authorizationTokenMiddleware(cfg.Auth.Token)
+	} else if cfg.IssueTrackerType == issuetracker.Gitlab && cfg.Auth.Type == config.AuthTypeAPIToken {
 		return gitlabAPITokenMiddleware(cfg.Auth.Token)
 	}
 
@@ -29,7 +32,7 @@ func noAuthMiddleware() Func {
 	return func(r *http.Request) {}
 }
 
-func offlineTokenMiddleware(token string) Func {
+func authorizationTokenMiddleware(token string) Func {
 	return func(r *http.Request) {
 		r.Header.Add("Authorization", "Bearer "+token)
 	}

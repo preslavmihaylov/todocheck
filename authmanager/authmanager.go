@@ -9,10 +9,12 @@ import (
 
 	"github.com/preslavmihaylov/todocheck/authmanager/authstore"
 	"github.com/preslavmihaylov/todocheck/config"
+	"github.com/preslavmihaylov/todocheck/issuetracker"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
 const (
+	githubAPITokenPage = "https://github.com/settings/tokens"
 	gitlabAPITokenPage = "https://gitlab.com/profile/personal_access_tokens"
 )
 
@@ -32,7 +34,14 @@ func AcquireToken(cfg *config.Local) error {
 
 func acquireAPIToken(cfg *config.Local) error {
 	return acquireToken(cfg.Auth, cfg.Origin, func() ([]byte, error) {
-		fmt.Printf("Please go to %v, create a read-only access token & paste it here:\nToken: ", gitlabAPITokenPage)
+		var targetPage string
+		if cfg.IssueTrackerType == issuetracker.Github {
+			targetPage = githubAPITokenPage
+		} else {
+			targetPage = gitlabAPITokenPage
+		}
+
+		fmt.Printf("Please go to %v, create a read-only access token & paste it here:\nToken: ", targetPage)
 		return readPassword()
 	})
 }
