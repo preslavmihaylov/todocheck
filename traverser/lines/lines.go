@@ -9,6 +9,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/bmatcuk/doublestar"
 )
 
 type lineCallback func(filename, line string, linecnt int) error
@@ -20,9 +22,13 @@ func TraversePath(path string, ignoredPaths, supportedFileExtensions []string, c
 			return fmt.Errorf("couldn't traverse %s: %w", file, err)
 		}
 
-		if info.IsDir() && isIgnored(ignoredPaths, file) {
-			fmt.Println("Skipping ignored dir", file)
-			return filepath.SkipDir
+		if isIgnored(ignoredPaths, file) {
+			fmt.Println("Skipping ignored file", file)
+			if info.IsDir() {
+				return filepath.SkipDir
+			}
+
+			return nil
 		} else if info.IsDir() || !isSupported(supportedFileExtensions, file) {
 			return nil
 		}
@@ -74,7 +80,7 @@ func isIgnored(ignoredPaths []string, path string) bool {
 	}
 
 	for _, ignoredPath := range ignoredPaths {
-		isMatch, err := filepath.Match(ignoredPath, path)
+		isMatch, err := doublestar.Match(ignoredPath, path)
 		if err != nil {
 			log.Fatalf("Couldn't process glob pattern %s for path %s: %s", ignoredPath, path, err)
 		}

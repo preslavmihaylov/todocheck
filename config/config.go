@@ -54,7 +54,7 @@ func NewLocal(cfgPath, basepath string) (*Local, error) {
 
 	cfg.Auth.TokensCache = prependBasepath(cfg.Auth.TokensCache, basepath)
 
-	prependBasepathDirs(cfg.IgnoredPaths, basepath)
+	prependDoublestarGlob(cfg.IgnoredPaths, basepath)
 	trimTrailingSlashesFromDirs(cfg.IgnoredPaths)
 	removeCurrentDirReference(cfg.IgnoredPaths)
 
@@ -75,9 +75,9 @@ func trimTrailingSlashesFromDirs(dirs []string) {
 	}
 }
 
-func prependBasepathDirs(dirs []string, basepath string) {
+func prependDoublestarGlob(dirs []string, basepath string) {
 	for i := range dirs {
-		dirs[i] = prependBasepath(dirs[i], basepath)
+		dirs[i] = "**/" + dirs[i]
 	}
 }
 
