@@ -165,9 +165,7 @@ Based on this, here are the supported languages:
 | JavaScript/Typescript | `*.js/*.ts` extension. Supports single-line `//` comments and multi-line `/* */` comments |
 | Python                | `*.py` extension. Supports single-line `#` comments and multi-line `"""` comments         |
 
-TODO: Add issue
-
-If you don't see your favorite language in this table, but it does use one of the supported comment formats, submit an issue [here]()
+If you don't see your favorite language in this table, but it does use one of the supported comment formats, submit an issue [here](https://github.com/preslavmihaylov/todocheck/issues/new)
 
 # Ignored Files & Directories
 If you want certain project files not to be included for todocheck processing, you can specify that in an `ignored` section in the `.todocheck.yaml` configuration:
