@@ -17,7 +17,7 @@ function create_build {
     fi
 
     BINARY=todocheck-$VERSION-$GOOS-$EXT
-    go build -o $DIR/$BINARY
+    GOOS=$GOOS GOARCH=$GOARCH go build -o $DIR/$BINARY
     cd $DIR && shasum -a 256 $BINARY > $BINARY.sha256 && cd ..
 }
 
@@ -25,4 +25,3 @@ mkdir -p $DIR
 create_build darwin amd64 x86_64
 create_build linux amd64 x86_64
 create_build linux arm64
-create_build windows amd64 x86_64
