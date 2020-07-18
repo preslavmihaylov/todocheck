@@ -1,13 +1,15 @@
 # todocheck
 
-todocheck is a static code analyzer for annotated TODO comments.
+todocheck is a static code analyzer for annotated `TODO` comments.
 
-It let's you create actionable `TODOs` by marking them against issues from any of the supported issue trackers.  
+It let's you create actionable `TODOs` by annotating them with issues from any of the [supported issue trackers](#supported-issue-trackers).  
 No longer will you discover arcane, undocumented `TODO` comments, scattered across your code base.
 
+See [How it works](#how-it-works) for more info.
+
 # Table of Contents
-- [Installation](#installation)
 - [How it works](#how-it-works)
+- [Installation](#installation)
 - [Quickstart](#quickstart)
 - [Supported Issue Trackers](#supported-issue-trackers)
   * [Github](#github)
@@ -20,9 +22,6 @@ No longer will you discover arcane, undocumented `TODO` comments, scattered acro
   * [API Token/Offline Token](#api-tokenoffline-token)
   * [Authentication Tokens Cache](#authentication-tokens-cache)
 - [Configuration](#configuration)
-
-# Installation
-TODO: Add instructions after publishing on github
 
 # How it works
 Here's an example of an annotated TODO:
@@ -50,8 +49,12 @@ myproject/main.go:16: // TODO - This is not a valid annotated todo
 
 ![todocheck demo gif](images/todocheck-demo.gif)
 
-By integrating todocheck in your CI pipeline, you can ensure that there will be no closed half-baked issue  
-or an unannotated `TODO` that slips into your master branch unnoticed.
+Only `TODO`s with valid, open issues are allowed to exist in the codebase.  
+
+By integrating todocheck in your development workflow & CI pipeline, you can ensure that there will be no half-baked issue closed with pending `TODO`s in the codebase.  
+
+# Installation
+TODO: Add instructions after publishing on github
 
 # Quickstart
 You will need a `.todocheck.yaml` configuration file in the root of your project first.  
