@@ -58,7 +58,7 @@ Download the binary for your OS from the [latest release](https://github.com/pre
 
 Optionally verify the `sha256` checksum:
  * For macos, run `shasum -a 256 <binary>` & verify it's the same as `<binary>.sha256`
- * For linux, run `sha256sum <binary>
+ * For linux, run `sha256sum <binary>`
  * For windows, consult Google for the various tools available
  
  Afterwards, verify the shasum is the same as `<binary>.sha256`.
