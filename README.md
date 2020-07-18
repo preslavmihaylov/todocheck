@@ -238,7 +238,8 @@ Afterwards, todocheck will not ask for your token again as it will store it in i
 
 ## Authentication Tokens Cache
 Whenever a user grants todocheck an auth token, the token will be stored in a file `~/.todocheck/authtokens.yaml`.
-If that file doesn't already exist, it will be created with read/write permissions for current user only (permission 0700).
+
+If that file doesn't already exist, it will be created with read/write permissions for current user only (permission `0700`).
 
 This file stores a key-value mapping of project origin to auth token.  
 Whenever todocheck runs, it first checks this file for an existing authentication token before contacting the issue tracker's server.
