@@ -69,8 +69,11 @@ After the config file is in place, simply run `todocheck` from the root of your 
 
 In case you are running `todocheck` from a different directory, you can specify your project's path using the `--basepath` flag and the project configuration with `--config`:
 ```
-$ todocheck --basepath path/to/your/project --config path/to/your/config/.todocheck.yaml
+$ todocheck --basepath path/to/project --config path/to/config/.todocheck.yaml
 ```
+
+If the `--config` option is not specified, the configuration in the basepath will be used.  
+In the example above, it would look for it in `path/to/project/.todocheck.yaml`.
 
 # Supported Issue Trackers
 Currently, todocheck supports the following issue trackers:
