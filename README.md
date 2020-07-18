@@ -24,7 +24,7 @@ See [How it works](#how-it-works) for more info.
 - [Configuration](#configuration)
 
 # How it works
-Here's an example of an annotated TODO:
+Here's an example of an annotated `TODO`:
 ```
 // TODO J123: Fix this typo
 func fuu() {
@@ -150,8 +150,8 @@ auth:
 After you run todocheck for the first time, it will request your offline token:
 ![Offline token prompt example](images/offline-token-prompt.png)
 
-Example offline token page using openauth:
-![Offline token page example](images/openauth-token-page.png)
+Example offline token page:
+![Offline token page example](images/offline-token-page.png)
 
 After you've given the offline token to `todocheck`'s prompt, it will store it in the auth tokens cache for subsequent executions.  
 
@@ -226,8 +226,9 @@ auth:
 ```
 
 An offline token is one which your user can get by accessing a specific page, where your server generates an access token.  
-Example offline token page using openauth:
-![Offline token page example](images/openauth-token-page.png)
+
+Example offline token page:
+![Offline token page example](images/offline-token-page.png)
 
 After you've received either an api token (github/gitlab) or an offline token, you can paste it in todocheck's secure prompt when asked.  
 Example with github PAT prompt:
