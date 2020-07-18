@@ -42,7 +42,7 @@ ERROR: Issue doesn't exist.
 myproject/main.go:14: // TODO J321: A non-existent issue
 ```
 
-If there is an unannotated TODO in your code base, todocheck will also report it as a malformed TODO:
+If there is an unannotated `TODO` in your code base, todocheck will also report it as a malformed `TODO`:
 ```
 ERROR: Malformed todo.
 myproject/main.go:16: // TODO - This is not a valid annotated todo
@@ -69,7 +69,7 @@ After the config file is in place, simply run `todocheck` from the root of your 
 
 In case you are running `todocheck` from a different directory, you can specify your project's path using the `--basepath` flag and the project configuration with `--config`:
 ```
-$ todocheck --basepath path/to/your/project --config path/to/your/project/.todocheck.yaml
+$ todocheck --basepath path/to/your/project --config path/to/your/config/.todocheck.yaml
 ```
 
 # Supported Issue Trackers
