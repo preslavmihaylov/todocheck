@@ -64,6 +64,8 @@ var supportedMatchers = map[string]*matcherFactory{
 	".c":    standardMatcherFactory,
 	".cpp":  standardMatcherFactory,
 	".cs":   standardMatcherFactory,
+	".js":   standardMatcherFactory,
+	".ts":   standardMatcherFactory,
 
 	// file types, supporting scripts comments
 	".sh":   scriptsMatcherFactory,

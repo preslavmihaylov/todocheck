@@ -148,15 +148,16 @@ Currently, todocheck has parsers for three different types of comments:
 
 Based on this, here are the supported languages:
 
-| Supported Languages | Description                                                                            |
-|---------------------|----------------------------------------------------------------------------------------|
-| Bash/Zsh            | `*.sh/*.bash/*.zsh` extension. Supports `#` single-line comments                       |
-| C                   | `*.c` extension. Supports single-line `//` comments and multi-line `/* */` comments    |
-| C++                 | `*.cpp` extension. Supports single-line `//` comments and multi-line `/* */` comments  |
-| CSharp              | `*.cs` extension. Supports single-line `//` comments and multi-line `/* */` comments   |
-| Golang              | `*.go` extension. Supports single-line `//` comments and multi-line `/* */` comments   |
-| Java                | `*.java` extension. Supports single-line `//` comments and multi-line `/* */` comments |
-| Python              | `*.py` extension. Supports single-line `#` comments and multi-line `"""` comments      |
+| Supported Languages   | Description                                                                               |
+|-----------------------|-------------------------------------------------------------------------------------------|
+| Bash/Zsh              | `*.sh/*.bash/*.zsh` extension. Supports `#` single-line comments                          |
+| C                     | `*.c` extension. Supports single-line `//` comments and multi-line `/* */` comments       |
+| C++                   | `*.cpp` extension. Supports single-line `//` comments and multi-line `/* */` comments     |
+| CSharp                | `*.cs` extension. Supports single-line `//` comments and multi-line `/* */` comments      |
+| Golang                | `*.go` extension. Supports single-line `//` comments and multi-line `/* */` comments      |
+| Java                  | `*.java` extension. Supports single-line `//` comments and multi-line `/* */` comments    |
+| JavaScript/Typescript | `*.js/*.ts` extension. Supports single-line `//` comments and multi-line `/* */` comments |
+| Python                | `*.py` extension. Supports single-line `#` comments and multi-line `"""` comments         |
 
 TODO: Add issue
 
