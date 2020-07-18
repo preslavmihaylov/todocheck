@@ -26,6 +26,7 @@ type TodocheckScenario struct {
 	binaryLoc              string
 	basepath               string
 	cfgPath                string
+	testCfgPath            string
 	cfg                    *config.Local
 	expectedAuthToken      string
 	userOfflineToken       string
@@ -41,7 +42,6 @@ func NewScenario() *TodocheckScenario {
 	return &TodocheckScenario{
 		binaryLoc:        "./todocheck",
 		basepath:         ".",
-		cfgPath:          ".todocheck.yaml",
 		issues:           map[string]issuetracker.Status{},
 		expectedExitCode: 0,
 	}
@@ -59,9 +59,21 @@ func (s *TodocheckScenario) WithBasepath(basepath string) *TodocheckScenario {
 	return s
 }
 
-// WithConfig let's you specify the --config flag passed to the program
+// WithConfig let's you specify the --config flag passed to the program.
+// By default, it is also used for the test environment config.
+// If you want to specify a different test environment config, see WithTestEnvConfig
 func (s *TodocheckScenario) WithConfig(cfgPath string) *TodocheckScenario {
 	s.cfgPath = cfgPath
+	if s.testCfgPath == "" {
+		s.testCfgPath = cfgPath
+	}
+
+	return s
+}
+
+// WithTestEnvConfig let's you specify a configuration used for the test environment, which can be different from the --config flag passed to todocheck
+func (s *TodocheckScenario) WithTestEnvConfig(cfgPath string) *TodocheckScenario {
+	s.testCfgPath = cfgPath
 	return s
 }
 
@@ -111,7 +123,7 @@ func (s *TodocheckScenario) ExpectExecutionError() *TodocheckScenario {
 // Run sets up the environment & executes the configured scenario
 func (s *TodocheckScenario) Run() error {
 	var err error
-	s.cfg, err = config.NewLocal(s.cfgPath, s.basepath)
+	s.cfg, err = config.NewLocal(s.testCfgPath, s.basepath)
 	if err != nil {
 		return fmt.Errorf("couldn't initialize todocheck config: %w", err)
 	}
@@ -167,7 +179,7 @@ func validationPipeline(fs ...validateFunc) error {
 
 func (s *TodocheckScenario) setupTestEnvironment() (teardownFunc, error) {
 	mockSrv := s.setupMockIssueTrackerServer()
-	teardownIssueTrackerCfg, err := setupMockIssueTrackerCfg(s.cfgPath, mockSrv.URL)
+	teardownIssueTrackerCfg, err := setupMockIssueTrackerCfg(s.testCfgPath, mockSrv.URL)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't setup mock issue tracker: %w", err)
 	}

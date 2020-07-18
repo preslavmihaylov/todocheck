@@ -19,7 +19,7 @@ import (
 // * Add caching for task statuses
 func main() {
 	var basepath = flag.String("basepath", ".", "The path for the project to todocheck. Defaults to current directory")
-	var cfgPath = flag.String("config", config.DefaultLocal, "The project configuration file to use")
+	var cfgPath = flag.String("config", "", "The project configuration file to use. Will use the one from the basepath if not specified")
 	flag.Parse()
 
 	localCfg, err := config.NewLocal(*cfgPath, *basepath)

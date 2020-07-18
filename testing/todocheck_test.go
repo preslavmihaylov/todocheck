@@ -329,3 +329,20 @@ func TestDefaultAuthInConfig(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+// Test that the configuration path can be derived implicitly from the basepath
+func TestConfigDerivedFromBasepath(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/basepath_config").
+		WithTestEnvConfig("./scenarios/basepath_config/.todocheck.yaml").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("scenarios/basepath_config/main.go", 3).
+				ExpectLine("// TODO - malformed todo")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}

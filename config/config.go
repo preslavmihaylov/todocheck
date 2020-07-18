@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -12,9 +11,6 @@ import (
 
 // DefaultLocal contains the default filepath to the local todocheck config for the current repository
 const DefaultLocal = ".todocheck.yaml"
-
-// ErrNotFound when the specified file is not found
-var ErrNotFound = errors.New("file not found")
 
 // IssueTracker enum
 type IssueTracker string
@@ -37,8 +33,12 @@ type Local struct {
 
 // NewLocal configuration from a given file path
 func NewLocal(cfgPath, basepath string) (*Local, error) {
+	if cfgPath == "" {
+		cfgPath = basepath + "/" + DefaultLocal
+	}
+
 	if !exists(cfgPath) {
-		return nil, ErrNotFound
+		return nil, fmt.Errorf("file %s not found", cfgPath)
 	}
 
 	bs, err := ioutil.ReadFile(cfgPath)
