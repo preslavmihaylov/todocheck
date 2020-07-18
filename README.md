@@ -59,13 +59,11 @@ Download the binary for your OS from the [latest release](https://github.com/pre
 Optionally verify the `sha256` checksum:
  * For macos, run `shasum -a 256 <binary>` & verify it's the same as `<binary>.sha256`
  * For linux, run `sha256sum <binary>`
- * For windows, consult Google for the various tools available
  
  Afterwards, verify the shasum is the same as `<binary>.sha256`.
 
 Place the binary in a folder, shined upon by your `$PATH`.
  * For macos & linux, that's typically `/usr/local/bin/`
- * For Windows, you'll need to check your [PATH variable](https://www.computerhope.com/issues/ch000549.htm)
 
 # Quickstart
 You will need a `.todocheck.yaml` configuration file in the root of your project first.  
