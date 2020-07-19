@@ -71,6 +71,7 @@ var supportedMatchers = map[string]*matcherFactory{
 	".sh":   scriptsMatcherFactory,
 	".bash": scriptsMatcherFactory,
 	".zsh":  scriptsMatcherFactory,
+	".R":    scriptsMatcherFactory,
 
 	// file types, supporting python comments
 	".py": pythonMatcherFactory,
