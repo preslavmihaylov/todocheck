@@ -1,3 +1,4 @@
+![todocheck logo](images/todocheck-logo.png)
 # todocheck
 
 todocheck is a static code analyzer for annotated `TODO` comments.
