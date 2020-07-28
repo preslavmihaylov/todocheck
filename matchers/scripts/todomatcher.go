@@ -1,5 +1,3 @@
-// Package scripts contains a todo matcher & comments matcher for scripts.
-// Scripts contain only single-line comments which begin with '#'
 package scripts
 
 import (
@@ -11,10 +9,10 @@ import (
 var singleLineTodoPattern = regexp.MustCompile("^\\s*#.*TODO")
 var singleLineValidTodoPattern = regexp.MustCompile("^\\s*# TODO ([a-zA-Z0-9\\-]+):.*")
 
-// NewTodoMatcher for standard comments
+// NewTodoMatcher for scripts comments
 func NewTodoMatcher() *TodoMatcher { return &TodoMatcher{} }
 
-// TodoMatcher for standard comments
+// TodoMatcher for scripts comments
 type TodoMatcher struct{}
 
 // IsMatch checks if the current expression matches a standard comment

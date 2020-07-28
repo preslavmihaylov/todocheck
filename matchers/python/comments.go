@@ -1,8 +1,6 @@
 package python
 
 import (
-	"fmt"
-
 	"github.com/preslavmihaylov/todocheck/matchers/state"
 )
 
@@ -86,7 +84,6 @@ func (m *CommentMatcher) MultiLineCommentState(
 
 	m.buffer += string(currToken)
 	if isMultilineStringLiteral(m.stringToken, prevToken, currToken, nextToken) {
-		fmt.Println("exiting multi-line state")
 		m.buffer += string(nextToken)
 		err := m.callback(m.buffer, filename, m.lines, m.linecnt)
 		if err != nil {
