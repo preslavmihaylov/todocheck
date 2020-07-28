@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 
 	"github.com/preslavmihaylov/todocheck/matchers/groovy"
+	"github.com/preslavmihaylov/todocheck/matchers/php"
 	"github.com/preslavmihaylov/todocheck/matchers/python"
 	"github.com/preslavmihaylov/todocheck/matchers/scripts"
 	"github.com/preslavmihaylov/todocheck/matchers/standard"
@@ -56,6 +57,14 @@ var (
 			return scripts.NewCommentMatcher(callback)
 		},
 	}
+	phpMatcherFactory = &matcherFactory{
+		func() TodoMatcher {
+			return php.NewTodoMatcher()
+		},
+		func(callback state.CommentCallback) CommentMatcher {
+			return php.NewCommentMatcher(callback)
+		},
+	}
 	pythonMatcherFactory = &matcherFactory{
 		func() TodoMatcher {
 			return python.NewTodoMatcher()
@@ -99,6 +108,9 @@ var supportedMatchers = map[string]*matcherFactory{
 	".bash": scriptsMatcherFactory,
 	".zsh":  scriptsMatcherFactory,
 	".R":    scriptsMatcherFactory,
+
+	// file types, supporting php comments
+	".php": phpMatcherFactory,
 
 	// file types, supporting python comments
 	".py": pythonMatcherFactory,
