@@ -34,6 +34,7 @@ type TodocheckScenario struct {
 	expectedExitCode       int
 	issueTracker           issuetracker.Type
 	issues                 map[string]issuetracker.Status
+	envVariables           map[string]string
 	todoErrScenarios       []*TodoErrScenario
 }
 
@@ -43,6 +44,7 @@ func NewScenario() *TodocheckScenario {
 		binaryLoc:        "./todocheck",
 		basepath:         ".",
 		issues:           map[string]issuetracker.Status{},
+		envVariables:     map[string]string{},
 		expectedExitCode: 0,
 	}
 }
@@ -89,6 +91,12 @@ func (s *TodocheckScenario) RequireAuthToken(token string) *TodocheckScenario {
 	return s
 }
 
+// WithEnvVariable sets a custom environment variable for the period of test execution
+func (s *TodocheckScenario) WithEnvVariable(key, value string) *TodocheckScenario {
+	s.envVariables[key] = value
+	return s
+}
+
 // WithIssue sets up a mock issue in your issue tracker with the given status
 func (s *TodocheckScenario) WithIssue(issueID string, status issuetracker.Status) *TodocheckScenario {
 	s.issues[issueID] = status
@@ -128,13 +136,12 @@ func (s *TodocheckScenario) Run() error {
 		return fmt.Errorf("couldn't initialize todocheck config: %w", err)
 	}
 
-	teardown, err := s.setupTestEnvironment()
+	cmd := exec.Command(s.binaryLoc, "--basepath", s.basepath, "--config", s.cfgPath)
+	teardown, err := s.setupTestEnvironment(cmd)
 	if err != nil {
 		return fmt.Errorf("couldn't setup test environment: %s", err)
 	}
 	defer teardown()
-
-	cmd := exec.Command(s.binaryLoc, "--basepath", s.basepath, "--config", s.cfgPath)
 
 	var stdin, stdout, stderr bytes.Buffer
 	if s.userOfflineToken != "" {
@@ -167,17 +174,8 @@ func (s *TodocheckScenario) Run() error {
 	return validationPipeline(validateFuncs...)
 }
 
-func validationPipeline(fs ...validateFunc) error {
-	for _, f := range fs {
-		if err := f(); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (s *TodocheckScenario) setupTestEnvironment() (teardownFunc, error) {
+func (s *TodocheckScenario) setupTestEnvironment(cmd *exec.Cmd) (teardownFunc, error) {
+	s.setupEnvironmentVariables(cmd, s.envVariables)
 	mockSrv := s.setupMockIssueTrackerServer()
 	teardownIssueTrackerCfg, err := setupMockIssueTrackerCfg(s.testCfgPath, mockSrv.URL)
 	if err != nil {
@@ -192,6 +190,13 @@ func (s *TodocheckScenario) setupTestEnvironment() (teardownFunc, error) {
 		defer teardownIssueTrackerCfg()
 		defer mockSrv.Close()
 	}, nil
+}
+
+func (s *TodocheckScenario) setupEnvironmentVariables(cmd *exec.Cmd, envVariables map[string]string) {
+	cmd.Env = os.Environ()
+	for key, value := range envVariables {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", key, value))
+	}
 }
 
 func (s *TodocheckScenario) setupMockIssueTrackerServer() *httptest.Server {
@@ -243,4 +248,14 @@ func deleteTokensCache(tokensCache string) {
 	if err != nil {
 		panic("couldn't teardown test environment: failed to delete tokens cache " + tokensCache)
 	}
+}
+
+func validationPipeline(fs ...validateFunc) error {
+	for _, f := range fs {
+		if err := f(); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

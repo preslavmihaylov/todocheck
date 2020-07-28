@@ -22,6 +22,7 @@ See [How it works](#how-it-works) for more info.
   * [None](#none)
   * [API Token/Offline Token](#api-tokenoffline-token)
   * [Authentication Tokens Cache](#authentication-tokens-cache)
+  * [Auth Token via Environment Variable](#auth-token-via-environment-variable)
 - [Configuration](#configuration)
 
 # How it works
@@ -256,6 +257,16 @@ auth:
   tokens_cache: path/to/tokens_cache
 ```
 
+## Auth Token via Environment Variable
+If you need to pass an authentication token via an environment variable, use the `TODOCHECK_AUTH_TOKEN` environment variable.
+
+Example usage:
+```
+TODOCHECK_AUTH_TOKEN=<secret-token> todocheck --basepath path/to/project
+```
+
+This can be useful when you want to integrate todocheck in your CI pipeline.
+
 # Configuration
 In your `.todocheck.yaml` configuration, you have the following configuration options:
  * origin - the origin of your remote repository/issue tracker (example: `github.com/golang/go`)
@@ -275,6 +286,7 @@ tokens:
 ```
 
 If you'd like to explicitly specify an access token in this file, feel free to do so. 
-This will let the user not have to manually input the token on the first todocheck execution.
+This will let the user not have to manually input the token on the first todocheck execution.  
 
-This can be used e.g. in a CI environment, in an initial laptop setup script, etc.
+This can be used e.g. in a CI environment, in an initial laptop setup script, etc.  
+Alternatively, use an [Auth Token via Environment Variable](#auth-token-via-environment-variable)
