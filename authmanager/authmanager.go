@@ -15,6 +15,8 @@ import (
 const (
 	githubAPITokenPage = "https://github.com/settings/tokens"
 	gitlabAPITokenPage = "https://gitlab.com/profile/personal_access_tokens"
+
+	authTokenEnvVariable = "TODOCHECK_AUTH_TOKEN"
 )
 
 // AcquireToken stores the issue tracker's auth token based on the auth type specified
@@ -36,8 +38,10 @@ func acquireAPIToken(cfg *config.Local) error {
 		var targetPage string
 		if cfg.IssueTracker == config.IssueTrackerGithub {
 			targetPage = githubAPITokenPage
-		} else {
+		} else if cfg.IssueTracker == config.IssueTrackerGitlab {
 			targetPage = gitlabAPITokenPage
+		} else {
+			panic("attempt to acquire token for unsupported issue tracker " + cfg.IssueTracker)
 		}
 
 		fmt.Printf("Please go to %v, create a read-only access token & paste it here:\nToken: ", targetPage)
@@ -61,6 +65,8 @@ func acquireToken(authCfg *config.Auth, tokenKey string, promptCallback func() (
 	if store.Tokens[tokenKey] != "" {
 		authCfg.Token = store.Tokens[tokenKey]
 		return nil
+	} else if envToken := os.Getenv(authTokenEnvVariable); envToken != "" {
+		return setAndPersistToken(authCfg, store, tokenKey, envToken)
 	}
 
 	tokenBs, err := promptCallback()
@@ -68,11 +74,7 @@ func acquireToken(authCfg *config.Auth, tokenKey string, promptCallback func() (
 		return fmt.Errorf("couldn't acquire token: %w", err)
 	}
 
-	authCfg.Token = strings.TrimSpace(string(tokenBs))
-	store.Tokens[tokenKey] = authCfg.Token
-	store.Save(authCfg.TokensCache)
-
-	return nil
+	return setAndPersistToken(authCfg, store, tokenKey, strings.TrimSpace(string(tokenBs)))
 }
 
 // Make token input scriptable, while preserving the hidden prompt behavior for users
@@ -84,4 +86,10 @@ func readPassword() ([]byte, error) {
 
 	reader := bufio.NewReader(os.Stdin)
 	return reader.ReadBytes('\n')
+}
+
+func setAndPersistToken(authCfg *config.Auth, store *authstore.Config, key, token string) error {
+	authCfg.Token = token
+	store.Tokens[key] = authCfg.Token
+	return store.Save(authCfg.TokensCache)
 }
