@@ -346,3 +346,60 @@ func TestConfigDerivedFromBasepath(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+func TestGroovyTodos(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/groovy").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("1", issuetracker.StatusOpen).
+		WithIssue("2", issuetracker.StatusClosed).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("scenarios/groovy/main.groovy", 1).
+				ExpectLine("//TODO: regular inline comment")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("scenarios/groovy/main.groovy", 11).
+				ExpectLine("/*").
+				ExpectLine("* TODO: Multi-line invalid todo").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithLocation("scenarios/groovy/main.groovy", 15).
+				ExpectLine("/**").
+				ExpectLine("* TODO: groovydoc invalid todo").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithLocation("scenarios/groovy/main.groovy", 19).
+				ExpectLine("// TODO 2: The issue is closed")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeIssueNonExistent).
+				WithLocation("scenarios/groovy/main.groovy", 21).
+				ExpectLine("// TODO 3: The issue is non-existent")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithLocation("scenarios/groovy/main.groovy", 52).
+				ExpectLine("/*").
+				ExpectLine("* TODO 2: Invalid todo as issue is closed").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithLocation("scenarios/groovy/main.groovy", 56).
+				ExpectLine("/**").
+				ExpectLine("* TODO 2: Invalid todo as issue is closed").
+				ExpectLine("*/")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}

@@ -3,6 +3,7 @@ package matchers
 import (
 	"path/filepath"
 
+	"github.com/preslavmihaylov/todocheck/matchers/groovy"
 	"github.com/preslavmihaylov/todocheck/matchers/python"
 	"github.com/preslavmihaylov/todocheck/matchers/scripts"
 	"github.com/preslavmihaylov/todocheck/matchers/standard"
@@ -55,6 +56,14 @@ var (
 			return python.NewCommentMatcher(callback)
 		},
 	}
+	groovyMatcherFactory = &matcherFactory{
+		func() TodoMatcher {
+			return groovy.NewTodoMatcher()
+		},
+		func(callback state.CommentCallback) CommentMatcher {
+			return groovy.NewCommentMatcher(callback)
+		},
+	}
 )
 
 var supportedMatchers = map[string]*matcherFactory{
@@ -66,6 +75,12 @@ var supportedMatchers = map[string]*matcherFactory{
 	".cs":   standardMatcherFactory,
 	".js":   standardMatcherFactory,
 	".ts":   standardMatcherFactory,
+
+	// groovy file extensions
+	".groovy": groovyMatcherFactory,
+	".gvy":    groovyMatcherFactory,
+	".gy":     groovyMatcherFactory,
+	".gsh":    groovyMatcherFactory,
 
 	// file types, supporting scripts comments
 	".sh":   scriptsMatcherFactory,
