@@ -3,9 +3,11 @@ package standard
 import "github.com/preslavmihaylov/todocheck/matchers/state"
 
 // NewCommentMatcher for standard comments
-func NewCommentMatcher(callback state.CommentCallback) *CommentMatcher {
+func NewCommentMatcher(callback state.CommentCallback, hasNestedMultilineComments bool) *CommentMatcher {
 	return &CommentMatcher{
-		callback: callback,
+		callback:                   callback,
+		hasNestedMultilineComments: hasNestedMultilineComments,
+		currentDepth:               1,
 	}
 }
 
@@ -16,6 +18,9 @@ type CommentMatcher struct {
 	lines       []string
 	linecnt     int
 	stringToken rune
+
+	hasNestedMultilineComments bool
+	currentDepth               int
 }
 
 // NonCommentState for standard comments
@@ -75,14 +80,20 @@ func (m *CommentMatcher) MultiLineCommentState(
 	filename, line string, linecnt int, prevToken, currToken, nextToken rune,
 ) (state.CommentState, error) {
 	m.buffer += string(currToken)
-	if prevToken == '*' && currToken == '/' {
-		err := m.callback(m.buffer, filename, m.lines, m.linecnt)
-		if err != nil {
-			return state.NonComment, err
-		}
+	if m.hasNestedMultilineComments && currToken == '/' && nextToken == '*' {
+		m.currentDepth++
+	} else if prevToken == '*' && currToken == '/' {
+		if m.hasNestedMultilineComments && m.currentDepth > 1 {
+			m.currentDepth--
+		} else {
+			err := m.callback(m.buffer, filename, m.lines, m.linecnt)
+			if err != nil {
+				return state.NonComment, err
+			}
 
-		m.resetState()
-		return state.NonComment, nil
+			m.resetState()
+			return state.NonComment, nil
+		}
 	}
 
 	if prevToken == '\n' {
@@ -97,4 +108,5 @@ func (m *CommentMatcher) resetState() {
 	m.lines = nil
 	m.linecnt = 0
 	m.stringToken = 0
+	m.currentDepth = 1
 }
