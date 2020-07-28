@@ -6,14 +6,14 @@ import (
 	"github.com/preslavmihaylov/todocheck/matchers/state"
 )
 
-// NewCommentMatcher for standard comments
+// NewCommentMatcher for scripts comments
 func NewCommentMatcher(callback state.CommentCallback) *CommentMatcher {
 	return &CommentMatcher{
 		callback: callback,
 	}
 }
 
-// CommentMatcher for standard comments
+// CommentMatcher for scripts comments
 type CommentMatcher struct {
 	callback    state.CommentCallback
 	buffer      string
@@ -22,7 +22,7 @@ type CommentMatcher struct {
 	stringToken rune
 }
 
-// NonCommentState for standard comments
+// NonCommentState for scripts comments
 func (m *CommentMatcher) NonCommentState(
 	filename, line string, linecnt int, prevToken, currToken, nextToken rune,
 ) (state.CommentState, error) {
@@ -39,7 +39,7 @@ func (m *CommentMatcher) NonCommentState(
 	return state.NonComment, nil
 }
 
-// StringState for standard comments
+// StringState for scripts comments
 func (m *CommentMatcher) StringState(
 	filename, line string, linecnt int, prevToken, currToken, nextToken rune,
 ) (state.CommentState, error) {
@@ -50,7 +50,7 @@ func (m *CommentMatcher) StringState(
 	return state.String, nil
 }
 
-// SingleLineCommentState for standard comments
+// SingleLineCommentState for scripts comments
 func (m *CommentMatcher) SingleLineCommentState(
 	filename, line string, linecnt int, prevToken, currToken, nextToken rune,
 ) (state.CommentState, error) {
@@ -68,7 +68,7 @@ func (m *CommentMatcher) SingleLineCommentState(
 	return state.SingleLineComment, nil
 }
 
-// MultiLineCommentState for standard comments
+// MultiLineCommentState for scripts comments
 func (m *CommentMatcher) MultiLineCommentState(
 	filename, line string, linecnt int, prevToken, currToken, nextToken rune,
 ) (state.CommentState, error) {

@@ -12,13 +12,13 @@ var singleLineValidTodoPattern = regexp.MustCompile("^\\s*# TODO ([a-zA-Z0-9\\-]
 var multiLineTodoPattern = regexp.MustCompile("(?s)^\\s*(\"\"\"|''').*TODO")
 var multiLineValidTodoPattern = regexp.MustCompile("(?s)^\\s*(\"\"\"|''').*TODO ([a-zA-Z0-9\\-]+):.*")
 
-// NewTodoMatcher for standard comments
+// NewTodoMatcher for python comments
 func NewTodoMatcher() *TodoMatcher { return &TodoMatcher{} }
 
-// TodoMatcher for standard comments
+// TodoMatcher for python comments
 type TodoMatcher struct{}
 
-// IsMatch checks if the current expression matches a standard comment
+// IsMatch checks if the current expression matches a python comment
 func (m *TodoMatcher) IsMatch(expr string) bool {
 	return singleLineTodoPattern.Match([]byte(expr)) || multiLineTodoPattern.Match([]byte(expr))
 }
