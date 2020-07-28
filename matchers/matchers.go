@@ -37,7 +37,15 @@ var (
 			return standard.NewTodoMatcher()
 		},
 		func(callback state.CommentCallback) CommentMatcher {
-			return standard.NewCommentMatcher(callback)
+			return standard.NewCommentMatcher(callback, false)
+		},
+	}
+	standardMatcherWithNestedMultilineCommentsFactory = &matcherFactory{
+		func() TodoMatcher {
+			return standard.NewTodoMatcher()
+		},
+		func(callback state.CommentCallback) CommentMatcher {
+			return standard.NewCommentMatcher(callback, true)
 		},
 	}
 	scriptsMatcherFactory = &matcherFactory{
@@ -75,6 +83,10 @@ var supportedMatchers = map[string]*matcherFactory{
 	".cs":   standardMatcherFactory,
 	".js":   standardMatcherFactory,
 	".ts":   standardMatcherFactory,
+
+	// file types, supporting standard comments \w nested multi-line comments
+	".rs":    standardMatcherWithNestedMultilineCommentsFactory,
+	".swift": standardMatcherWithNestedMultilineCommentsFactory,
 
 	// groovy file extensions
 	".groovy": groovyMatcherFactory,
