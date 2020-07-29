@@ -1,20 +1,14 @@
 package scenariobuilder
 
-import "fmt"
+import (
+	"fmt"
 
-// TodoErrType is an enum specifying the possible todo err type one could expect
-type TodoErrType string
-
-// Possible types of todo errors to expect
-const (
-	TodoErrTypeMalformed        TodoErrType = "ERROR: Malformed todo."
-	TodoErrTypeIssueClosed                  = "ERROR: Issue is closed."
-	TodoErrTypeIssueNonExistent             = "ERROR: Issue doesn't exist."
+	"github.com/preslavmihaylov/todocheck/checker/errors"
 )
 
 // TodoErrScenario encapsulates a test scenario for an expected todo err the program should return.
 type TodoErrScenario struct {
-	TodoErrType
+	errType       errors.TODOErrType
 	sourceFile    string
 	sourceLineNum int
 	contents      []string
@@ -26,8 +20,8 @@ func NewTodoErr() *TodoErrScenario {
 }
 
 // WithType specifies the expected todo err type for the given scenario
-func (s *TodoErrScenario) WithType(t TodoErrType) *TodoErrScenario {
-	s.TodoErrType = t
+func (s *TodoErrScenario) WithType(t errors.TODOErrType) *TodoErrScenario {
+	s.errType = t
 	return s
 }
 
@@ -55,13 +49,13 @@ func (s *TodoErrScenario) ExpectLine(line string) *TodoErrScenario {
 }
 
 func (s *TodoErrScenario) String() string {
-	str := fmt.Sprintf("%s", s.TodoErrType)
+	str := fmt.Sprintf("ERROR: %s", s.errType)
 	for i := 0; i < len(s.contents); i++ {
 		str += fmt.Sprintf("\n%s:%d: %s", s.sourceFile, i+s.sourceLineNum, s.contents[i])
 	}
 
-	if s.TodoErrType == TodoErrTypeMalformed {
-		str += "\n\t> TODO should match pattern - \"TODO [TASK_ID]:\""
+	if s.errType == errors.TODOErrTypeMalformed {
+		str += "\n\t> TODO should match pattern - TODO {task_id}:"
 	}
 
 	return str
