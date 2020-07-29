@@ -18,6 +18,7 @@ See [How it works](#how-it-works) for more info.
   * [Jira](#jira)
 - [Supported Programming Languages](#supported-programming-languages)
 - [Ignored Files & Directories](#ignored-files--directories)
+- [Supported Output Formats](#supported-output-formats)
 - [Authentication](#authentication)
   * [None](#none)
   * [API Token/Offline Token](#api-tokenoffline-token)
@@ -195,6 +196,48 @@ ignored:
 
 Ignored files/folders can be specified via standard pattern-matching.
 Hidden files (dotfiles, i.e. `.git`, `.gitignore`, etc) are ignored by default.
+
+# Supported Output Formats
+Currently, todocheck supports two kinds of output - standard & json.  
+
+The standard format is meant to be user-friendly & used in the normal day-to-day workflow.  
+```
+ERROR: Malformed todo
+tmp/main.groovy:2: // TODO: Invalid todo
+        > TODO should match pattern - TODO {task_id}:
+
+ERROR: Malformed todo
+tmp/main.groovy:12: // TODO: Invalid todo
+        > TODO should match pattern - TODO {task_id}:
+
+ERROR: Issue doesn't exist
+tmp/main.groovy:15: // TODO 3: A non-existent issue
+```
+
+The json output is meant to be used for integrating todocheck in third-party systems, such as an IDE plugin.  
+To use json output, use the `--format json` flag.
+```json
+[
+   {
+      "type":"Malformed todo",
+      "filename":"tmp/main.groovy",
+      "line":2,
+      "message":"TODO should match pattern - TODO {task_id}:"
+   },
+   {
+      "type":"Malformed todo",
+      "filename":"tmp/main.groovy",
+      "line":12,
+      "message":"TODO should match pattern - TODO {task_id}:"
+   },
+   {
+      "type":"Issue doesn't exist",
+      "filename":"tmp/main.groovy",
+      "line":15,
+      "message":""
+   }
+]
+```
 
 # Authentication
 ## None
