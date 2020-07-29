@@ -3,6 +3,7 @@ package testing
 import (
 	"testing"
 
+	"github.com/preslavmihaylov/todocheck/checker/errors"
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder"
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder/issuetracker"
 )
@@ -14,32 +15,32 @@ func TestSingleLineMalformedTodos(t *testing.T) {
 		WithConfig("./test_configs/no_issue_tracker.yaml").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/singleline_todos/other.go", 3).
 				ExpectLine("// TODO: This is a todo in a separate go file")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/singleline_todos/main.go", 5).
 				ExpectLine("// TODO: This is a malformed todo")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/singleline_todos/main.go", 6).
 				ExpectLine("// TODO: This is a malformed todo 2")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/singleline_todos/main.go", 10).
 				ExpectLine("func main() { // TODO: This is a todo comment at the end of a line")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/singleline_todos/main.go", 15).
 				ExpectLine("// TODO comment without colons")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/singleline_todos/main.go", 17).
 				ExpectLine("// This is a TODO comment at the middle of it")).
 		Run()
@@ -55,12 +56,12 @@ func TestFirstlineMalformedTodo(t *testing.T) {
 		WithConfig("./test_configs/no_issue_tracker.yaml").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/firstline_comment/main.cpp", 1).
 				ExpectLine("// This is an invalid TODO on the very first line of the file")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/firstline_comment/other.cpp", 1).
 				ExpectLine("// This is another first-line TODO comment in a second file")).
 		Run()
@@ -76,7 +77,7 @@ func TestMultiLineMalformedTodos(t *testing.T) {
 		WithConfig("./test_configs/no_issue_tracker.yaml").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/multiline_todos/main.go", 3).
 				ExpectLine("/*").
 				ExpectLine(" * This is a multiline").
@@ -84,7 +85,7 @@ func TestMultiLineMalformedTodos(t *testing.T) {
 				ExpectLine(" */")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/multiline_todos/main.go", 8).
 				ExpectLine("func main() { /*").
 				ExpectLine("	 * This is a multiline TODO comment").
@@ -92,7 +93,7 @@ func TestMultiLineMalformedTodos(t *testing.T) {
 				ExpectLine("	 */")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/multiline_todos/main.go", 18).
 				ExpectLine("/* This is a single-line multi-line TODO comment */")).
 		Run()
@@ -111,17 +112,17 @@ func TestAnnotatedTodos(t *testing.T) {
 		WithIssue("J321", issuetracker.StatusOpen).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/annotated_todos/main.go", 3).
 				ExpectLine("// TODO J123: This is a todo, annotated with a closed issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueNonExistent).
+				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/annotated_todos/main.go", 7).
 				ExpectLine("// TODO J456: This is an invalid todo, annotated with a non-existent issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/annotated_todos/main.go", 14).
 				ExpectLine("/*").
 				ExpectLine(" * This is an invalid TODO J123:").
@@ -129,7 +130,7 @@ func TestAnnotatedTodos(t *testing.T) {
 				ExpectLine(" */")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueNonExistent).
+				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/annotated_todos/main.go", 19).
 				ExpectLine("/*").
 				ExpectLine(" * TODO J456:").
@@ -151,27 +152,27 @@ func TestScriptsTodos(t *testing.T) {
 		WithIssue("321", issuetracker.StatusClosed).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/scripts/script.sh", 1).
 				ExpectLine("# This is a malformed TODO")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/scripts/script.sh", 5).
 				ExpectLine("curl \"localhost:8080\" # This is a TODO comment at the end of the line")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/scripts/script.bash", 3).
 				ExpectLine("# A malformed TODO comment")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/scripts/script.bash", 7).
 				ExpectLine("# TODO 321: This is an invalid todo, marked against a closed issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueNonExistent).
+				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/scripts/script.bash", 9).
 				ExpectLine("curl \"localhost:8080\" # TODO 567: This is an invalid todo, marked against a non-existent issue")).
 		Run()
@@ -190,12 +191,12 @@ func TestPythonTodos(t *testing.T) {
 		WithIssue("234", issuetracker.StatusClosed).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/python/main.py", 3).
 				ExpectLine("# This is a single-line malformed TODO")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/python/main.py", 5).
 				ExpectLine("\"\"\"").
 				ExpectLine("And this is a multiline malformed TODO").
@@ -203,7 +204,7 @@ func TestPythonTodos(t *testing.T) {
 				ExpectLine("\"\"\"")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/python/main.py", 10).
 				ExpectLine("'''").
 				ExpectLine("This is the same multiline malformed TODO").
@@ -211,24 +212,24 @@ func TestPythonTodos(t *testing.T) {
 				ExpectLine("'''")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/python/main.py", 15).
 				ExpectLine("myvar = 5 # This is a malformed TODO at the end of a line")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/python/main.py", 19).
 				ExpectLine("hello = \"hello\" # TODO 234: This is an invalid todo, with a closed issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/python/main.py", 21).
 				ExpectLine("\"\"\"").
 				ExpectLine("TODO 234: This is an invalid todo, marked against a closed issue").
 				ExpectLine("\"\"\"")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/python/main.py", 25).
 				ExpectLine("'''").
 				ExpectLine("TODO 234: This is an invalid todo,").
@@ -293,7 +294,7 @@ func TestIgnoredDirectories(t *testing.T) {
 		WithConfig("./test_configs/ignored_dirs.yaml").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/ignored_dirs/main.go", 3).
 				ExpectLine("// This is a malformed TODO")).
 		Run()
@@ -309,7 +310,7 @@ func TestIgnoredDirectoriesWithDotDot(t *testing.T) {
 		WithConfig("./test_configs/ignored_dirs.yaml").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("../testing/scenarios/ignored_dirs/main.go", 3).
 				ExpectLine("// This is a malformed TODO")).
 		Run()
@@ -337,7 +338,7 @@ func TestDefaultAuthInConfig(t *testing.T) {
 		WithConfig("./test_configs/no_auth_section.yaml").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/no_auth_section/main.go", 3).
 				ExpectLine("// TODO - malformed todo")).
 		Run()
@@ -354,7 +355,7 @@ func TestConfigDerivedFromBasepath(t *testing.T) {
 		WithTestEnvConfig("./scenarios/basepath_config/.todocheck.yaml").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/basepath_config/main.go", 3).
 				ExpectLine("// TODO - malformed todo")).
 		Run()
@@ -373,43 +374,43 @@ func TestGroovyTodos(t *testing.T) {
 		WithIssue("2", issuetracker.StatusClosed).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/groovy/main.groovy", 1).
 				ExpectLine("//TODO: regular inline comment")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/groovy/main.groovy", 11).
 				ExpectLine("/*").
 				ExpectLine("* TODO: Multi-line invalid todo").
 				ExpectLine("*/")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/groovy/main.groovy", 15).
 				ExpectLine("/**").
 				ExpectLine("* TODO: groovydoc invalid todo").
 				ExpectLine("*/")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/groovy/main.groovy", 19).
 				ExpectLine("// TODO 2: The issue is closed")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueNonExistent).
+				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/groovy/main.groovy", 21).
 				ExpectLine("// TODO 3: The issue is non-existent")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/groovy/main.groovy", 52).
 				ExpectLine("/*").
 				ExpectLine("* TODO 2: Invalid todo as issue is closed").
 				ExpectLine("*/")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/groovy/main.groovy", 56).
 				ExpectLine("/**").
 				ExpectLine("* TODO 2: Invalid todo as issue is closed").
@@ -431,31 +432,31 @@ func TestSwiftTodos(t *testing.T) {
 		WithIssue("2", issuetracker.StatusClosed).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/swift/main.swift", 4).
 				ExpectLine("print(\"Hello, World!\") // TODO: An invalid todo")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/swift/main.swift", 6).
 				ExpectLine("/*").
 				ExpectLine(" * TODO: An invalid multi-line todo").
 				ExpectLine(" */")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/swift/main.swift", 10).
 				ExpectLine("/// TODO: An invalid docstring todo")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/swift/main.swift", 12).
 				ExpectLine("/*").
 				ExpectLine(" /* TODO: An invalid nested todo */").
 				ExpectLine("*/")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/swift/main.swift", 22).
 				ExpectLine("/*").
 				ExpectLine(" /*").
@@ -478,72 +479,72 @@ func TestPHPTodos(t *testing.T) {
 		WithIssue("2", issuetracker.StatusClosed).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/php/main.php", 2).
 				ExpectLine("// TODO: malformed todo")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/php/main.php", 4).
 				ExpectLine("// TODO 2: The issue is closed")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueNonExistent).
+				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/php/main.php", 5).
 				ExpectLine("// TODO 3: The issue is non-existent")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/php/main.php", 7).
 				ExpectLine("# TODO: malformed todo")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/php/main.php", 9).
 				ExpectLine("# TODO 2: The issue is closed")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueNonExistent).
+				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/php/main.php", 10).
 				ExpectLine("# TODO 3: The issue is non-existent")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/php/main.php", 19).
 				ExpectLine("/*").
 				ExpectLine(" * TODO: Multi-line invalid todo").
 				ExpectLine(" */")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/php/main.php", 27).
 				ExpectLine("/*").
 				ExpectLine(" * TODO 2: issue is closed").
 				ExpectLine(" */")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueNonExistent).
+				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/php/main.php", 31).
 				ExpectLine("/*").
 				ExpectLine(" * TODO 3: issue is non-existent").
 				ExpectLine(" */")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeMalformed).
+				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/php/main.php", 35).
 				ExpectLine("/**").
 				ExpectLine(" * TODO: docstring invalid todo").
 				ExpectLine(" */")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueClosed).
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/php/main.php", 43).
 				ExpectLine("/**").
 				ExpectLine(" * TODO 2: issue is closed").
 				ExpectLine(" */")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(scenariobuilder.TodoErrTypeIssueNonExistent).
+				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/php/main.php", 47).
 				ExpectLine("/**").
 				ExpectLine(" * TODO 3: issue is non-existent").

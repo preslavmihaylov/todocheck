@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/preslavmihaylov/todocheck/checker"
+	"github.com/preslavmihaylov/todocheck/checker/errors"
 	"github.com/preslavmihaylov/todocheck/fetcher"
 	"github.com/preslavmihaylov/todocheck/matchers"
 	"github.com/preslavmihaylov/todocheck/matchers/state"
@@ -11,7 +12,7 @@ import (
 )
 
 // TodoErrCallback is a function which acts on an encountered todo error
-type TodoErrCallback func(todoerr error) error
+type TodoErrCallback func(todoerr *errors.TODO) error
 
 // NewTraverser for todo errors
 func NewTraverser(f *fetcher.Fetcher, ignoredPaths []string, callback TodoErrCallback) *Traverser {

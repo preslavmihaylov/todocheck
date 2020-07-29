@@ -23,7 +23,7 @@ func New(statusFetcher *fetcher.Fetcher) *Checker {
 // Check if todo line is valid
 func (c *Checker) Check(
 	matcher matchers.TodoMatcher, comment, filename string, lines []string, linecnt int,
-) (error, error) {
+) (*checkererrors.TODO, error) {
 	if matcher == nil {
 		return nil, errors.New("matcher is nil")
 	}
@@ -39,7 +39,7 @@ func (c *Checker) Check(
 	taskID, err := matcher.ExtractIssueRef(comment)
 	if err != nil {
 		// should never happen after validating todo line
-		panic(err)
+		panic("couldn't extract issue reference from a valid todo: " + err.Error())
 	}
 
 	status, err := c.statusFetcher.Fetch(taskID)

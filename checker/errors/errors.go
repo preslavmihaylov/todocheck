@@ -1,35 +1,93 @@
 package errors
 
 import (
-	"errors"
+	"encoding/json"
 	"fmt"
 
 	"github.com/fatih/color"
 )
 
-// MalformedTODOErr when todo is not properly formatted
-func MalformedTODOErr(filename string, lines []string, linecnt int) error {
-	msg := color.RedString("ERROR: Malformed todo.\n") +
-		printSourceLocation(filename, lines, linecnt) +
-		color.CyanString("\t> TODO should match pattern - \"TODO [TASK_ID]:\"\n")
+// TODOErrType is an enum representing the type of todo error
+type TODOErrType string
 
-	return errors.New(msg)
+// supported todo error types enum
+const (
+	TODOErrTypeMalformed        TODOErrType = "Malformed todo"
+	TODOErrTypeIssueClosed      TODOErrType = "Issue is closed"
+	TODOErrTypeNonExistentIssue TODOErrType = "Issue doesn't exist"
+)
+
+// TODO encapsulates the todo error information
+type TODO struct {
+	errType  TODOErrType
+	filename string
+	lines    []string
+	linecnt  int
+}
+
+// ToJSON converts the todo error into json format
+func (err *TODO) ToJSON() ([]byte, error) {
+	res := &struct {
+		Type     string `json:"type"`
+		Filename string `json:"filename"`
+		Line     int    `json:"line"`
+		Message  string `json:"message"`
+	}{
+		Type:     string(err.errType),
+		Filename: err.filename,
+		Line:     err.linecnt,
+		Message:  "",
+	}
+
+	if err.errType == TODOErrTypeMalformed {
+		res.Message = "TODO should match pattern - TODO {task_id}:"
+	}
+
+	return json.Marshal(res)
+}
+
+func (err *TODO) Error() string {
+	return err.String()
+}
+
+func (err *TODO) String() string {
+	msg := color.RedString("ERROR: " + string(err.errType) + "\n")
+	msg += printSourceLocation(err.filename, err.lines, err.linecnt)
+	if err.errType == TODOErrTypeMalformed {
+		msg += color.CyanString("\t> TODO should match pattern - TODO {task_id}:\n")
+	}
+
+	return msg
+}
+
+// MalformedTODOErr when todo is not properly formatted
+func MalformedTODOErr(filename string, lines []string, linecnt int) *TODO {
+	return &TODO{
+		errType:  TODOErrTypeMalformed,
+		filename: filename,
+		lines:    lines,
+		linecnt:  linecnt,
+	}
 }
 
 // IssueClosedErr when referenced todo issue is closed
-func IssueClosedErr(filename string, lines []string, linecnt int) error {
-	msg := color.RedString("ERROR: Issue is closed.\n") +
-		printSourceLocation(filename, lines, linecnt)
-
-	return errors.New(msg)
+func IssueClosedErr(filename string, lines []string, linecnt int) *TODO {
+	return &TODO{
+		errType:  TODOErrTypeIssueClosed,
+		filename: filename,
+		lines:    lines,
+		linecnt:  linecnt,
+	}
 }
 
 // IssueNonExistentErr when referenced todo issue doesn't exist
-func IssueNonExistentErr(filename string, lines []string, linecnt int) error {
-	msg := color.RedString("ERROR: Issue doesn't exist.\n") +
-		printSourceLocation(filename, lines, linecnt)
-
-	return errors.New(msg)
+func IssueNonExistentErr(filename string, lines []string, linecnt int) *TODO {
+	return &TODO{
+		errType:  TODOErrTypeNonExistentIssue,
+		filename: filename,
+		lines:    lines,
+		linecnt:  linecnt,
+	}
 }
 
 func printSourceLocation(filename string, lines []string, linecnt int) string {
