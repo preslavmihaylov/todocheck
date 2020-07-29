@@ -22,6 +22,8 @@ func For(cfg *config.Local) Func {
 		return authorizationTokenMiddleware(cfg.Auth.Token)
 	} else if cfg.IssueTracker == config.IssueTrackerGitlab && cfg.Auth.Type == config.AuthTypeAPIToken {
 		return gitlabAPITokenMiddleware(cfg.Auth.Token)
+	} else if cfg.IssueTracker == config.IssueTrackerPivotal && cfg.Auth.Type == config.AuthTypeAPIToken {
+		return pivotalTrackerAPITokenMiddleware(cfg.Auth.Token)
 	}
 
 	panic("couldn't derive authentication middleware based on the given local configuration")
@@ -40,6 +42,12 @@ func authorizationTokenMiddleware(token string) Func {
 func gitlabAPITokenMiddleware(token string) Func {
 	return func(r *http.Request) {
 		r.Header.Add("PRIVATE-TOKEN", token)
+	}
+}
+
+func pivotalTrackerAPITokenMiddleware(token string) Func {
+	return func(r *http.Request) {
+		r.Header.Add("X-TrackerToken", token)
 	}
 }
 

@@ -13,8 +13,9 @@ import (
 )
 
 const (
-	githubAPITokenPage = "https://github.com/settings/tokens"
-	gitlabAPITokenPage = "https://gitlab.com/profile/personal_access_tokens"
+	githubAPITokenMsg  = "Please go to https://github.com/settings/tokens, create a read-only access token & paste it here:\nToken: "
+	gitlabAPITokenMsg  = "Please go to https://gitlab.com/profile/personal_access_tokens, create a read-only access token & paste it here:\nToken: "
+	pivotalAPITokenMsg = "Please go to https://www.pivotaltracker.com/profile, create a new API token & paste it here:\nToken: "
 
 	authTokenEnvVariable = "TODOCHECK_AUTH_TOKEN"
 )
@@ -35,16 +36,18 @@ func AcquireToken(cfg *config.Local) error {
 
 func acquireAPIToken(cfg *config.Local) error {
 	return acquireToken(cfg.Auth, cfg.Origin, func() ([]byte, error) {
-		var targetPage string
+		var msg string
 		if cfg.IssueTracker == config.IssueTrackerGithub {
-			targetPage = githubAPITokenPage
+			msg = githubAPITokenMsg
 		} else if cfg.IssueTracker == config.IssueTrackerGitlab {
-			targetPage = gitlabAPITokenPage
+			msg = gitlabAPITokenMsg
+		} else if cfg.IssueTracker == config.IssueTrackerPivotal {
+			msg = pivotalAPITokenMsg
 		} else {
 			panic("attempt to acquire token for unsupported issue tracker " + cfg.IssueTracker)
 		}
 
-		fmt.Printf("Please go to %v, create a read-only access token & paste it here:\nToken: ", targetPage)
+		fmt.Printf(msg)
 		return readPassword()
 	})
 }
