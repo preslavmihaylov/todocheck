@@ -16,6 +16,7 @@ See [How it works](#how-it-works) for more info.
   * [Github](#github)
   * [Gitlab](#gitlab)
   * [Jira](#jira)
+  * [Pivotal Tracker](#pivotal-tracker)
 - [Supported Programming Languages](#supported-programming-languages)
 - [Ignored Files & Directories](#ignored-files--directories)
 - [Supported Output Formats](#supported-output-formats)
@@ -93,11 +94,12 @@ In the example above, it would look for it in `path/to/project/.todocheck.yaml`.
 # Supported Issue Trackers
 Currently, todocheck supports the following issue trackers:
 
-| Issue Tracker | Description                                      |
-|---------------|--------------------------------------------------|
-| Github        | Both public & private repositories are supported |
-| Gitlab        | Both public & private repositories are supported |
-| Jira          | Supported via offline tokens                     |
+| Issue Tracker   | Description                                      |
+|-----------------|--------------------------------------------------|
+| Github          | Both public & private repositories are supported |
+| Gitlab          | Both public & private repositories are supported |
+| Jira            | Supported via offline tokens                     |
+| Pivotal Tracker | Supported via an API token                       |
 
 ## Github
 To integrate with a public github repository, specify the origin of your repo and the `GITHUB` issue tracker in your `.todocheck.yaml` configuration:
@@ -157,6 +159,29 @@ Example offline token page:
 After you've given the offline token to `todocheck`'s prompt, it will store it in the auth tokens cache for subsequent executions.  
 
 See the [Authentication](#authentication) section for more info.
+
+## Pivotal Tracker
+To integrate with a pivotal tracker project, specify the origin of your project and the `PIVOTAL_TRACKER` issue tracker in your `.todocheck.yaml` configuration.  
+You should also specify the `apitoken` as an auth type:
+```
+origin: pivotaltracker.com/projects/PROJECT_ID
+issue_tracker: PIVOTAL_TRACKER
+auth:
+  type: apitoken
+```
+
+The first time you run the application, it will ask for your [API Token](https://www.pivotaltracker.com/help/articles/api_token/):
+
+After you've specified it, it will store it in the auth tokens cache for subsequent executions. See the [Authentication](#authentication) section for more info.
+
+Note that for Pivotal Tracker, you'll need to specify your TODOs without the `#` as they're typically shown in the site.  
+For example:
+```
+// TODO 123456: This is a valid todo
+
+// TODO #123456: This one is not
+```
+
 
 # Supported Programming Languages
 Currently, todocheck has parsers for three different types of comments:
