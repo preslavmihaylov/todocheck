@@ -17,6 +17,7 @@ See [How it works](#how-it-works) for more info.
   * [Gitlab](#gitlab)
   * [Jira](#jira)
   * [Pivotal Tracker](#pivotal-tracker)
+  * [Redmine](#redmine)
 - [Supported Programming Languages](#supported-programming-languages)
 - [Ignored Files & Directories](#ignored-files--directories)
 - [Supported Output Formats](#supported-output-formats)
@@ -170,7 +171,7 @@ auth:
   type: apitoken
 ```
 
-The first time you run the application, it will ask for your [API Token](https://www.pivotaltracker.com/help/articles/api_token/):
+The first time you run the application, it will ask for your [API Token](https://www.pivotaltracker.com/help/articles/api_token/).
 
 After you've specified it, it will store it in the auth tokens cache for subsequent executions. See the [Authentication](#authentication) section for more info.
 
@@ -181,6 +182,25 @@ For example:
 
 // TODO #123456: This one is not
 ```
+
+## Redmine
+To integrate with a redmine issue tracker project, specify the origin of your installation (without project path) and the `REDMINE` issue tracker in your `.todocheck.yaml` configuration.  
+
+You should also specify the `apitoken` as an auth type if you have authentication enabled on your server:
+```
+origin: https://redmine.mycorp.com
+issue_tracker: REDMINE
+auth:
+  type: apitoken
+```
+
+Alternatively, if no authentication is required, don't include the `auth` section.
+
+The first time you run the application, it will ask for your [API Token](https://www.redmine.org/projects/redmine/wiki/rest_api#Authentication).
+
+After you've specified it, it will store it in the auth tokens cache for subsequent executions. See the [Authentication](#authentication) section for more info.
+
+In order to integrate todocheck with your redmine server, you'll need to enable the server's rest API and, optionally, enable authentication - [See Docs](https://www.redmine.org/projects/redmine/wiki/rest_api#Authentication).
 
 
 # Supported Programming Languages

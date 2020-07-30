@@ -24,6 +24,8 @@ func For(cfg *config.Local) Func {
 		return gitlabAPITokenMiddleware(cfg.Auth.Token)
 	} else if cfg.IssueTracker == config.IssueTrackerPivotal && cfg.Auth.Type == config.AuthTypeAPIToken {
 		return pivotalTrackerAPITokenMiddleware(cfg.Auth.Token)
+	} else if cfg.IssueTracker == config.IssueTrackerRedmine && cfg.Auth.Type == config.AuthTypeAPIToken {
+		return redmineAPITokenMiddleware(cfg.Auth.Token)
 	}
 
 	panic("couldn't derive authentication middleware based on the given local configuration")
@@ -48,6 +50,12 @@ func gitlabAPITokenMiddleware(token string) Func {
 func pivotalTrackerAPITokenMiddleware(token string) Func {
 	return func(r *http.Request) {
 		r.Header.Add("X-TrackerToken", token)
+	}
+}
+
+func redmineAPITokenMiddleware(token string) Func {
+	return func(r *http.Request) {
+		r.Header.Add("X-Redmine-API-Key", token)
 	}
 }
 
