@@ -7,7 +7,7 @@ type PivotalTrackerTask struct {
 	CurrentState string `json:"current_state"`
 }
 
-// GetStatus of picotal tracker task, based on underlying structure
+// GetStatus of pivotal tracker task, based on underlying structure
 func (t *PivotalTrackerTask) GetStatus() taskstatus.TaskStatus {
 	switch t.CurrentState {
 	case "finished":

@@ -22,6 +22,7 @@ const (
 	IssueTrackerGithub               = "GITHUB"
 	IssueTrackerGitlab               = "GITLAB"
 	IssueTrackerPivotal              = "PIVOTAL_TRACKER"
+	IssueTrackerRedmine              = "REDMINE"
 )
 
 // Local todocheck configuration struct definition
