@@ -95,14 +95,15 @@ In the example above, it would look for it in `path/to/project/.todocheck.yaml`.
 # Supported Issue Trackers
 Currently, todocheck supports the following issue trackers:
 
-| Issue Tracker   | Description                                      |
-|-----------------|--------------------------------------------------|
-| Github          | Both public & private repositories are supported |
-| Gitlab          | Both public & private repositories are supported |
-| Jira            | Supported via offline tokens                     |
-| Pivotal Tracker | Supported via an API token                       |
+| Issue Tracker                                   | Description                                                           |
+|-------------------------------------------------|-----------------------------------------------------------------------|
+| [Github](https://github.com)                    | Both public & private repositories are supported                      |
+| [Gitlab](https://gitlab.com/)                   | Both public & private repositories are supported                      |
+| [Jira](https://www.atlassian.com/software/jira) | Supported via offline tokens                                          |
+| [Pivotal Tracker](https://pivotaltracker.com/)  | Supported via an API token                                            |
+| [Redmine](https://redmine.org/)                 | Supports public access with no auth & private access via an API token |
 
-## Github
+## [Github](https://github.com)
 To integrate with a public github repository, specify the origin of your repo and the `GITHUB` issue tracker in your `.todocheck.yaml` configuration:
 ```
 origin: github.com/user/repository
@@ -122,7 +123,7 @@ The first time you run the application, it will ask for your [personal access to
 
 After you've specified it, it will store it in the auth tokens cache for subsequent executions. See the [Authentication](#authentication) section for more info.
 
-## Gitlab
+## [Gitlab](https://gitlab.com)
 To integrate with a public gitlab repository, specify the origin of your repo and the `GITLAB` issue tracker in your `.todocheck.yaml` configuration:
 ```
 origin: gitlab.com/user/repository
@@ -141,7 +142,7 @@ The first time you run the application, it will ask for your [personal access to
 
 After you've specified it, it will store it in the auth tokens cache for subsequent executions. See the [Authentication](#authentication) section for more info.
 
-## Jira
+## [Jira](https://www.atlassian.com/software/jira)
 To integrate with your organization's Jira, you'll need to specify `JIRA` as your issue tracker, the origin of your jira server instance, along with an [offline token](#api-tokenoffline-token):
 ```
 origin: https://myjira.awesomeorg.com
@@ -161,7 +162,7 @@ After you've given the offline token to `todocheck`'s prompt, it will store it i
 
 See the [Authentication](#authentication) section for more info.
 
-## Pivotal Tracker
+## [Pivotal Tracker](https://pivotaltracker.com/)
 To integrate with a pivotal tracker project, specify the origin of your project and the `PIVOTAL_TRACKER` issue tracker in your `.todocheck.yaml` configuration.  
 You should also specify the `apitoken` as an auth type:
 ```
@@ -183,7 +184,7 @@ For example:
 // TODO #123456: This one is not
 ```
 
-## Redmine
+## [Redmine](https://redmine.org)
 To integrate with a redmine issue tracker project, specify the origin of your installation (without project path) and the `REDMINE` issue tracker in your `.todocheck.yaml` configuration.  
 
 You should also specify the `apitoken` as an auth type if you have authentication enabled on your server:
