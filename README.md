@@ -226,6 +226,7 @@ Based on this, here are the supported languages:
 | Python                | `*.py` extension. Supports single-line `#` comments and multi-line `"""` comments                                      |
 | R                     | `*.R` extension. Supports single-line `//` comments and multi-line `/* */` comments                                    |
 | Rust                  | `*.rs` extension. Supports single-line `//` comments and multi-line `/* */` comments                                   |
+| Scala                 | `*.scala`, `*.sc` extensions. Supports single-line `//` comments and multi-line `/* */` comments                                 |
 | Swift                 | `*.swift` extension. Supports single-line `//` comments and multi-line `/* */` comments                                |
 
 If you don't see your favorite language in this table, but it does use one of the supported comment formats, submit an issue [here](https://github.com/preslavmihaylov/todocheck/issues/new)

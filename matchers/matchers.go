@@ -96,6 +96,8 @@ var supportedMatchers = map[string]*matcherFactory{
 	// file types, supporting standard comments \w nested multi-line comments
 	".rs":    standardMatcherWithNestedMultilineCommentsFactory,
 	".swift": standardMatcherWithNestedMultilineCommentsFactory,
+	".scala": standardMatcherWithNestedMultilineCommentsFactory,
+	".sc":    standardMatcherWithNestedMultilineCommentsFactory,
 
 	// groovy file extensions
 	".groovy": groovyMatcherFactory,
