@@ -86,8 +86,9 @@ func acquireToken(authCfg *config.Auth, tokenKey string, promptCallback func() (
 // Make token input scriptable, while preserving the hidden prompt behavior for users
 // https://github.com/golang/go/issues/19909#issuecomment-399409958
 func readPassword() ([]byte, error) {
-	if terminal.IsTerminal(syscall.Stdin) {
-		return terminal.ReadPassword(syscall.Stdin)
+	fd := int(syscall.Stdin)
+	if terminal.IsTerminal(fd) {
+		return terminal.ReadPassword(fd)
 	}
 
 	reader := bufio.NewReader(os.Stdin)
