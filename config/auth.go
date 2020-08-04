@@ -1,6 +1,8 @@
 package config
 
-import "github.com/mitchellh/go-homedir"
+import (
+	"github.com/mitchellh/go-homedir"
+)
 
 // AuthType specifies the type of the auth token in todocheck's config
 type AuthType string

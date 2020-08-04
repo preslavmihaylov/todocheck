@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -24,6 +25,8 @@ const (
 	IssueTrackerPivotal              = "PIVOTAL_TRACKER"
 	IssueTrackerRedmine              = "REDMINE"
 )
+
+var windowsAbsolutePathPattern = regexp.MustCompile("^[A-Z]{1}:")
 
 // Local todocheck configuration struct definition
 type Local struct {
@@ -104,5 +107,5 @@ func removeCurrentDirReference(dirs []string) {
 }
 
 func isRelativePath(path string) bool {
-	return path[0] != '/' && path[0] != '~'
+	return path[0] != '/' && path[0] != '~' && !windowsAbsolutePathPattern.MatchString(path)
 }
