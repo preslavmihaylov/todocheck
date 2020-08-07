@@ -104,9 +104,9 @@ func isSupported(supportedExtensions []string, file string) bool {
 }
 
 func isHidden(path string) bool {
-	return !isRelative(path) && path[0] == byte('.')
+	return len(path) > 1 && !isRelative(path) && path[0] == byte('.')
 }
 
 func isRelative(path string) bool {
-	return len(path) > 1 && (path[:2] == "./" || path[:2] == ".\\" || path[:2] == "..")
+	return path[:2] == "./" || path[:2] == ".\\" || path[:2] == ".."
 }
