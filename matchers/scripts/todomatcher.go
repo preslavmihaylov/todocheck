@@ -7,7 +7,7 @@ import (
 )
 
 var singleLineTodoPattern = regexp.MustCompile("^\\s*#.*TODO")
-var singleLineValidTodoPattern = regexp.MustCompile("^\\s*# TODO ([a-zA-Z0-9\\-]+):.*")
+var singleLineValidTodoPattern = regexp.MustCompile("^\\s*# TODO (#?[a-zA-Z0-9\\-]+):.*")
 
 // NewTodoMatcher for scripts comments
 func NewTodoMatcher() *TodoMatcher { return &TodoMatcher{} }
