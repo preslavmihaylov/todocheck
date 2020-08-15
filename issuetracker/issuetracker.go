@@ -56,13 +56,13 @@ func BaseURLFor(issueTracker config.IssueTracker, origin string) (string, error)
 		return fmt.Sprintf("%s//api.github.com/repos/%s/%s/issues/", scheme, owner, repo), nil
 	case config.IssueTrackerGitlab:
 		tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
-		if tokens[0] == "gitlab.com" {
+		if tokens[0] != "http:" && tokens[0] != "https:" {
 			tokens = append([]string{"https:"}, tokens...)
 		}
 
-		scheme, owner, repo := tokens[0], tokens[2], tokens[3]
+		scheme, host, owner, repo := tokens[0], tokens[1], tokens[2], tokens[3]
 		urlEncodedProject := url.QueryEscape(fmt.Sprintf("%s/%s", owner, repo))
-		return fmt.Sprintf("%s//gitlab.com/api/v4/projects/%s/issues/", scheme, urlEncodedProject), nil
+		return fmt.Sprintf("%s//%s/api/v4/projects/%s/issues/", scheme, host, urlEncodedProject), nil
 	case config.IssueTrackerPivotal:
 		tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
 		if tokens[0] == "pivotaltracker.com" {
