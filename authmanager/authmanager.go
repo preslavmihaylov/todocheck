@@ -8,13 +8,14 @@ import (
 	"syscall"
 
 	"github.com/preslavmihaylov/todocheck/authmanager/authstore"
+	"github.com/preslavmihaylov/todocheck/common"
 	"github.com/preslavmihaylov/todocheck/config"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
 const (
 	githubAPITokenMsg  = "Please go to https://github.com/settings/tokens, create a read-only access token & paste it here:\nToken: "
-	gitlabAPITokenMsg  = "Please go to https://gitlab.com/profile/personal_access_tokens, create a read-only access token & paste it here:\nToken: "
+	gitlabAPITokenMsg  = "Please go to %s/profile/personal_access_tokens, create a read-only access token & paste it here:\nToken: "
 	pivotalAPITokenMsg = "Please go to https://www.pivotaltracker.com/profile, create a new API token & paste it here:\nToken: "
 	redmineAPITokenMsg = "Please go to %s/my/account, create a new API token & paste it here:\nToken: "
 
@@ -41,7 +42,7 @@ func acquireAPIToken(cfg *config.Local) error {
 		if cfg.IssueTracker == config.IssueTrackerGithub {
 			msg = githubAPITokenMsg
 		} else if cfg.IssueTracker == config.IssueTrackerGitlab {
-			msg = gitlabAPITokenMsg
+			msg = fmt.Sprintf(gitlabAPITokenMsg, extractBaseURL(cfg.Origin))
 		} else if cfg.IssueTracker == config.IssueTrackerPivotal {
 			msg = pivotalAPITokenMsg
 		} else if cfg.IssueTracker == config.IssueTrackerRedmine {
@@ -99,4 +100,13 @@ func setAndPersistToken(authCfg *config.Auth, store *authstore.Config, key, toke
 	authCfg.Token = token
 	store.Tokens[key] = authCfg.Token
 	return store.Save(authCfg.TokensCache)
+}
+
+func extractBaseURL(origin string) string {
+	tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
+	if tokens[0] != "http:" && tokens[0] != "https:" {
+		return fmt.Sprintf("https://%s", tokens[0])
+	}
+
+	return fmt.Sprintf("%s//%s", tokens[0], tokens[1])
 }
