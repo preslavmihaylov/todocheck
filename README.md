@@ -177,14 +177,6 @@ The first time you run the application, it will ask for your [API Token](https:/
 
 After you've specified it, it will store it in the auth tokens cache for subsequent executions. See the [Authentication](#authentication) section for more info.
 
-Note that for Pivotal Tracker, you'll need to specify your TODOs without the `#` as they're typically shown in the site.  
-For example:
-```
-// TODO 123456: This is a valid todo
-
-// TODO #123456: This one is not
-```
-
 ## [Redmine](https://redmine.org)
 To integrate with a redmine issue tracker project, specify the origin of your installation (without project path) and the `REDMINE` issue tracker in your `.todocheck.yaml` configuration.  
 
