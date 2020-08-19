@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/fatih/color"
 	"github.com/preslavmihaylov/todocheck/authmanager"
 	"github.com/preslavmihaylov/todocheck/authmanager/authmiddleware"
 	todocheckerrors "github.com/preslavmihaylov/todocheck/checker/errors"
@@ -70,7 +71,7 @@ func printTodoErrs(errs []*todocheckerrors.TODO, format string) error {
 
 	if format == "standard" {
 		for _, err := range errs {
-			fmt.Fprintln(os.Stderr, err.Error())
+			fmt.Fprintln(color.Error, err.Error())
 		}
 	} else if format == "json" {
 		out := fmt.Sprintf("[%s", must(errs[0].ToJSON()))
