@@ -1,0 +1,5 @@
+origin: http://127.0.0.1:51596
+issue_tracker: JIRA
+auth: 
+  type: offline
+  offline_url: INVALID_URL

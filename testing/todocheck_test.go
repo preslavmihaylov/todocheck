@@ -330,6 +330,28 @@ func TestInvalidIssueTracker(t *testing.T) {
 	}
 }
 
+func TestInvalidOfflineURL(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithConfig("./test_configs/invalid_offline_url.yaml").
+		ExpectExecutionError().
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestNonExistentOfflineURL(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithConfig("./test_configs/non_existent_offline_url.yaml").
+		ExpectExecutionError().
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestTraversingNonExistentDirectory(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
