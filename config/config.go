@@ -27,6 +27,13 @@ const (
 )
 
 var windowsAbsolutePathPattern = regexp.MustCompile("^[A-Z]{1}:")
+// TODO: add jira issue tracker pattern
+var jiraOriginPattern = regexp.MustCompile(``)
+var githubOriginPattern = regexp.MustCompile(`^(https://)?(www\.)?github\.com/[a-zA-Z0-9\-_]+/[a-zA-Z0-9\-_]+`)
+var gitlabOriginPattern = regexp.MustCompile(`^(https://)?(www\.)?gitlab\.com/[a-zA-Z0-9\-_]+/[a-zA-Z0-9\-_]+`)
+var pivotalOriginPattern = regexp.MustCompile(`^(https://)?(www\.)?pivotaltracker/n/projects/[0-9]+`)
+// TODO: add redmine issue tracker pattern
+var redmineOriginPattern = regexp.MustCompile(``)
 
 // Local todocheck configuration struct definition
 type Local struct {
@@ -55,6 +62,33 @@ func NewLocal(cfgPath, basepath string) (*Local, error) {
 	err = yaml.Unmarshal(bs, &cfg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal local configuration (%s): %w", cfgPath, err)
+	}
+
+	// Check that origin matches issue tracker's format
+	var validOrigin bool
+	switch cfg.IssueTracker {
+	case IssueTrackerJira:
+		validOrigin = jiraOriginPattern.MatchString(cfg.Origin)
+		break
+	case IssueTrackerGithub:
+		validOrigin = githubOriginPattern.MatchString(cfg.Origin)
+		break
+	case IssueTrackerGitlab:
+		validOrigin = gitlabOriginPattern.MatchString(cfg.Origin)
+		break
+	case IssueTrackerPivotal:
+		validOrigin = pivotalOriginPattern.MatchString(cfg.Origin)
+		break
+	case IssueTrackerRedmine:
+		validOrigin = redmineOriginPattern.MatchString(cfg.Origin)
+		break
+	case IssueTrackerInvalid:
+		return nil, fmt.Errorf("issue tracker was not provided in configuration file")
+	default:
+		return nil, fmt.Errorf("issue tracker %s is not supported", cfg.IssueTracker)
+	}
+	if !validOrigin {
+		return nil, fmt.Errorf("origin is not valid for issue tracker: %s", cfg.IssueTracker)
 	}
 
 	cfg.Auth.TokensCache = prependBasepath(cfg.Auth.TokensCache, basepath)
