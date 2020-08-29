@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/preslavmihaylov/todocheck/checker/errors"
+	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder"
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder/issuetracker"
 )
@@ -327,6 +328,50 @@ func TestInvalidIssueTracker(t *testing.T) {
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
+	}
+}
+
+func TestInvalidOrigins(t *testing.T) {
+	invalidConfigPaths := []string{
+		"./test_configs/invalid_jira_origin.yaml",
+		"./test_configs/invalid_github_origin.yaml",
+		"./test_configs/invalid_gitlab_origin.yaml",
+		"./test_configs/invalid_pivotal_origin.yaml",
+		"./test_configs/invalid_redmine_origin.yaml",
+	}
+
+	for _, path := range invalidConfigPaths {
+		cfg, err := config.NewLocal(path, ".")
+		if err != nil {
+			t.Errorf("%s", err)
+			continue
+		}
+		errors := cfg.Validate()
+		if 0 == len(errors) {
+			t.Errorf("%s should be invalid", path)
+		}
+	}
+}
+
+func TestValidOrigins(t *testing.T) {
+	validConfigPaths := []string{
+		"./test_configs/valid_jira_origin.yaml",
+		"./test_configs/valid_github_origin.yaml",
+		"./test_configs/valid_gitlab_origin.yaml",
+		"./test_configs/valid_pivotal_origin.yaml",
+		"./test_configs/valid_redmine_origin.yaml",
+	}
+
+	for _, path := range validConfigPaths {
+		cfg, err := config.NewLocal(path, ".")
+		if err != nil {
+			t.Errorf("%s", err)
+			continue
+		}
+		errors := cfg.Validate()
+		if len(errors) > 0 {
+			t.Errorf("%v", errors)
+		}
 	}
 }
 
