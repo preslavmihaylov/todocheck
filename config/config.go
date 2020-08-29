@@ -27,13 +27,14 @@ const (
 )
 
 var windowsAbsolutePathPattern = regexp.MustCompile("^[A-Z]{1}:")
-// TODO: add jira issue tracker pattern
-var jiraOriginPattern = regexp.MustCompile(``)
-var githubOriginPattern = regexp.MustCompile(`^(https://)?(www\.)?github\.com/[a-zA-Z0-9\-_]+/[a-zA-Z0-9\-_]+`)
-var gitlabOriginPattern = regexp.MustCompile(`^(https://)?(www\.)?gitlab\.com/[a-zA-Z0-9\-_]+/[a-zA-Z0-9\-_]+`)
-var pivotalOriginPattern = regexp.MustCompile(`^(https://)?(www\.)?pivotaltracker/n/projects/[0-9]+`)
-// TODO: add redmine issue tracker pattern
-var redmineOriginPattern = regexp.MustCompile(``)
+
+var originPatterns = map[IssueTracker]*regexp.Regexp{
+	IssueTrackerJira:    regexp.MustCompile(``),
+	IssueTrackerGithub:  regexp.MustCompile(`^(https://)?(www\.)?github\.com/[a-zA-Z0-9\-_]+/[a-zA-Z0-9\-_]+`),
+	IssueTrackerGitlab:  regexp.MustCompile(`^(https://)?(www\.)?gitlab\.com/[a-zA-Z0-9\-_]+/[a-zA-Z0-9\-_]+`),
+	IssueTrackerPivotal: regexp.MustCompile(`^(https://)?(www\.)?pivotaltracker/n/projects/[0-9]+`),
+	IssueTrackerRedmine: regexp.MustCompile(``),
+}
 
 // Local todocheck configuration struct definition
 type Local struct {
@@ -65,29 +66,12 @@ func NewLocal(cfgPath, basepath string) (*Local, error) {
 	}
 
 	// Check that origin matches issue tracker's format
-	var validOrigin bool
-	switch cfg.IssueTracker {
-	case IssueTrackerJira:
-		validOrigin = jiraOriginPattern.MatchString(cfg.Origin)
-		break
-	case IssueTrackerGithub:
-		validOrigin = githubOriginPattern.MatchString(cfg.Origin)
-		break
-	case IssueTrackerGitlab:
-		validOrigin = gitlabOriginPattern.MatchString(cfg.Origin)
-		break
-	case IssueTrackerPivotal:
-		validOrigin = pivotalOriginPattern.MatchString(cfg.Origin)
-		break
-	case IssueTrackerRedmine:
-		validOrigin = redmineOriginPattern.MatchString(cfg.Origin)
-		break
-	case IssueTrackerInvalid:
-		return nil, fmt.Errorf("issue tracker was not provided in configuration file")
-	default:
+	pattern, ok := originPatterns[cfg.IssueTracker]
+	if "" == cfg.IssueTracker {
+		return nil, fmt.Errorf("issue tracker not supplied")
+	} else if !ok {
 		return nil, fmt.Errorf("issue tracker %s is not supported", cfg.IssueTracker)
-	}
-	if !validOrigin {
+	} else if !pattern.MatchString(cfg.Origin) {
 		return nil, fmt.Errorf("origin is not valid for issue tracker: %s", cfg.IssueTracker)
 	}
 
