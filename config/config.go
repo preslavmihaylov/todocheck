@@ -73,16 +73,6 @@ func NewLocal(cfgPath, basepath string) (*Local, error) {
 		return nil, fmt.Errorf("failed to unmarshal local configuration (%s): %w", cfgPath, err)
 	}
 
-	// Check that origin matches issue tracker's format
-	pattern, ok := originPatterns[cfg.IssueTracker]
-	if "" == cfg.IssueTracker {
-		return nil, fmt.Errorf("issue tracker not supplied")
-	} else if !ok {
-		return nil, fmt.Errorf("issue tracker %s is not supported", cfg.IssueTracker)
-	} else if !pattern.MatchString(cfg.Origin) {
-		return nil, fmt.Errorf("origin is not valid for issue tracker: %s", cfg.IssueTracker)
-	}
-
 	cfg.Auth.TokensCache = prependBasepath(cfg.Auth.TokensCache, basepath)
 
 	prependDoublestarGlob(cfg.IgnoredPaths, basepath)
@@ -98,6 +88,14 @@ func (l *Local) Validate() []error {
 
 	if err := l.validateIssueTracker(); err != nil {
 		errors = append(errors, err)
+	}
+
+	if 0 == len(errors) {
+		// l.IssueTracker is sure to be in the map after validating above
+		pattern := originPatterns[l.IssueTracker]
+		if !pattern.MatchString(l.Origin) {
+			errors = append(errors, fmt.Errorf("origin is not valid for issue tracker: %s", l.IssueTracker))
+		}
 	}
 
 	return errors
