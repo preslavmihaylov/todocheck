@@ -319,6 +319,17 @@ func TestIgnoredDirectoriesWithDotDot(t *testing.T) {
 	}
 }
 
+func TestInvalidIssueTracker(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithConfig("./test_configs/invalid_issue_tracker.yaml").
+		ExpectExecutionError().
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestTraversingNonExistentDirectory(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").

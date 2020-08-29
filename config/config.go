@@ -26,6 +26,14 @@ const (
 	IssueTrackerRedmine              = "REDMINE"
 )
 
+var validIssueTrackers = []IssueTracker{
+	IssueTrackerJira,
+	IssueTrackerGithub,
+	IssueTrackerGitlab,
+	IssueTrackerPivotal,
+	IssueTrackerRedmine,
+}
+
 var windowsAbsolutePathPattern = regexp.MustCompile("^[A-Z]{1}:")
 
 var originPatterns = map[IssueTracker]*regexp.Regexp{
@@ -82,6 +90,27 @@ func NewLocal(cfgPath, basepath string) (*Local, error) {
 	removeCurrentDirReference(cfg.IgnoredPaths)
 
 	return cfg, nil
+}
+
+// Validate validates the values of given configuration
+func (l *Local) Validate() []error {
+	var errors []error
+
+	if err := l.validateIssueTracker(); err != nil {
+		errors = append(errors, err)
+	}
+
+	return errors
+}
+
+func (l *Local) validateIssueTracker() error {
+	for _, issueTracker := range validIssueTrackers {
+		if l.IssueTracker == issueTracker {
+			return nil
+		}
+	}
+	return fmt.Errorf("invalid issue tracker: %q is not supported. the valid issue trackers are: %v",
+		l.IssueTracker, validIssueTrackers)
 }
 
 func exists(filepath string) bool {
