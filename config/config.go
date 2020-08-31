@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -82,6 +83,10 @@ func (l *Local) Validate() []error {
 		errors = append(errors, err)
 	}
 
+	if err := l.validateAuthOfflineURL(); err != nil {
+		errors = append(errors, err)
+	}
+
 	return errors
 }
 
@@ -93,6 +98,14 @@ func (l *Local) validateIssueTracker() error {
 	}
 	return fmt.Errorf("invalid issue tracker: %q is not supported. the valid issue trackers are: %v",
 		l.IssueTracker, validIssueTrackers)
+}
+
+func (l *Local) validateAuthOfflineURL() error {
+	if _, err := url.ParseRequestURI(l.Auth.OfflineURL); l.Auth.Type == AuthTypeOffline && err != nil {
+		return fmt.Errorf("invalid offline URL: %q", l.Auth.OfflineURL)
+	}
+
+	return nil
 }
 
 func exists(filepath string) bool {
