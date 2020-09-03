@@ -397,6 +397,40 @@ func TestConfigDerivedFromBasepath(t *testing.T) {
 	}
 }
 
+func TestConfigAutoDetectWithSSHGitConfig(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/auto_detect_config").
+		WithTestEnvConfig("./scenarios/auto_detect_config/expected_config.yaml").
+		WithGitConfig("git@github.com:username/repo.git").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/auto_detect_config/main.go", 3).
+				ExpectLine("// TODO - malformed todo")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestConfigAutoDetectWithHTTPSGitConfig(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/auto_detect_config").
+		WithTestEnvConfig("./scenarios/auto_detect_config/expected_config.yaml").
+		WithGitConfig("https://github.com/username/repo").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/auto_detect_config/main.go", 3).
+				ExpectLine("// TODO - malformed todo")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestGroovyTodos(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").

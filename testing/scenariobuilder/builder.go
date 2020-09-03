@@ -11,6 +11,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 
 	"github.com/preslavmihaylov/todocheck/config"
@@ -30,6 +31,7 @@ type TodocheckScenario struct {
 	cfg                    *config.Local
 	expectedAuthToken      string
 	userOfflineToken       string
+	gitOriginURL           string
 	deleteTokensCacheAfter bool
 	expectedExitCode       int
 	issueTracker           issuetracker.Type
@@ -71,6 +73,43 @@ func (s *TodocheckScenario) WithConfig(cfgPath string) *TodocheckScenario {
 	}
 
 	return s
+}
+
+// WithGitConfig let's you specify a custom git configuration to be created under basepath directory.
+func (s *TodocheckScenario) WithGitConfig(origunURL string) *TodocheckScenario {
+	s.gitOriginURL = origunURL
+	return s
+}
+
+func (s *TodocheckScenario) setupGitConfig() error {
+	if s.gitOriginURL == "" {
+		return nil
+	}
+
+	gitDir := filepath.Join(s.basepath, ".git")
+	gitConfig := fmt.Sprintf(`[remote "origin"]
+	url = %s
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+`, s.gitOriginURL)
+
+	if _, err := os.Stat(gitDir); os.IsNotExist(err) {
+		if err := os.Mkdir(gitDir, 0777); err != nil {
+			return err
+		}
+	}
+
+	return ioutil.WriteFile(filepath.Join(gitDir, "config"), []byte(gitConfig), 0644)
+}
+
+func (s *TodocheckScenario) teardownGitConfig() {
+	if s.gitOriginURL == "" {
+		return
+	}
+
+	os.RemoveAll(filepath.Join(s.basepath, ".git"))
 }
 
 // WithTestEnvConfig let's you specify a configuration used for the test environment, which can be different from the --config flag passed to todocheck
@@ -182,11 +221,16 @@ func (s *TodocheckScenario) setupTestEnvironment(cmd *exec.Cmd) (teardownFunc, e
 		return nil, fmt.Errorf("couldn't setup mock issue tracker: %w", err)
 	}
 
+	if err := s.setupGitConfig(); err != nil {
+		return nil, fmt.Errorf("couldn't setup given git configuration: %w", err)
+	}
+
 	return func() {
 		if s.deleteTokensCacheAfter {
 			defer deleteTokensCache(s.cfg.Auth.TokensCache)
 		}
 
+		defer s.teardownGitConfig()
 		defer teardownIssueTrackerCfg()
 		defer mockSrv.Close()
 	}, nil
