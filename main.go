@@ -17,6 +17,7 @@ import (
 	"github.com/preslavmihaylov/todocheck/traverser/todoerrs"
 )
 
+aaa
 // TODO:
 // * Add a --closes option which indicates that an issue is to be closed as a result of a PR
 // * Add caching for task statuses
