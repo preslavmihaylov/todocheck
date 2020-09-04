@@ -22,7 +22,7 @@ func TestSingleLineMalformedTodos(t *testing.T) {
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/singleline_todos/main.go", 5).
-				ExpectLine("// TODO: This is a malformed toqqdo")).
+				ExpectLine("// TODO: This is a malformed todo")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).
