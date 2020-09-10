@@ -41,11 +41,11 @@ var (
 )
 
 var originPatterns = map[IssueTracker]*regexp.Regexp{
-	IssueTrackerJira:    regexp.MustCompile(`[a-zA-Z0-9\-]+\.[a-zA-Z]+$`),
-	IssueTrackerGithub:  regexp.MustCompile(`^(https://)?(www\.)?github\.com/[a-zA-Z0-9\-_]+/[a-zA-Z0-9\-_]+`),
-	IssueTrackerGitlab:  regexp.MustCompile(`^(https://)?(www\.)?gitlab\.com/[a-zA-Z0-9\-_]+/[a-zA-Z0-9\-_]+`),
-	IssueTrackerPivotal: regexp.MustCompile(`^(https://)?(www\.)?pivotaltracker\.com/n/projects/[0-9]+`),
-	IssueTrackerRedmine: regexp.MustCompile(`[a-zA-Z0-9\-]+\.[a-zA-Z]+$`),
+	IssueTrackerJira:    regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]+)+(:[0-9]+)?$`),
+	IssueTrackerGithub:  regexp.MustCompile(`^(https?://)?(www\.)?github\.com/[a-zA-Z0-9\-_]+/[a-zA-Z0-9\-_]+`),
+	IssueTrackerGitlab:  regexp.MustCompile(`^(https?://)?(www\.)?gitlab\.com/[a-zA-Z0-9\-_]+/[a-zA-Z0-9\-_]+`),
+	IssueTrackerPivotal: regexp.MustCompile(`^(https?://)?(www\.)?pivotaltracker\.com/n/projects/[0-9]+`),
+	IssueTrackerRedmine: regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]+)+(:[0-9]+)?$`),
 }
 
 // Local todocheck configuration struct definition
@@ -153,10 +153,9 @@ func (l *Local) Validate() []error {
 		errors = append(errors, err)
 	}
 
-	if 0 == len(errors) {
-		// l.IssueTracker is sure to be in the map after validating above
-		pattern := originPatterns[l.IssueTracker]
-		if !pattern.MatchString(l.Origin) {
+	if l.IssueTracker != "" {
+		pattern, ok := originPatterns[l.IssueTracker]
+		if !ok || !pattern.MatchString(l.Origin) {
 			errors = append(errors, fmt.Errorf("origin is not valid for issue tracker: %s", l.IssueTracker))
 		}
 	}
