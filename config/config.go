@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -34,7 +35,10 @@ var validIssueTrackers = []IssueTracker{
 	IssueTrackerRedmine,
 }
 
-var windowsAbsolutePathPattern = regexp.MustCompile("^[A-Z]{1}:")
+var (
+	windowsAbsolutePathPattern = regexp.MustCompile("^[A-Z]{1}:")
+	gitRemoteOriginPattern     = regexp.MustCompile(`url\s=\s\w+(://|@)(?P<origin>(?P<host>.+?)(:|/).+)(\.git)?`)
+)
 
 var originPatterns = map[IssueTracker]*regexp.Regexp{
 	IssueTrackerJira:    regexp.MustCompile(`[a-zA-Z0-9\-]+\.[a-zA-Z]+$`),
@@ -58,19 +62,21 @@ func NewLocal(cfgPath, basepath string) (*Local, error) {
 		cfgPath = basepath + "/" + DefaultLocal
 	}
 
-	if !exists(cfgPath) {
-		return nil, fmt.Errorf("file %s not found", cfgPath)
-	}
+	var (
+		cfg *Local
+		err error
+	)
 
-	bs, err := ioutil.ReadFile(cfgPath)
-	if err != nil {
-		return nil, fmt.Errorf("couldn't open local configuration (%s): %w", cfgPath, err)
-	}
-
-	cfg := &Local{Auth: defaultAuthCfg()}
-	err = yaml.Unmarshal(bs, &cfg)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal local configuration (%s): %w", cfgPath, err)
+	if exists(cfgPath) {
+		cfg, err = fromFile(cfgPath)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		cfg, err = autoDetect(basepath)
+		if err != nil {
+			return nil, fmt.Errorf("file %s not found: unable to automatically detect issue tracker: %w", cfgPath, err)
+		}
 	}
 
 	cfg.Auth.TokensCache = prependBasepath(cfg.Auth.TokensCache, basepath)
@@ -82,11 +88,68 @@ func NewLocal(cfgPath, basepath string) (*Local, error) {
 	return cfg, nil
 }
 
+func fromFile(cfgPath string) (*Local, error) {
+	bs, err := ioutil.ReadFile(cfgPath)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't open local configuration (%s): %w", cfgPath, err)
+	}
+
+	cfg := &Local{Auth: defaultAuthCfg()}
+	err = yaml.Unmarshal(bs, &cfg)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal local configuration (%s): %w", cfgPath, err)
+	}
+
+	return cfg, nil
+}
+
+func autoDetect(basepath string) (*Local, error) {
+	bs, err := ioutil.ReadFile(basepath + "/.git/config")
+	if err != nil {
+		return nil, err
+	}
+
+	result := map[string]string{}
+	match := gitRemoteOriginPattern.FindStringSubmatch(string(bs))
+
+	for i, group := range gitRemoteOriginPattern.SubexpNames() {
+		result[group] = match[i]
+	}
+
+	var issueTracker IssueTracker
+
+	switch result["host"] {
+	case "github.com":
+		issueTracker = IssueTrackerGithub
+	case "gitlab.com":
+		issueTracker = IssueTrackerGitlab
+	default:
+		return nil, fmt.Errorf("unable to auto-detect issue tracker")
+	}
+
+	// Since origin urls can be found in both formats of HTTP based URLs and SSH URIs,
+	// it's necessary to replace colon with slash to convert it to a valid HTTP URL.
+	// Example: git@github:username/repo.git, https://github.com/username/repo.git
+	origin := strings.Replace(result["origin"], ":", "/", 1)
+
+	fmt.Printf("Detected %q as issue tracker since no config file was found.\n", origin)
+
+	return &Local{
+		Auth:         defaultAuthCfg(),
+		IssueTracker: issueTracker,
+		Origin:       origin,
+	}, nil
+}
+
 // Validate validates the values of given configuration
 func (l *Local) Validate() []error {
 	var errors []error
 
 	if err := l.validateIssueTracker(); err != nil {
+		errors = append(errors, err)
+	}
+
+	if err := l.validateAuthOfflineURL(); err != nil {
 		errors = append(errors, err)
 	}
 
@@ -109,6 +172,14 @@ func (l *Local) validateIssueTracker() error {
 	}
 	return fmt.Errorf("invalid issue tracker: %q is not supported. the valid issue trackers are: %v",
 		l.IssueTracker, validIssueTrackers)
+}
+
+func (l *Local) validateAuthOfflineURL() error {
+	if _, err := url.ParseRequestURI(l.Auth.OfflineURL); l.Auth.Type == AuthTypeOffline && err != nil {
+		return fmt.Errorf("invalid offline URL: %q", l.Auth.OfflineURL)
+	}
+
+	return nil
 }
 
 func exists(filepath string) bool {

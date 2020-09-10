@@ -375,6 +375,28 @@ func TestValidOrigins(t *testing.T) {
 	}
 }
 
+func TestInvalidOfflineURL(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithConfig("./test_configs/invalid_offline_url.yaml").
+		ExpectExecutionError().
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestNonExistentOfflineURL(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithConfig("./test_configs/non_existent_offline_url.yaml").
+		ExpectExecutionError().
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestTraversingNonExistentDirectory(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
@@ -413,6 +435,40 @@ func TestConfigDerivedFromBasepath(t *testing.T) {
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/basepath_config/main.go", 3).
+				ExpectLine("// TODO - malformed todo")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestConfigAutoDetectWithSSHGitConfig(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/auto_detect_config").
+		WithTestEnvConfig("./scenarios/auto_detect_config/expected_config.yaml").
+		WithGitConfig("git@github.com:username/repo.git").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/auto_detect_config/main.go", 3).
+				ExpectLine("// TODO - malformed todo")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestConfigAutoDetectWithHTTPSGitConfig(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/auto_detect_config").
+		WithTestEnvConfig("./scenarios/auto_detect_config/expected_config.yaml").
+		WithGitConfig("https://github.com/username/repo").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/auto_detect_config/main.go", 3).
 				ExpectLine("// TODO - malformed todo")).
 		Run()
 	if err != nil {
