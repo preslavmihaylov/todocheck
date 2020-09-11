@@ -37,7 +37,7 @@ var validIssueTrackers = []IssueTracker{
 
 var (
 	windowsAbsolutePathPattern = regexp.MustCompile("^[A-Z]{1}:")
-	gitRemoteOriginPattern     = regexp.MustCompile(`url\s=\s\w+(://|@)(?P<origin>(?P<host>.+?)(:|/).+)(\.git)?`)
+	gitRemoteOriginPattern     = regexp.MustCompile(`(?Um)url\s=\s\w+(://|@)(?P<origin>(?P<host>.+)?(:|/).+)(\.git)?$`)
 )
 
 // Local todocheck configuration struct definition
