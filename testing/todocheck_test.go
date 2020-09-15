@@ -333,11 +333,18 @@ func TestInvalidIssueTracker(t *testing.T) {
 
 func TestInvalidOrigins(t *testing.T) {
 	invalidConfigPaths := []string{
-		"./test_configs/invalid_jira_origin.yaml",
+		"./test_configs/invalid_github_https.yaml",
 		"./test_configs/invalid_github_origin.yaml",
+		"./test_configs/invalid_github_www.yaml",
 		"./test_configs/invalid_gitlab_origin.yaml",
+		"./test_configs/invalid_gitlab_port.yaml",
+		"./test_configs/invalid_issue_tracker.yaml",
+		"./test_configs/invalid_jira_origin.yaml",
+		"./test_configs/invalid_jira_port.yaml",
+		"./test_configs/invalid_offline_url.yaml",
 		"./test_configs/invalid_pivotal_origin.yaml",
 		"./test_configs/invalid_redmine_origin.yaml",
+		"./test_configs/invalid_redmine_port.yaml",
 	}
 
 	for _, path := range invalidConfigPaths {
@@ -355,11 +362,19 @@ func TestInvalidOrigins(t *testing.T) {
 
 func TestValidOrigins(t *testing.T) {
 	validConfigPaths := []string{
-		"./test_configs/valid_jira_origin.yaml",
+		"./test_configs/valid_github_https.yaml",
 		"./test_configs/valid_github_origin.yaml",
+		"./test_configs/valid_github_www.yaml",
 		"./test_configs/valid_gitlab_origin.yaml",
+		"./test_configs/valid_gitlab_port.yaml",
+		"./test_configs/valid_gitlab_subdomain.yaml",
+		"./test_configs/valid_jira_origin.yaml",
+		"./test_configs/valid_jira_port.yaml",
+		"./test_configs/valid_jira_subdomain.yaml",
 		"./test_configs/valid_pivotal_origin.yaml",
 		"./test_configs/valid_redmine_origin.yaml",
+		"./test_configs/valid_redmine_port.yaml",
+		"./test_configs/valid_redmine_subdomain.yaml",
 	}
 
 	for _, path := range validConfigPaths {
@@ -370,7 +385,7 @@ func TestValidOrigins(t *testing.T) {
 		}
 		errors := cfg.Validate()
 		if len(errors) > 0 {
-			t.Errorf("%v", errors)
+			t.Errorf("%s should be valid but has errors: %v", path, errors)
 		}
 	}
 }
