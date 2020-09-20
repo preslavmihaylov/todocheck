@@ -156,7 +156,7 @@ func (l *Local) Validate() []error {
 	if l.IssueTracker != "" {
 		pattern, ok := originPatterns[l.IssueTracker]
 		if !ok || !pattern.MatchString(l.Origin) {
-			errors = append(errors, fmt.Errorf("origin is not valid for issue tracker: %s", l.IssueTracker))
+			errors = append(errors, fmt.Errorf("%s is not a valid origin for issue tracker %s", l.Origin, l.IssueTracker))
 		}
 	}
 
