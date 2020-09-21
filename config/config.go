@@ -40,6 +40,14 @@ var (
 	gitRemoteOriginPattern     = regexp.MustCompile(`(?Um)url\s=\s\w+(://|@)(?P<origin>(?P<host>.+)?(:|/).+)(\.git)?$`)
 )
 
+var originPatterns = map[IssueTracker]*regexp.Regexp{
+	IssueTrackerJira:    regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]+)+(:[0-9]+)?$`),
+	IssueTrackerGithub:  regexp.MustCompile(`^(https?://)?(www\.)?github\.com/[\w-]+/[\w-]+`),
+	IssueTrackerGitlab:  regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]+)+(:[0-9]+)?/[\w-]+/[\w-]+$`),
+	IssueTrackerPivotal: regexp.MustCompile(`^(https?://)?(www\.)?pivotaltracker\.com/n/projects/[0-9]+`),
+	IssueTrackerRedmine: regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]+)+(:[0-9]+)?$`),
+}
+
 // Local todocheck configuration struct definition
 type Local struct {
 	Origin       string       `yaml:"origin"`
@@ -143,6 +151,13 @@ func (l *Local) Validate() []error {
 
 	if err := l.validateAuthOfflineURL(); err != nil {
 		errors = append(errors, err)
+	}
+
+	if l.IssueTracker != "" {
+		pattern, ok := originPatterns[l.IssueTracker]
+		if !ok || !pattern.MatchString(l.Origin) {
+			errors = append(errors, fmt.Errorf("%s is not a valid origin for issue tracker %s", l.Origin, l.IssueTracker))
+		}
 	}
 
 	return errors
