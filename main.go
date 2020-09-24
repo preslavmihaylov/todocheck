@@ -17,6 +17,9 @@ import (
 	"github.com/preslavmihaylov/todocheck/traverser/todoerrs"
 )
 
+// set dynamically on build time. See Makefile for more info
+var version string
+
 // TODO:
 // * Add a --closes option which indicates that an issue is to be closed as a result of a PR
 // * Add caching for task statuses
@@ -24,7 +27,14 @@ func main() {
 	var basepath = flag.String("basepath", ".", "The path for the project to todocheck. Defaults to current directory")
 	var cfgPath = flag.String("config", "", "The project configuration file to use. Will use the one from the basepath if not specified")
 	var format = flag.String("format", "standard", "The output format to use. Available formats - standard, json")
+	var versionRequested = flag.Bool("version", false, "Show the current version of todocheck")
+	flag.BoolVar(versionRequested, "v", *versionRequested, "Show the current version of todocheck (shorthand)")
 	flag.Parse()
+
+	if *versionRequested {
+		fmt.Println(version)
+		os.Exit(0)
+	}
 
 	localCfg, err := config.NewLocal(*cfgPath, *basepath)
 	if err != nil {
