@@ -73,10 +73,12 @@ Place the binary in a folder, shined upon by your `$PATH`.
  * For macos & linux, that's typically `/usr/local/bin/`
 
 # Quickstart
-You will need a `.todocheck.yaml` configuration file in the root of your project first.  
-It configures todocheck's integration with your project's issue tracker.
+First, you need to configure `todocheck`'s integration with your issue tracker.
+This is done by creating a `.todocheck.yaml` file in the root of your project.
 
-For a public github project, this is what the config file should contain:
+For public github or gitlab repositories, you don't need to specify a config file, as long as you are using git, as `todocheck` will interpret your issue tracker from the git configuration.
+
+Alternatively, the explicit configuration for a public github repository would look like this:
 ```
 origin: github.com/user/repository
 issue_tracker: GITHUB
@@ -106,7 +108,8 @@ Currently, todocheck supports the following issue trackers:
 | [Redmine](https://redmine.org/)                 | Supports public access with no auth & private access via an API token |
 
 ## [Github](https://github.com)
-To integrate with a public github repository, specify the origin of your repo and the `GITHUB` issue tracker in your `.todocheck.yaml` configuration:
+To integrate with a public github repository, there's no need to provide a `.todocheck.yaml` explicitly as it can automatically detect the issue tracker based on the git remote address.
+And if you want to be explicit, please specify the origin of your repo and the `GITHUB` issue tracker in your `.todocheck.yaml` configuration:
 ```
 origin: github.com/user/repository
 issue_tracker: GITHUB
@@ -126,7 +129,8 @@ The first time you run the application, it will ask for your [personal access to
 After you've specified it, it will store it in the auth tokens cache for subsequent executions. See the [Authentication](#authentication) section for more info.
 
 ## [Gitlab](https://gitlab.com)
-To integrate with a public gitlab repository, specify the origin of your repo and the `GITLAB` issue tracker in your `.todocheck.yaml` configuration:
+To integrate with a public gitlab repository, there's no need to provide a `.todocheck.yaml` explicitly as it can automatically detect the issue tracker based on the git remote address.
+And if you want to be explicit, please specify the origin of your repo and the `GITLAB` issue tracker in your `.todocheck.yaml` configuration:
 ```
 origin: gitlab.com/user/repository
 issue_tracker: GITLAB
