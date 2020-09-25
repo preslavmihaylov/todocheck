@@ -27,6 +27,7 @@ See [How it works](#how-it-works) for more info.
   * [Authentication Tokens Cache](#authentication-tokens-cache)
   * [Auth Token via Environment Variable](#auth-token-via-environment-variable)
 - [Configuration](#configuration)
+- [Contributing](#contributing)
 
 # How it works
 Here's an example of an annotated `TODO`:
@@ -377,3 +378,8 @@ This will let the user not have to manually input the token on the first todoche
 
 This can be used e.g. in a CI environment, in an initial laptop setup script, etc.  
 Alternatively, use an [Auth Token via Environment Variable](#auth-token-via-environment-variable)
+
+# Contributing
+If you want to report an issue, make improvement suggestions or open a pull request, refer to the [Contributing guide](./CONTRIBUTING.md)
+
+Special thanks to all the project's [contributors](https://github.com/preslavmihaylov/todocheck/graphs/contributors)!
