@@ -681,3 +681,20 @@ func TestPHPTodos(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+// This test prints the --version flag of the binary and expects that no other output,
+// other than the version flag is printed.
+//
+// The target basepath includes files with todo errors, but no todo errors are expected to be printed as
+// the version flagg overrides the normal execution of the program and exits the program after printing it.
+func TestPrintingVersionFlagStopsProgram(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/php").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithVersionFlag().
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
