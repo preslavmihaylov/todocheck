@@ -32,6 +32,7 @@ type TodocheckScenario struct {
 	expectedAuthToken      string
 	userOfflineToken       string
 	gitOriginURL           string
+	versionFlagRequested   bool
 	deleteTokensCacheAfter bool
 	expectedExitCode       int
 	issueTracker           issuetracker.Type
@@ -78,6 +79,12 @@ func (s *TodocheckScenario) WithConfig(cfgPath string) *TodocheckScenario {
 // WithGitConfig let's you specify a custom git configuration to be created under basepath directory.
 func (s *TodocheckScenario) WithGitConfig(origunURL string) *TodocheckScenario {
 	s.gitOriginURL = origunURL
+	return s
+}
+
+// WithVersionFlag sets the --version flag when calling the todocheck binary
+func (s *TodocheckScenario) WithVersionFlag() *TodocheckScenario {
+	s.versionFlagRequested = true
 	return s
 }
 
@@ -176,6 +183,10 @@ func (s *TodocheckScenario) Run() error {
 	}
 
 	cmd := exec.Command(s.binaryLoc, "--basepath", s.basepath, "--config", s.cfgPath)
+	if s.versionFlagRequested {
+		cmd.Args = append(cmd.Args, "--version")
+	}
+
 	teardown, err := s.setupTestEnvironment(cmd)
 	if err != nil {
 		return fmt.Errorf("couldn't setup test environment: %s", err)
