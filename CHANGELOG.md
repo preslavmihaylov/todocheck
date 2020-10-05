@@ -1,15 +1,25 @@
 # Change Log
 
-## Next release
+## 0.3.0 (2020-10-04)
 
 ### Features
-N/A
+ * Support for additional programming languages - Scala ([#32](https://github.com/preslavmihaylov/todocheck/issues/32))
+ * Support for running `todocheck` on Windows ([#35](https://github.com/preslavmihaylov/todocheck/issues/35))
+ * Support for using `todocheck` with a private gitlab server ([#40](https://github.com/preslavmihaylov/todocheck/issues/40))
+ * Support for specifying issues with `#` for integrating with pivotal tracker ([#39](https://github.com/preslavmihaylov/todocheck/issues/39))
+ * Improved validation of `.todocheck.yaml` configuration ([#25](https://github.com/preslavmihaylov/todocheck/issues/25), [#36](https://github.com/preslavmihaylov/todocheck/issues/36), [#44](https://github.com/preslavmihaylov/todocheck/issues/44))
+ * `todocheck` now automatically detects issue tracker from git config if `.todocheck.yaml` is not explicitly provided for public github & gitlab repos ([#50](https://github.com/preslavmihaylov/todocheck/issues/50), [#58](https://github.com/preslavmihaylov/todocheck/issues/58))
+ * Added `-v/--version` flag for showing currently installed `todocheck` version ([#67](https://github.com/preslavmihaylov/todocheck/issues/67))
 
 ### Bug fixes
 N/A
 
 ### Breaking Changes
 N/A
+
+### Internal Improvements
+ * Configured automatic CI pipeline for executing build & test on PRs ([#51](https://github.com/preslavmihaylov/todocheck/issues/51))
+ * Wrote the project's [Contributing guide](./CONTRIBUTING.md) ([#24](https://github.com/preslavmihaylov/todocheck/issues/24))
 
 ## 0.2.0 (2020-08-01)
 
