@@ -1,11 +1,14 @@
 package validation
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 
 	"github.com/fatih/color"
 	"github.com/preslavmihaylov/todocheck/config"
+	"github.com/preslavmihaylov/todocheck/fetcher"
+	"github.com/preslavmihaylov/todocheck/issuetracker"
 )
 
 // Validate validates the values of given configuration
@@ -53,6 +56,20 @@ func validateAuthOfflineURL(cfg *config.Local) error {
 func validateIssueTrackerOrigin(cfg *config.Local) error {
 	if cfg.IssueTracker != "" && !cfg.IssueTracker.IsValidOrigin(cfg.Origin) {
 		return fmt.Errorf("%s is not a valid origin for issue tracker %s", cfg.Origin, cfg.IssueTracker)
+	}
+
+	return nil
+}
+
+// Validate checks if the user has access to the configured repo
+func Validate(issueTracker config.IssueTracker, origin string) error {
+	url, err := issuetracker.HealthcheckURL(issueTracker, origin)
+	if err != nil {
+		return err
+	}
+
+	if !fetcher.IsHealthy(url) {
+		return errors.New("user does not have access to repo")
 	}
 
 	return nil

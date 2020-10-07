@@ -57,3 +57,17 @@ func (f *Fetcher) Fetch(taskID string) (taskstatus.TaskStatus, error) {
 
 	return task.GetStatus(), nil
 }
+
+// IsHealthy returns true if the user has access to the repo
+func IsHealthy(url string) bool {
+	res, err := http.Head(url)
+	if err != nil {
+		return false
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return false
+	}
+
+	return true
+}

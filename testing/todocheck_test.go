@@ -332,6 +332,17 @@ func TestInvalidIssueTracker(t *testing.T) {
 	}
 }
 
+func TestInvalidGithubAccess(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithConfig("./test_configs/invalid_github_access.yaml").
+		ExpectExecutionError().
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestInvalidOrigins(t *testing.T) {
 	invalidConfigPaths := []string{
 		"./test_configs/invalid_github_https.yaml",
