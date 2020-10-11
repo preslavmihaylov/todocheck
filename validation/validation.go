@@ -65,6 +65,9 @@ func validateIssueTrackerOrigin(cfg *config.Local) error {
 func Validate(issueTracker config.IssueTracker, origin string) error {
 	url, err := issuetracker.HealthcheckURL(issueTracker, origin)
 	if err != nil {
+		if errors.Is(err, issuetracker.ErrUnsupportedHealthCheck) {
+			return nil
+		}
 		return err
 	}
 

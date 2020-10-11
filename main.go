@@ -66,9 +66,7 @@ func main() {
 	if runningTests != "true" {
 		err = validation.Validate(localCfg.IssueTracker, localCfg.Origin)
 		if err != nil {
-			if !errors.Is(err, issuetracker.ErrUnsupportedHealthCheck) {
-				log.Fatalf("Github repository %s not found. Are you accessing a private repository without a token?", localCfg.Origin)
-			}
+			log.Fatal(err)
 		}
 	}
 
