@@ -332,6 +332,13 @@ func TestInvalidIssueTracker(t *testing.T) {
 	}
 }
 
+func TestValidGithubAccess(t *testing.T) {
+	err := validation.Validate(config.IssueTrackerGithub, "https://github.com/preslavmihaylov/todocheck")
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestInvalidGithubAccess(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
