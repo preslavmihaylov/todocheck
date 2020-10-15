@@ -4,10 +4,7 @@ RELEASE_BINARIES=binaries-$(version)
 build:
 	go build -ldflags "-X main.version=$(version)"
 
-build-test:
-	go build -ldflags "-X main.version=$(version) -X main.runningTests=true"
-
-test: build-test
+test: build
 	go test -v -count=1 ./testing
 
 release:

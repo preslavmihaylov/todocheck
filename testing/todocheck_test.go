@@ -481,7 +481,7 @@ func TestConfigAutoDetectWithSSHGitConfig(t *testing.T) {
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/auto_detect_config").
 		WithTestEnvConfig("./scenarios/auto_detect_config/expected_config.yaml").
-		WithGitConfig("git@github.com:username/repo.git").
+		WithGitConfig("git@github.com:preslavmihaylov/todocheck.git").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).
@@ -498,7 +498,7 @@ func TestConfigAutoDetectWithHTTPSGitConfig(t *testing.T) {
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/auto_detect_config").
 		WithTestEnvConfig("./scenarios/auto_detect_config/expected_config.yaml").
-		WithGitConfig("https://github.com/username/repo").
+		WithGitConfig("https://github.com/preslavmihaylov/todocheck").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).

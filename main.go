@@ -21,9 +21,6 @@ import (
 // set dynamically on build time. See Makefile for more info
 var version string
 
-// set dynamically on build time. If this value is "true", it will skip unnecessary external calls
-var runningTests string
-
 // TODO:
 // * Add a --closes option which indicates that an issue is to be closed as a result of a PR
 // * Add caching for task statuses
@@ -63,11 +60,9 @@ func main() {
 		log.Fatalf("couldn't get base url for origin %s & issue tracker %s: %s\n",
 			localCfg.Origin, localCfg.IssueTracker, err)
 	}
-	if runningTests != "true" {
-		err = validation.Validate(localCfg.IssueTracker, localCfg.Origin)
-		if err != nil {
-			log.Fatal(err)
-		}
+	err = validation.Validate(localCfg.IssueTracker, localCfg.Origin)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	todoErrs := []*todocheckerrors.TODO{}
