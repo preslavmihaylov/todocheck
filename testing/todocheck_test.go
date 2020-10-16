@@ -7,7 +7,6 @@ import (
 	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder"
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder/issuetracker"
-	"github.com/preslavmihaylov/todocheck/validation"
 )
 
 func TestSingleLineMalformedTodos(t *testing.T) {
@@ -333,7 +332,11 @@ func TestInvalidIssueTracker(t *testing.T) {
 }
 
 func TestValidGithubAccess(t *testing.T) {
-	err := validation.Validate(config.IssueTrackerGithub, "https://github.com/preslavmihaylov/todocheck")
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/repo_health_checks").
+		WithTestEnvConfig("./test_configs/valid_github_access.yaml").
+		Run()
 	if err != nil {
 		t.Errorf("%s", err)
 	}
