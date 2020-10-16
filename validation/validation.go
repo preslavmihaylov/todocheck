@@ -72,7 +72,7 @@ func Validate(issueTracker config.IssueTracker, origin string) error {
 	}
 
 	if !fetcher.IsHealthy(issueTracker, url) {
-		return errors.New("user does not have access to repo")
+		return fmt.Errorf("repository %s not found. Is the repository private? More info: https://github.com/preslavmihaylov/todocheck#github", url)
 	}
 
 	return nil
