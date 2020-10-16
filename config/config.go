@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/fatih/color"
 	"gopkg.in/yaml.v2"
 )
 
@@ -25,6 +26,8 @@ const (
 	IssueTrackerGitlab               = "GITLAB"
 	IssueTrackerPivotal              = "PIVOTAL_TRACKER"
 	IssueTrackerRedmine              = "REDMINE"
+
+	githubAPITokenWarning = "WARNING: Github has API rate limits for all requests which do not contain a token.\nPlease create a read-only access token to increase that limit.\nGo to https://developer.github.com/v3/#rate-limiting for more information."
 )
 
 var validIssueTrackers = []IssueTracker{
@@ -160,6 +163,10 @@ func (l *Local) Validate() []error {
 		}
 	}
 
+	if l.Auth.Token == "" {
+		l.showAuthWarning()
+	}
+
 	return errors
 }
 
@@ -179,6 +186,15 @@ func (l *Local) validateAuthOfflineURL() error {
 	}
 
 	return nil
+}
+
+func (l *Local) showAuthWarning() {
+	switch l.IssueTracker {
+	case IssueTrackerGithub:
+		fmt.Println(color.YellowString(githubAPITokenWarning))
+	default:
+		// noop
+	}
 }
 
 func exists(filepath string) bool {

@@ -7,7 +7,6 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/fatih/color"
 	"github.com/preslavmihaylov/todocheck/authmanager/authstore"
 	"github.com/preslavmihaylov/todocheck/common"
 	"github.com/preslavmihaylov/todocheck/config"
@@ -20,31 +19,21 @@ const (
 	pivotalAPITokenMsg = "Please go to https://www.pivotaltracker.com/profile, create a new API token & paste it here:\nToken: "
 	redmineAPITokenMsg = "Please go to %s/my/account, create a new API token & paste it here:\nToken: "
 
-	githubAPITokenWarning = "WARNING: Github has API rate limits for all requests which do not contain a token.\nPlease create a read-only access token to increase that limit.\nGo to https://developer.github.com/v3/#rate-limiting for more information."
-
 	authTokenEnvVariable = "TODOCHECK_AUTH_TOKEN"
 )
 
 // AcquireToken stores the issue tracker's auth token based on the auth type specified
 func AcquireToken(cfg *config.Local) error {
-	err := func() error {
-		switch cfg.Auth.Type {
-		case config.AuthTypeNone:
-			return nil
-		case config.AuthTypeAPIToken:
-			return acquireAPIToken(cfg)
-		case config.AuthTypeOffline:
-			return acquireOfflineToken(cfg.Auth)
-		default:
-			panic("unknown auth token type")
-		}
-	}()
-
-	if cfg.Auth.Token == "" {
-		showAuthWarning(cfg)
+	switch cfg.Auth.Type {
+	case config.AuthTypeNone:
+		return nil
+	case config.AuthTypeAPIToken:
+		return acquireAPIToken(cfg)
+	case config.AuthTypeOffline:
+		return acquireOfflineToken(cfg.Auth)
+	default:
+		panic("unknown auth token type")
 	}
-
-	return err
 }
 
 func acquireAPIToken(cfg *config.Local) error {
@@ -120,13 +109,4 @@ func extractBaseURL(origin string) string {
 	}
 
 	return fmt.Sprintf("%s//%s", tokens[0], tokens[1])
-}
-
-func showAuthWarning(cfg *config.Local) {
-	switch cfg.IssueTracker {
-	case config.IssueTrackerGithub:
-		fmt.Println(color.YellowString(githubAPITokenWarning))
-	default:
-		// noop
-	}
 }
