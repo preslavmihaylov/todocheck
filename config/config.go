@@ -14,39 +14,10 @@ import (
 // DefaultLocal contains the default filepath to the local todocheck config for the current repository
 const DefaultLocal = ".todocheck.yaml"
 
-// IssueTracker enum
-type IssueTracker string
-
-// Issue tracker types
-const (
-	IssueTrackerInvalid IssueTracker = ""
-	IssueTrackerJira                 = "JIRA"
-	IssueTrackerGithub               = "GITHUB"
-	IssueTrackerGitlab               = "GITLAB"
-	IssueTrackerPivotal              = "PIVOTAL_TRACKER"
-	IssueTrackerRedmine              = "REDMINE"
-)
-
-var validIssueTrackers = []IssueTracker{
-	IssueTrackerJira,
-	IssueTrackerGithub,
-	IssueTrackerGitlab,
-	IssueTrackerPivotal,
-	IssueTrackerRedmine,
-}
-
 var (
 	windowsAbsolutePathPattern = regexp.MustCompile("^[A-Z]{1}:")
 	gitRemoteOriginPattern     = regexp.MustCompile(`(?Um)url\s=\s\w+(://|@)(?P<origin>(?P<host>.+)?(:|/).+)(\.git)?$`)
 )
-
-var originPatterns = map[IssueTracker]*regexp.Regexp{
-	IssueTrackerJira:    regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]+)+(:[0-9]+)?$`),
-	IssueTrackerGithub:  regexp.MustCompile(`^(https?://)?(www\.)?github\.com/[\w-]+/[\w-]+`),
-	IssueTrackerGitlab:  regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]+)+(:[0-9]+)?/[\w-]+/[\w-]+$`),
-	IssueTrackerPivotal: regexp.MustCompile(`^(https?://)?(www\.)?pivotaltracker\.com/n/projects/[0-9]+`),
-	IssueTrackerRedmine: regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]+)+(:[0-9]+)?$`),
-}
 
 // Local todocheck configuration struct definition
 type Local struct {
