@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/fatih/color"
 	"github.com/preslavmihaylov/todocheck/config"
 )
 
@@ -21,6 +22,13 @@ func Validate(cfg *config.Local) []error {
 
 	if err := validateIssueTrackerOrigin(cfg); err != nil {
 		errors = append(errors, err)
+	}
+
+	if cfg.Auth.Token == "" && cfg.IssueTracker == IssueTrackerGithub {
+		fmt.Fprintln(color.Output, color.YellowString(
+			"WARNING: Github has API rate limits for all requests which do not contain a token.\n"+
+				"         Please create a read-only access token to increase that limit.\n"+
+				"         Go to https://developer.github.com/v3/#rate-limiting for more information."))
 	}
 
 	return errors
