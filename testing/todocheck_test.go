@@ -7,6 +7,7 @@ import (
 	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder"
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder/issuetracker"
+	"github.com/preslavmihaylov/todocheck/validation"
 )
 
 func TestSingleLineMalformedTodos(t *testing.T) {
@@ -353,7 +354,7 @@ func TestInvalidOrigins(t *testing.T) {
 			t.Errorf("%s", err)
 			continue
 		}
-		errors := cfg.Validate()
+		errors := validation.Validate(cfg)
 		if 0 == len(errors) {
 			t.Errorf("%s should be invalid", path)
 		}
@@ -383,7 +384,7 @@ func TestValidOrigins(t *testing.T) {
 			t.Errorf("%s", err)
 			continue
 		}
-		errors := cfg.Validate()
+		errors := validation.Validate(cfg)
 		if len(errors) > 0 {
 			t.Errorf("%s should be valid but has errors: %v", path, errors)
 		}
