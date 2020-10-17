@@ -3,53 +3,20 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
-	"net/url"
 	"os"
 	"regexp"
 	"strings"
 
-	"github.com/fatih/color"
 	"gopkg.in/yaml.v2"
 )
 
 // DefaultLocal contains the default filepath to the local todocheck config for the current repository
 const DefaultLocal = ".todocheck.yaml"
 
-// IssueTracker enum
-type IssueTracker string
-
-// Issue tracker types
-const (
-	IssueTrackerInvalid IssueTracker = ""
-	IssueTrackerJira                 = "JIRA"
-	IssueTrackerGithub               = "GITHUB"
-	IssueTrackerGitlab               = "GITLAB"
-	IssueTrackerPivotal              = "PIVOTAL_TRACKER"
-	IssueTrackerRedmine              = "REDMINE"
-
-	githubAPITokenWarning = "WARNING: Github has API rate limits for all requests which do not contain a token.\nPlease create a read-only access token to increase that limit.\nGo to https://developer.github.com/v3/#rate-limiting for more information."
-)
-
-var validIssueTrackers = []IssueTracker{
-	IssueTrackerJira,
-	IssueTrackerGithub,
-	IssueTrackerGitlab,
-	IssueTrackerPivotal,
-	IssueTrackerRedmine,
-}
-
 var (
 	windowsAbsolutePathPattern = regexp.MustCompile("^[A-Z]{1}:")
 	gitRemoteOriginPattern     = regexp.MustCompile(`(?Um)url\s=\s\w+(://|@)(?P<origin>(?P<host>.+)?(:|/).+)(\.git)?$`)
 )
-
-var originPatterns = map[IssueTracker]*regexp.Regexp{
-	IssueTrackerJira:    regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]+)+(:[0-9]+)?$`),
-	IssueTrackerGithub:  regexp.MustCompile(`^(https?://)?(www\.)?github\.com/[\w-]+/[\w-]+`),
-	IssueTrackerGitlab:  regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]+)+(:[0-9]+)?/[\w-]+/[\w-]+$`),
-	IssueTrackerPivotal: regexp.MustCompile(`^(https?://)?(www\.)?pivotaltracker\.com/n/projects/[0-9]+`),
-	IssueTrackerRedmine: regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]+)+(:[0-9]+)?$`),
-}
 
 // Local todocheck configuration struct definition
 type Local struct {
@@ -142,50 +109,6 @@ func autoDetect(basepath string) (*Local, error) {
 		IssueTracker: issueTracker,
 		Origin:       origin,
 	}, nil
-}
-
-// Validate validates the values of given configuration
-func (l *Local) Validate() []error {
-	var errors []error
-
-	if err := l.validateIssueTracker(); err != nil {
-		errors = append(errors, err)
-	}
-
-	if err := l.validateAuthOfflineURL(); err != nil {
-		errors = append(errors, err)
-	}
-
-	if l.IssueTracker != "" {
-		pattern, ok := originPatterns[l.IssueTracker]
-		if !ok || !pattern.MatchString(l.Origin) {
-			errors = append(errors, fmt.Errorf("%s is not a valid origin for issue tracker %s", l.Origin, l.IssueTracker))
-		}
-	}
-
-	if l.Auth.Token == "" && l.IssueTracker == IssueTrackerGithub {
-		fmt.Fprintln(color.Output, color.YellowString(githubAPITokenWarning))
-	}
-
-	return errors
-}
-
-func (l *Local) validateIssueTracker() error {
-	for _, issueTracker := range validIssueTrackers {
-		if l.IssueTracker == issueTracker {
-			return nil
-		}
-	}
-	return fmt.Errorf("invalid issue tracker: %q is not supported. the valid issue trackers are: %v",
-		l.IssueTracker, validIssueTrackers)
-}
-
-func (l *Local) validateAuthOfflineURL() error {
-	if _, err := url.ParseRequestURI(l.Auth.OfflineURL); l.Auth.Type == AuthTypeOffline && err != nil {
-		return fmt.Errorf("invalid offline URL: %q", l.Auth.OfflineURL)
-	}
-
-	return nil
 }
 
 func exists(filepath string) bool {
