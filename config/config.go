@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/fatih/color"
 	"gopkg.in/yaml.v2"
 )
 
@@ -25,6 +26,8 @@ const (
 	IssueTrackerGitlab               = "GITLAB"
 	IssueTrackerPivotal              = "PIVOTAL_TRACKER"
 	IssueTrackerRedmine              = "REDMINE"
+
+	githubAPITokenWarning = "WARNING: Github has API rate limits for all requests which do not contain a token.\nPlease create a read-only access token to increase that limit.\nGo to https://developer.github.com/v3/#rate-limiting for more information."
 )
 
 var validIssueTrackers = []IssueTracker{
@@ -158,6 +161,10 @@ func (l *Local) Validate() []error {
 		if !ok || !pattern.MatchString(l.Origin) {
 			errors = append(errors, fmt.Errorf("%s is not a valid origin for issue tracker %s", l.Origin, l.IssueTracker))
 		}
+	}
+
+	if l.Auth.Token == "" && l.IssueTracker == IssueTrackerGithub {
+		fmt.Fprintln(color.Output, color.YellowString(githubAPITokenWarning))
 	}
 
 	return errors
