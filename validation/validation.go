@@ -24,7 +24,7 @@ func Validate(cfg *config.Local) []error {
 		errors = append(errors, err)
 	}
 
-	if cfg.Auth.Token == "" && cfg.IssueTracker == IssueTrackerGithub {
+	if cfg.Auth.Token == "" && cfg.IssueTracker == config.IssueTrackerGithub {
 		fmt.Fprintln(color.Output, color.YellowString(
 			"WARNING: Github has API rate limits for all requests which do not contain a token.\n"+
 				"         Please create a read-only access token to increase that limit.\n"+
