@@ -163,8 +163,8 @@ func (l *Local) Validate() []error {
 		}
 	}
 
-	if l.Auth.Token == "" {
-		l.showAuthWarning()
+	if l.Auth.Token == "" && l.IssueTracker == IssueTrackerGithub {
+		fmt.Fprintln(color.Output, color.YellowString(githubAPITokenWarning))
 	}
 
 	return errors
@@ -186,15 +186,6 @@ func (l *Local) validateAuthOfflineURL() error {
 	}
 
 	return nil
-}
-
-func (l *Local) showAuthWarning() {
-	switch l.IssueTracker {
-	case IssueTrackerGithub:
-		fmt.Println(color.YellowString(githubAPITokenWarning))
-	default:
-		// noop
-	}
 }
 
 func exists(filepath string) bool {
