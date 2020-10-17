@@ -8,7 +8,7 @@ import (
 )
 
 // Validate validates the values of given configuration
-func Validate(cfg config.Local) []error {
+func Validate(cfg *config.Local) []error {
 	var errors []error
 
 	if err := validateIssueTracker(cfg); err != nil {
@@ -26,7 +26,7 @@ func Validate(cfg config.Local) []error {
 	return errors
 }
 
-func validateIssueTracker(cfg config.Local) error {
+func validateIssueTracker(cfg *config.Local) error {
 	if !cfg.IssueTracker.IsValid() {
 		return fmt.Errorf("invalid issue tracker: %q is not supported", cfg.IssueTracker)
 	}
@@ -34,7 +34,7 @@ func validateIssueTracker(cfg config.Local) error {
 	return nil
 }
 
-func validateAuthOfflineURL(cfg config.Local) error {
+func validateAuthOfflineURL(cfg *config.Local) error {
 	if _, err := url.ParseRequestURI(cfg.Auth.OfflineURL); cfg.Auth.Type == config.AuthTypeOffline && err != nil {
 		return fmt.Errorf("invalid offline URL: %q", cfg.Auth.OfflineURL)
 	}
@@ -42,7 +42,7 @@ func validateAuthOfflineURL(cfg config.Local) error {
 	return nil
 }
 
-func validateIssueTrackerOrigin(cfg config.Local) error {
+func validateIssueTrackerOrigin(cfg *config.Local) error {
 	if cfg.IssueTracker != "" && !cfg.IssueTracker.IsValidOrigin(cfg.Origin) {
 		return fmt.Errorf("%s is not a valid origin for issue tracker %s", cfg.Origin, cfg.IssueTracker)
 	}
