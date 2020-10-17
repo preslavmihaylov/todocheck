@@ -15,6 +15,7 @@ import (
 	"github.com/preslavmihaylov/todocheck/fetcher"
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 	"github.com/preslavmihaylov/todocheck/traverser/todoerrs"
+	"github.com/preslavmihaylov/todocheck/validation"
 )
 
 // set dynamically on build time. See Makefile for more info
@@ -41,7 +42,7 @@ func main() {
 		log.Fatalf("couldn't open configuration file: %s\n", err)
 	}
 
-	if errors := localCfg.Validate(); len(errors) > 0 {
+	if errors := validation.Validate(localCfg); len(errors) > 0 {
 		for _, err := range errors {
 			log.Println(err)
 		}

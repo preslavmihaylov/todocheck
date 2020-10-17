@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
-	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -110,46 +109,6 @@ func autoDetect(basepath string) (*Local, error) {
 		IssueTracker: issueTracker,
 		Origin:       origin,
 	}, nil
-}
-
-// Validate validates the values of given configuration
-func (l *Local) Validate() []error {
-	var errors []error
-
-	if err := l.validateIssueTracker(); err != nil {
-		errors = append(errors, err)
-	}
-
-	if err := l.validateAuthOfflineURL(); err != nil {
-		errors = append(errors, err)
-	}
-
-	if l.IssueTracker != "" {
-		pattern, ok := originPatterns[l.IssueTracker]
-		if !ok || !pattern.MatchString(l.Origin) {
-			errors = append(errors, fmt.Errorf("%s is not a valid origin for issue tracker %s", l.Origin, l.IssueTracker))
-		}
-	}
-
-	return errors
-}
-
-func (l *Local) validateIssueTracker() error {
-	for _, issueTracker := range validIssueTrackers {
-		if l.IssueTracker == issueTracker {
-			return nil
-		}
-	}
-	return fmt.Errorf("invalid issue tracker: %q is not supported. the valid issue trackers are: %v",
-		l.IssueTracker, validIssueTrackers)
-}
-
-func (l *Local) validateAuthOfflineURL() error {
-	if _, err := url.ParseRequestURI(l.Auth.OfflineURL); l.Auth.Type == AuthTypeOffline && err != nil {
-		return fmt.Errorf("invalid offline URL: %q", l.Auth.OfflineURL)
-	}
-
-	return nil
 }
 
 func exists(filepath string) bool {
