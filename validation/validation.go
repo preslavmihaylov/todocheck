@@ -13,18 +13,29 @@ import (
 
 // Validate validates the values of given configuration
 func Validate(cfg *config.Local) []error {
-	var errors []error
+	var errs []error
 
 	if err := validateIssueTracker(cfg); err != nil {
-		errors = append(errors, err)
+		errs = append(errs, err)
 	}
 
 	if err := validateAuthOfflineURL(cfg); err != nil {
-		errors = append(errors, err)
+		errs = append(errs, err)
 	}
 
 	if err := validateIssueTrackerOrigin(cfg); err != nil {
-		errors = append(errors, err)
+		errs = append(errs, err)
+	}
+
+	url, err := issuetracker.HealthcheckURL(cfg.IssueTracker, cfg.Origin)
+	if err != nil {
+		if !errors.Is(err, issuetracker.ErrUnsupportedHealthCheck) {
+			errs = append(errs, err)
+		}
+	} else {
+		if !fetcher.IsHealthy(cfg.IssueTracker, url) {
+			errs = append(errs, fmt.Errorf("repository %s not found. Is the repository private? More info: https://github.com/preslavmihaylov/todocheck#github", url))
+		}
 	}
 
 	if cfg.Auth.Token == "" && cfg.IssueTracker == config.IssueTrackerGithub {
@@ -34,7 +45,7 @@ func Validate(cfg *config.Local) []error {
 				"         Go to https://developer.github.com/v3/#rate-limiting for more information."))
 	}
 
-	return errors
+	return errs
 }
 
 func validateIssueTracker(cfg *config.Local) error {
@@ -56,23 +67,6 @@ func validateAuthOfflineURL(cfg *config.Local) error {
 func validateIssueTrackerOrigin(cfg *config.Local) error {
 	if cfg.IssueTracker != "" && !cfg.IssueTracker.IsValidOrigin(cfg.Origin) {
 		return fmt.Errorf("%s is not a valid origin for issue tracker %s", cfg.Origin, cfg.IssueTracker)
-	}
-
-	return nil
-}
-
-// Validate checks if the user has access to the configured repo
-func Validate(issueTracker config.IssueTracker, origin string) error {
-	url, err := issuetracker.HealthcheckURL(issueTracker, origin)
-	if err != nil {
-		if errors.Is(err, issuetracker.ErrUnsupportedHealthCheck) {
-			return nil
-		}
-		return err
-	}
-
-	if !fetcher.IsHealthy(issueTracker, url) {
-		return fmt.Errorf("repository %s not found. Is the repository private? More info: https://github.com/preslavmihaylov/todocheck#github", url)
 	}
 
 	return nil

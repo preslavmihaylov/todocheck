@@ -7,6 +7,7 @@ import (
 	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder"
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder/issuetracker"
+	"github.com/preslavmihaylov/todocheck/validation"
 )
 
 func TestSingleLineMalformedTodos(t *testing.T) {

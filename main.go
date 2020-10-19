@@ -60,10 +60,6 @@ func main() {
 		log.Fatalf("couldn't get base url for origin %s & issue tracker %s: %s\n",
 			localCfg.Origin, localCfg.IssueTracker, err)
 	}
-	err = validation.Validate(localCfg.IssueTracker, localCfg.Origin)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	todoErrs := []*todocheckerrors.TODO{}
 	f := fetcher.NewFetcher(baseURL, localCfg.IssueTracker, authmiddleware.For(localCfg))
