@@ -1,6 +1,7 @@
 package scenariobuilder
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -12,9 +13,30 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func validateTodoErrs(programOutput string, scenarios []*TodoErrScenario) validateFunc {
+func validateTodoErrs(programOutput string, scenarios []*TodoErrScenario, format string) validateFunc {
 	return func() error {
-		chunks := common.RemoveEmptyTokens(strings.Split(programOutput, "\n\n"))
+		var chunks []string
+		if format == "json" {
+			var elements []TodoErrForJson
+
+			err := json.Unmarshal([]byte(programOutput), &elements)
+			if err != nil {
+				return err
+			}
+
+			for _, elem := range elements {
+				element := elem
+				bytes, err := json.Marshal(&element)
+				if err != nil {
+					return err
+				}
+
+				chunks = append(chunks, string(bytes))
+			}
+		} else {
+			chunks = common.RemoveEmptyTokens(strings.Split(programOutput, "\n\n"))
+		}
+
 		if len(chunks) != len(scenarios) {
 			return fmt.Errorf("Invalid amount of todo errors detected.\nExpected: %d, Actual: %d\n\n"+
 				"(program output follows...)\n%s",
@@ -22,7 +44,7 @@ func validateTodoErrs(programOutput string, scenarios []*TodoErrScenario) valida
 		}
 
 		for i := range chunks {
-			j := indexOfMatchingTodoScenario(scenarios, chunks[i])
+			j := indexOfMatchingTodoScenario(scenarios, chunks[i], format)
 			if j == -1 {
 				return fmt.Errorf(
 					"No matching todo detected in any of the scenarios"+
@@ -65,10 +87,21 @@ func validateAuthTokensCache(tokensCache string, url, expectedToken string) vali
 	}
 }
 
-func indexOfMatchingTodoScenario(scenarios []*TodoErrScenario, target string) int {
+func indexOfMatchingTodoScenario(scenarios []*TodoErrScenario, target string, format string) int {
 	for i := range scenarios {
-		if scenarios[i].String() == target {
-			return i
+		if format == "json" {
+			bytes, err := scenarios[i].ToJSON()
+			if err != nil {
+				panic(err)
+			}
+
+			if string(bytes) == target {
+				return i
+			}
+		} else {
+			if scenarios[i].String() == target {
+				return i
+			}
 		}
 	}
 
