@@ -99,7 +99,7 @@ func HealthcheckURL(issueTracker config.IssueTracker, origin string) (string, er
 
 func parseGithubDetails(origin string) (scheme, owner, repo string) {
 	tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
-	if tokens[0] == "github.com" {
+	if !strings.HasPrefix(tokens[0], "http") {
 		tokens = append([]string{"https:"}, tokens...)
 	}
 
