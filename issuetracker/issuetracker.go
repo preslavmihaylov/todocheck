@@ -11,6 +11,9 @@ import (
 	"github.com/preslavmihaylov/todocheck/issuetracker/models"
 )
 
+// ErrUnsupportedHealthCheck is returned when the health check doesn't support the given issue tracker
+var ErrUnsupportedHealthCheck = errors.New("unsupported issue tracker for health check")
+
 // TaskFor gets the corresponding task model, based on the issue tracker type
 func TaskFor(issueTracker config.IssueTracker) models.Task {
 	switch issueTracker {
@@ -53,12 +56,7 @@ func BaseURLFor(issueTracker config.IssueTracker, origin string) (string, error)
 	case config.IssueTrackerJira:
 		return fmt.Sprintf("%s/rest/api/latest/issue/", origin), nil
 	case config.IssueTrackerGithub:
-		tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
-		if tokens[0] == "github.com" {
-			tokens = append([]string{"https:"}, tokens...)
-		}
-
-		scheme, owner, repo := tokens[0], tokens[2], tokens[3]
+		scheme, owner, repo := parseGithubDetails(origin)
 		return fmt.Sprintf("%s//api.github.com/repos/%s/%s/issues/", scheme, owner, repo), nil
 	case config.IssueTrackerGitlab:
 		tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
@@ -86,4 +84,25 @@ func BaseURLFor(issueTracker config.IssueTracker, origin string) (string, error)
 	default:
 		return "", errors.New("unknown issue tracker " + string(issueTracker))
 	}
+}
+
+// HealthcheckURL returns the health check base url given the issue tracker type and the site origin
+func HealthcheckURL(issueTracker config.IssueTracker, origin string) (string, error) {
+	switch issueTracker {
+	case config.IssueTrackerGithub:
+		scheme, owner, repo := parseGithubDetails(origin)
+		return fmt.Sprintf("%s//api.github.com/repos/%s/%s", scheme, owner, repo), nil
+	default:
+		return "", ErrUnsupportedHealthCheck
+	}
+}
+
+func parseGithubDetails(origin string) (scheme, owner, repo string) {
+	tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
+	if !strings.HasPrefix(tokens[0], "http") {
+		tokens = append([]string{"https:"}, tokens...)
+	}
+
+	scheme, owner, repo = tokens[0], tokens[2], tokens[3]
+	return
 }
