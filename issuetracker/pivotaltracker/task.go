@@ -1,14 +1,14 @@
-package models
+package pivotaltracker
 
 import "github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 
-// PivotalTrackerTask model
-type PivotalTrackerTask struct {
+// Task model
+type Task struct {
 	CurrentState string `json:"current_state"`
 }
 
 // GetStatus of pivotal tracker task, based on underlying structure
-func (t *PivotalTrackerTask) GetStatus() taskstatus.TaskStatus {
+func (t *Task) GetStatus() taskstatus.TaskStatus {
 	switch t.CurrentState {
 	case "finished":
 		fallthrough

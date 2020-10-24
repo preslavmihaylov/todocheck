@@ -14,19 +14,18 @@ import (
 
 // Fetcher for task statuses by contacting task management web apps' rest api
 type Fetcher struct {
-	origin         string
-	tracker        config.IssueTracker
+	issuetracker.IssueTracker
 	authMiddleware authmiddleware.Func
 }
 
 // NewFetcher instance
-func NewFetcher(origin string, tracker config.IssueTracker, authMw authmiddleware.Func) *Fetcher {
-	return &Fetcher{origin, tracker, authMw}
+func NewFetcher(issueTracker issuetracker.IssueTracker, authMw authmiddleware.Func) *Fetcher {
+	return &Fetcher{issueTracker, authMw}
 }
 
 // Fetch a task's status based on task ID
 func (f *Fetcher) Fetch(taskID string) (taskstatus.TaskStatus, error) {
-	req, err := http.NewRequest("GET", f.origin+issuetracker.TaskURLSuffixFor(taskID, f.tracker), nil)
+	req, err := http.NewRequest("GET", f.IssueTracker.IssueAPIOrigin()+f.IssueTracker.TaskURLFrom(taskID), nil)
 	if err != nil {
 		return taskstatus.None, fmt.Errorf("failed creating new GET request: %w", err)
 	}
@@ -49,7 +48,7 @@ func (f *Fetcher) Fetch(taskID string) (taskstatus.TaskStatus, error) {
 		return taskstatus.None, fmt.Errorf("bad status code upon fetching task: %d - %s", resp.StatusCode, string(body))
 	}
 
-	task := issuetracker.TaskFor(f.tracker)
+	task := f.IssueTracker.TaskModel()
 	err = json.Unmarshal(body, &task)
 	if err != nil {
 		return taskstatus.None, fmt.Errorf("couldn't unmarshal response task JSON: %w", err)

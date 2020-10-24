@@ -13,7 +13,7 @@ import (
 	todocheckerrors "github.com/preslavmihaylov/todocheck/checker/errors"
 	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/fetcher"
-	"github.com/preslavmihaylov/todocheck/issuetracker"
+	"github.com/preslavmihaylov/todocheck/issuetracker/factory"
 	"github.com/preslavmihaylov/todocheck/traverser/todoerrs"
 	"github.com/preslavmihaylov/todocheck/validation"
 )
@@ -55,14 +55,14 @@ func main() {
 		log.Fatalf("couldn't acquire token from config: %s\n", err)
 	}
 
-	baseURL, err := issuetracker.BaseURLFor(localCfg.IssueTracker, localCfg.Origin)
+	tracker, err := factory.NewIssueTrackerFrom(localCfg.IssueTracker, localCfg.Origin)
 	if err != nil {
-		log.Fatalf("couldn't get base url for origin %s & issue tracker %s: %s\n",
-			localCfg.Origin, localCfg.IssueTracker, err)
+		log.Fatalf("couldn't create new issue tracker: %s\n", err)
 	}
 
+	f := fetcher.NewFetcher(tracker, authmiddleware.For(localCfg))
+
 	todoErrs := []*todocheckerrors.TODO{}
-	f := fetcher.NewFetcher(baseURL, localCfg.IssueTracker, authmiddleware.For(localCfg))
 	traverser := todoerrs.NewTraverser(f, localCfg.IgnoredPaths, func(todoErr *todocheckerrors.TODO) error {
 		todoErrs = append(todoErrs, todoErr)
 		return nil

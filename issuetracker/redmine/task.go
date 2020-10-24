@@ -1,9 +1,9 @@
-package models
+package redmine
 
 import "github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 
-// RedmineTask model
-type RedmineTask struct {
+// Task model
+type Task struct {
 	Issue struct {
 		Status struct {
 			Name string `json:"name"`
@@ -11,8 +11,8 @@ type RedmineTask struct {
 	} `json:"issue"`
 }
 
-// GetStatus of pivotal tracker task, based on underlying structure
-func (t *RedmineTask) GetStatus() taskstatus.TaskStatus {
+// GetStatus of redmine task, based on underlying structure
+func (t *Task) GetStatus() taskstatus.TaskStatus {
 	switch t.Issue.Status.Name {
 	case "Resolved":
 		fallthrough
