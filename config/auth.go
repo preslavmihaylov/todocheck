@@ -14,6 +14,13 @@ const (
 	AuthTypeAPIToken AuthType = "apitoken"
 )
 
+//ValidAuthTypes is used for validation of auth type
+var ValidAuthTypes = []AuthType{
+	AuthTypeNone,
+	AuthTypeOffline,
+	AuthTypeAPIToken,
+}
+
 func defaultAuthCfg() *Auth {
 	return &Auth{
 		Type:        AuthTypeNone,
@@ -37,4 +44,15 @@ func DefaultTokensCache() string {
 	}
 
 	return dir + "/.todocheck/authtokens.yaml"
+}
+
+// IsValid checks if the given AuthType is among the valid enum values
+func (a AuthType) IsValid() bool {
+	for _, auth := range ValidAuthTypes {
+		if a == auth {
+			return true
+		}
+	}
+
+	return false
 }
