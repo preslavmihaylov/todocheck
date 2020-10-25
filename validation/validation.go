@@ -27,10 +27,6 @@ func Validate(cfg *config.Local) []error {
 		errs = append(errs, err)
 	}
 
-	// if err := validateIssueTrackerExists(cfg); err != nil {
-	// 	errs = append(errs, err)
-	// }
-
 	if err := validateAuthType(cfg); err != nil {
 		errs = append(errs, err)
 	}
