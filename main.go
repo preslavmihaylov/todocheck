@@ -42,17 +42,17 @@ func main() {
 		log.Fatalf("couldn't open configuration file: %s\n", err)
 	}
 
+	err = authmanager.AcquireToken(localCfg)
+	if err != nil {
+		log.Fatalf("couldn't acquire token from config: %s\n", err)
+	}
+
 	if errors := validation.Validate(localCfg); len(errors) > 0 {
 		for _, err := range errors {
 			log.Println(err)
 		}
 
 		os.Exit(1)
-	}
-
-	err = authmanager.AcquireToken(localCfg)
-	if err != nil {
-		log.Fatalf("couldn't acquire token from config: %s\n", err)
 	}
 
 	tracker, err := factory.NewIssueTrackerFrom(localCfg.IssueTracker, localCfg.Origin)
