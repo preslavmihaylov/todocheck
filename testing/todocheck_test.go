@@ -77,6 +77,7 @@ func TestFirstlineMalformedTodoWithJsonOutput(t *testing.T) {
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/firstline_comment").
 		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithJSONOutput().
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).
@@ -85,7 +86,6 @@ func TestFirstlineMalformedTodoWithJsonOutput(t *testing.T) {
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/firstline_comment/other.cpp", 1)).
-		ExpectJsonOutput().
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)

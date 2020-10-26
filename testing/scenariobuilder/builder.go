@@ -175,8 +175,8 @@ func (s *TodocheckScenario) ExpectExecutionError() *TodocheckScenario {
 	return s
 }
 
-// ExpectJsonOutput sets the output to be in JSON format
-func (s *TodocheckScenario) ExpectJsonOutput() *TodocheckScenario {
+// WithJSONOutput sets the output to be in JSON format
+func (s *TodocheckScenario) WithJSONOutput() *TodocheckScenario {
 	s.expectJsonFormat = true
 	return s
 }
@@ -231,8 +231,15 @@ func (s *TodocheckScenario) Run() error {
 		actualOutput = stderr.String()
 	}
 
+	var validateTodoFunc validateFunc
+	if format == "json" {
+		validateTodoFunc = validateJSONTodoErrs(actualOutput, s.todoErrScenarios)
+	} else {
+		validateTodoFunc = validateStandardTodoErrs(actualOutput, s.todoErrScenarios)
+	}
+
 	validateFuncs := []validateFunc{
-		validateTodoErrs(actualOutput, s.todoErrScenarios, format),
+		validateTodoFunc,
 		validateAuthTokensCache(s.cfg.Auth.TokensCache, s.cfg.Auth.OfflineURL, s.expectedAuthToken),
 	}
 

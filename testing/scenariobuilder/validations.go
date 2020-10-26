@@ -1,6 +1,7 @@
 package scenariobuilder
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,30 +14,9 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func validateTodoErrs(programOutput string, scenarios []*TodoErrScenario, format string) validateFunc {
+func validateStandardTodoErrs(programOutput string, scenarios []*TodoErrScenario) validateFunc {
 	return func() error {
-		var chunks []string
-		if format == "json" {
-			var elements []TodoErrForJson
-
-			err := json.Unmarshal([]byte(programOutput), &elements)
-			if err != nil {
-				return err
-			}
-
-			for _, elem := range elements {
-				element := elem
-				bytes, err := json.Marshal(&element)
-				if err != nil {
-					return err
-				}
-
-				chunks = append(chunks, string(bytes))
-			}
-		} else {
-			chunks = common.RemoveEmptyTokens(strings.Split(programOutput, "\n\n"))
-		}
-
+		chunks := common.RemoveEmptyTokens(strings.Split(programOutput, "\n\n"))
 		if len(chunks) != len(scenarios) {
 			return fmt.Errorf("Invalid amount of todo errors detected.\nExpected: %d, Actual: %d\n\n"+
 				"(program output follows...)\n%s",
@@ -44,7 +24,7 @@ func validateTodoErrs(programOutput string, scenarios []*TodoErrScenario, format
 		}
 
 		for i := range chunks {
-			j := indexOfMatchingTodoScenario(scenarios, chunks[i], format)
+			j := indexOfMatchingTodoScenario(scenarios, chunks[i])
 			if j == -1 {
 				return fmt.Errorf(
 					"No matching todo detected in any of the scenarios"+
@@ -53,6 +33,56 @@ func validateTodoErrs(programOutput string, scenarios []*TodoErrScenario, format
 			}
 
 			scenarios = removeScenario(scenarios, j)
+		}
+
+		return nil
+	}
+}
+
+func validateJSONTodoErrs(programOutput string, scenarios []*TodoErrScenario) validateFunc {
+	return func() error {
+		var elements []TodoErrForJson
+
+		err := json.Unmarshal([]byte(programOutput), &elements)
+		if err != nil {
+			return err
+		}
+
+		scenarioBytes := make([][]byte, len(scenarios))
+		for i, scenario := range scenarios {
+			scenarioBytes[i], err = scenario.ToJSON()
+			if err != nil {
+				return err
+			}
+		}
+
+		if len(elements) != len(scenarios) {
+			return fmt.Errorf("Invalid amount of todo errors detected.\nExpected: %d, Actual: %d\n\n"+
+				"(program output follows...)\n%s",
+				len(scenarios), len(elements), programOutput)
+		}
+
+		for _, elem := range elements {
+			element := elem
+			actualByte, err := json.Marshal(&element)
+			if err != nil {
+				return err
+			}
+
+			removeIdx := -1
+			for j, expected := range scenarioBytes {
+				if bytes.Equal(actualByte, expected) {
+					removeIdx = j
+					break
+				}
+			}
+
+			if removeIdx == -1 {
+				return fmt.Errorf(
+					"No matching todo detected in any of the scenarios"+
+						"\n\nActual:\n%s\n\nRemaining scenarios:\n%s",
+					string(actualByte), printScenarios(scenarios))
+			}
 		}
 
 		return nil
@@ -87,21 +117,10 @@ func validateAuthTokensCache(tokensCache string, url, expectedToken string) vali
 	}
 }
 
-func indexOfMatchingTodoScenario(scenarios []*TodoErrScenario, target string, format string) int {
+func indexOfMatchingTodoScenario(scenarios []*TodoErrScenario, target string) int {
 	for i := range scenarios {
-		if format == "json" {
-			bytes, err := scenarios[i].ToJSON()
-			if err != nil {
-				panic(err)
-			}
-
-			if string(bytes) == target {
-				return i
-			}
-		} else {
-			if scenarios[i].String() == target {
-				return i
-			}
+		if scenarios[i].String() == target {
+			return i
 		}
 	}
 
