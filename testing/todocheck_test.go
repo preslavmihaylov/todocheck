@@ -508,6 +508,21 @@ func TestConfigAutoDetectWithHTTPSGitConfig(t *testing.T) {
 				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/auto_detect_config/main.go", 3).
 				ExpectLine("// TODO - malformed todo")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/auto_detect_config/main.go", 5).
+				ExpectLine("// TODO #1: closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/auto_detect_config/main.go", 7).
+				ExpectLine("// TODO 2: closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/auto_detect_config/main.go", 9).
+				ExpectLine("// TODO #9999999: non-existent issue")).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
