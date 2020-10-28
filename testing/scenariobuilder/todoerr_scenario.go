@@ -1,7 +1,6 @@
 package scenariobuilder
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/preslavmihaylov/todocheck/checker/errors"
@@ -62,15 +61,15 @@ func (s *TodoErrScenario) String() string {
 	return str
 }
 
-type TodoErrForJson struct {
+type TodoErrForJSON struct {
 	Type     string `json:"type"`
 	Filename string `json:"filename"`
 	Line     int    `json:"line"`
 	Message  string `json:"message"`
 }
 
-func (s *TodoErrScenario) ToJSON() ([]byte, error) {
-	res := &TodoErrForJson{
+func (s *TodoErrScenario) ToTodoErrForJSON() *TodoErrForJSON {
+	res := &TodoErrForJSON{
 		Type:     string(s.errType),
 		Filename: s.sourceFile,
 		Line:     s.sourceLineNum,
@@ -81,5 +80,5 @@ func (s *TodoErrScenario) ToJSON() ([]byte, error) {
 		res.Message = "TODO should match pattern - TODO {task_id}:"
 	}
 
-	return json.Marshal(res)
+	return res
 }

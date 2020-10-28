@@ -1,7 +1,6 @@
 package scenariobuilder
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -41,19 +40,16 @@ func validateStandardTodoErrs(programOutput string, scenarios []*TodoErrScenario
 
 func validateJSONTodoErrs(programOutput string, scenarios []*TodoErrScenario) validateFunc {
 	return func() error {
-		var elements []TodoErrForJson
+		var elements []TodoErrForJSON
 
 		err := json.Unmarshal([]byte(programOutput), &elements)
 		if err != nil {
 			return err
 		}
 
-		scenarioBytes := make([][]byte, len(scenarios))
-		for i, scenario := range scenarios {
-			scenarioBytes[i], err = scenario.ToJSON()
-			if err != nil {
-				return err
-			}
+		scenarioJSONObjs := make([]*TodoErrForJSON, len(scenarios))
+		for i, s := range scenarios {
+			scenarioJSONObjs[i] = s.ToTodoErrForJSON()
 		}
 
 		if len(elements) != len(scenarios) {
@@ -63,15 +59,9 @@ func validateJSONTodoErrs(programOutput string, scenarios []*TodoErrScenario) va
 		}
 
 		for _, elem := range elements {
-			element := elem
-			actualByte, err := json.Marshal(&element)
-			if err != nil {
-				return err
-			}
-
 			removeIdx := -1
-			for j, expected := range scenarioBytes {
-				if bytes.Equal(actualByte, expected) {
+			for j, expected := range scenarioJSONObjs {
+				if elem == *expected {
 					removeIdx = j
 					break
 				}
@@ -80,9 +70,11 @@ func validateJSONTodoErrs(programOutput string, scenarios []*TodoErrScenario) va
 			if removeIdx == -1 {
 				return fmt.Errorf(
 					"No matching todo detected in any of the scenarios"+
-						"\n\nActual:\n%s\n\nRemaining scenarios:\n%s",
-					string(actualByte), printScenarios(scenarios))
+						"\n\nActual:\n%+v\n\nRemaining scenarios:\n%s",
+					elem, printScenariosForJSON(scenarioJSONObjs))
 			}
+
+			scenarioJSONObjs = removeScenarioForJSON(scenarioJSONObjs, removeIdx)
 		}
 
 		return nil
@@ -136,6 +128,19 @@ func printScenarios(ss []*TodoErrScenario) string {
 	return res
 }
 
+func printScenariosForJSON(ss []*TodoErrForJSON) string {
+	res := ""
+	for i, s := range ss {
+		res += fmt.Sprintf("(scenario #%d)\n%+v\n\n", i+1, s)
+	}
+
+	return res
+}
+
 func removeScenario(scenarios []*TodoErrScenario, i int) []*TodoErrScenario {
 	return append(scenarios[:i], scenarios[i+1:]...)
+}
+
+func removeScenarioForJSON(scenariosForJSON []*TodoErrForJSON, i int) []*TodoErrForJSON {
+	return append(scenariosForJSON[:i], scenariosForJSON[i+1:]...)
 }
