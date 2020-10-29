@@ -24,6 +24,11 @@ const (
 
 // AcquireToken stores the issue tracker's auth token based on the auth type specified
 func AcquireToken(cfg *config.Local) error {
+
+	if !cfg.Auth.Type.IsValid() {
+		return fmt.Errorf("invalid auth type: %q. valid auth types are: %q", cfg.Auth.Type, config.ValidAuthTypes)
+	}
+
 	switch cfg.Auth.Type {
 	case config.AuthTypeNone:
 		return nil
@@ -32,7 +37,7 @@ func AcquireToken(cfg *config.Local) error {
 	case config.AuthTypeOffline:
 		return acquireOfflineToken(cfg.Auth)
 	default:
-		panic("unknown auth token type")
+		panic("It's on us! Don't know how to handle this authentication token type. Please file an issue here - https://github.com/preslavmihaylov/todocheck/issues/new")
 	}
 }
 
