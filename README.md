@@ -47,16 +47,6 @@ ERROR: Issue doesn't exist.
 myproject/main.go:14: // TODO J321: A non-existent issue
 ```
 
-Here's another example of an annotated `TODO`:
-```
-// TODO #234: Fix the typo
-func fuu() {
-    ...
-}
-```
-
-In case the linked issue `234` with Github issue tracker is open, `todocheck` will not report any error. That means with Github issues, todos with a hashtag is supported.
-
 If there is an unannotated `TODO` in your code base, todocheck will also report it as a malformed `TODO`:
 ```
 ERROR: Malformed todo.
