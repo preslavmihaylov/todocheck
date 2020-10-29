@@ -491,21 +491,6 @@ func TestConfigAutoDetectWithSSHGitConfig(t *testing.T) {
 				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/auto_detect_config/main.go", 3).
 				ExpectLine("// TODO - malformed todo")).
-		ExpectTodoErr(
-			scenariobuilder.NewTodoErr().
-				WithType(errors.TODOErrTypeIssueClosed).
-				WithLocation("scenarios/auto_detect_config/main.go", 5).
-				ExpectLine("// TODO #1: closed issue")).
-		ExpectTodoErr(
-			scenariobuilder.NewTodoErr().
-				WithType(errors.TODOErrTypeIssueClosed).
-				WithLocation("scenarios/auto_detect_config/main.go", 7).
-				ExpectLine("// TODO 2: closed issue")).
-		ExpectTodoErr(
-			scenariobuilder.NewTodoErr().
-				WithType(errors.TODOErrTypeNonExistentIssue).
-				WithLocation("scenarios/auto_detect_config/main.go", 9).
-				ExpectLine("// TODO #9999999: non-existent issue")).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
@@ -523,21 +508,36 @@ func TestConfigAutoDetectWithHTTPSGitConfig(t *testing.T) {
 				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/auto_detect_config/main.go", 3).
 				ExpectLine("// TODO - malformed todo")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestHashTagTodosWithGithub(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/hashtag_todos_with_github").
+		WithTestEnvConfig("./test_configs/valid_github_access.yaml").
+		WithGitConfig("https://github.com/preslavmihaylov/todocheck").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
-				WithLocation("scenarios/auto_detect_config/main.go", 5).
-				ExpectLine("// TODO #1: closed issue")).
-		ExpectTodoErr(
-			scenariobuilder.NewTodoErr().
-				WithType(errors.TODOErrTypeIssueClosed).
-				WithLocation("scenarios/auto_detect_config/main.go", 7).
+				WithLocation("scenarios/hashtag_todos_with_github/main.go", 3).
 				ExpectLine("// TODO 2: closed issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).
-				WithLocation("scenarios/auto_detect_config/main.go", 9).
+				WithLocation("scenarios/hashtag_todos_with_github/main.go", 5).
 				ExpectLine("// TODO #9999999: non-existent issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/hashtag_todos_with_github/main.go", 7).
+				ExpectLine("/*").
+				ExpectLine(" * This is an invalid TODO #3:").
+				ExpectLine(" * as the issue is closed").
+				ExpectLine(" */")).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
