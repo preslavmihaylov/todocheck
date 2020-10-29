@@ -60,3 +60,25 @@ func (s *TodoErrScenario) String() string {
 
 	return str
 }
+
+type TodoErrForJSON struct {
+	Type     string `json:"type"`
+	Filename string `json:"filename"`
+	Line     int    `json:"line"`
+	Message  string `json:"message"`
+}
+
+func (s *TodoErrScenario) ToTodoErrForJSON() *TodoErrForJSON {
+	res := &TodoErrForJSON{
+		Type:     string(s.errType),
+		Filename: s.sourceFile,
+		Line:     s.sourceLineNum,
+		Message:  "",
+	}
+
+	if s.errType == errors.TODOErrTypeMalformed {
+		res.Message = "TODO should match pattern - TODO {task_id}:"
+	}
+
+	return res
+}

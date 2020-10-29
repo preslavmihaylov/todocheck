@@ -35,6 +35,7 @@ type TodocheckScenario struct {
 	versionFlagRequested   bool
 	deleteTokensCacheAfter bool
 	expectedExitCode       int
+	expectJsonFormat       bool
 	issueTracker           issuetracker.Type
 	issues                 map[string]issuetracker.Status
 	envVariables           map[string]string
@@ -174,6 +175,12 @@ func (s *TodocheckScenario) ExpectExecutionError() *TodocheckScenario {
 	return s
 }
 
+// WithJSONOutput sets the output to be in JSON format
+func (s *TodocheckScenario) WithJSONOutput() *TodocheckScenario {
+	s.expectJsonFormat = true
+	return s
+}
+
 // Run sets up the environment & executes the configured scenario
 func (s *TodocheckScenario) Run() error {
 	var err error
@@ -185,6 +192,12 @@ func (s *TodocheckScenario) Run() error {
 	cmd := exec.Command(s.binaryLoc, "--basepath", s.basepath, "--config", s.cfgPath)
 	if s.versionFlagRequested {
 		cmd.Args = append(cmd.Args, "--version")
+	}
+
+	format := ""
+	if s.expectJsonFormat {
+		format = "json"
+		cmd.Args = append(cmd.Args, "--format", format)
 	}
 
 	teardown, err := s.setupTestEnvironment(cmd)
@@ -211,8 +224,22 @@ func (s *TodocheckScenario) Run() error {
 		}
 	}
 
+	var actualOutput string
+	if format == "json" {
+		actualOutput = stdout.String()
+	} else {
+		actualOutput = stderr.String()
+	}
+
+	var validateTodoFunc validateFunc
+	if format == "json" {
+		validateTodoFunc = validateJSONTodoErrs(actualOutput, s.todoErrScenarios)
+	} else {
+		validateTodoFunc = validateStandardTodoErrs(actualOutput, s.todoErrScenarios)
+	}
+
 	validateFuncs := []validateFunc{
-		validateTodoErrs(stderr.String(), s.todoErrScenarios),
+		validateTodoFunc,
 		validateAuthTokensCache(s.cfg.Auth.TokensCache, s.cfg.Auth.OfflineURL, s.expectedAuthToken),
 	}
 
