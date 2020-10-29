@@ -1,6 +1,7 @@
 package scenariobuilder
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -12,7 +13,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func validateTodoErrs(programOutput string, scenarios []*TodoErrScenario) validateFunc {
+func validateStandardTodoErrs(programOutput string, scenarios []*TodoErrScenario) validateFunc {
 	return func() error {
 		chunks := common.RemoveEmptyTokens(strings.Split(programOutput, "\n\n"))
 		if len(chunks) != len(scenarios) {
@@ -31,6 +32,49 @@ func validateTodoErrs(programOutput string, scenarios []*TodoErrScenario) valida
 			}
 
 			scenarios = removeScenario(scenarios, j)
+		}
+
+		return nil
+	}
+}
+
+func validateJSONTodoErrs(programOutput string, scenarios []*TodoErrScenario) validateFunc {
+	return func() error {
+		var elements []TodoErrForJSON
+
+		err := json.Unmarshal([]byte(programOutput), &elements)
+		if err != nil {
+			return err
+		}
+
+		scenarioJSONObjs := make([]*TodoErrForJSON, len(scenarios))
+		for i, s := range scenarios {
+			scenarioJSONObjs[i] = s.ToTodoErrForJSON()
+		}
+
+		if len(elements) != len(scenarios) {
+			return fmt.Errorf("Invalid amount of todo errors detected.\nExpected: %d, Actual: %d\n\n"+
+				"(program output follows...)\n%s",
+				len(scenarios), len(elements), programOutput)
+		}
+
+		for _, elem := range elements {
+			removeIdx := -1
+			for j, expected := range scenarioJSONObjs {
+				if elem == *expected {
+					removeIdx = j
+					break
+				}
+			}
+
+			if removeIdx == -1 {
+				return fmt.Errorf(
+					"No matching todo detected in any of the scenarios"+
+						"\n\nActual:\n%+v\n\nRemaining scenarios:\n%s",
+					elem, printScenariosForJSON(scenarioJSONObjs))
+			}
+
+			scenarioJSONObjs = removeScenarioForJSON(scenarioJSONObjs, removeIdx)
 		}
 
 		return nil
@@ -84,6 +128,19 @@ func printScenarios(ss []*TodoErrScenario) string {
 	return res
 }
 
+func printScenariosForJSON(ss []*TodoErrForJSON) string {
+	res := ""
+	for i, s := range ss {
+		res += fmt.Sprintf("(scenario #%d)\n%+v\n\n", i+1, s)
+	}
+
+	return res
+}
+
 func removeScenario(scenarios []*TodoErrScenario, i int) []*TodoErrScenario {
 	return append(scenarios[:i], scenarios[i+1:]...)
+}
+
+func removeScenarioForJSON(scenariosForJSON []*TodoErrForJSON, i int) []*TodoErrForJSON {
+	return append(scenariosForJSON[:i], scenariosForJSON[i+1:]...)
 }

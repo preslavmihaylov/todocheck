@@ -72,6 +72,26 @@ func TestFirstlineMalformedTodo(t *testing.T) {
 	}
 }
 
+func TestFirstlineMalformedTodoWithJSONOutput(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/firstline_comment").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithJSONOutput().
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/firstline_comment/main.cpp", 1)).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/firstline_comment/other.cpp", 1)).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestMultiLineMalformedTodos(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
@@ -138,6 +158,37 @@ func TestAnnotatedTodos(t *testing.T) {
 				ExpectLine(" * TODO J456:").
 				ExpectLine(" * This issue doesn't exist").
 				ExpectLine(" */")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestAnnotatedTodosWithJSONOutput(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/annotated_todos").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("J123", issuetracker.StatusClosed).
+		WithIssue("J321", issuetracker.StatusOpen).
+		WithJSONOutput().
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/annotated_todos/main.go", 3)).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/annotated_todos/main.go", 7)).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/annotated_todos/main.go", 14)).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/annotated_todos/main.go", 19)).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
