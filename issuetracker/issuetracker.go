@@ -56,7 +56,7 @@ func BaseURLFor(issueTracker config.IssueTracker, origin string) (string, error)
 	case config.IssueTrackerJira:
 		return fmt.Sprintf("%s/rest/api/latest/issue/", origin), nil
 	case config.IssueTrackerGithub:
-		scheme, owner, repo := ParseGithubDetails(origin)
+		scheme, owner, repo := parseGithubDetails(origin)
 		return fmt.Sprintf("%s//api.github.com/repos/%s/%s/issues/", scheme, owner, repo), nil
 	case config.IssueTrackerGitlab:
 		tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
@@ -90,14 +90,14 @@ func BaseURLFor(issueTracker config.IssueTracker, origin string) (string, error)
 func HealthcheckURL(issueTracker config.IssueTracker, origin string) (string, error) {
 	switch issueTracker {
 	case config.IssueTrackerGithub:
-		scheme, owner, repo := ParseGithubDetails(origin)
+		scheme, owner, repo := parseGithubDetails(origin)
 		return fmt.Sprintf("%s//api.github.com/repos/%s/%s", scheme, owner, repo), nil
 	default:
 		return "", ErrUnsupportedHealthCheck
 	}
 }
 
-func ParseGithubDetails(origin string) (scheme, owner, repo string) {
+func parseGithubDetails(origin string) (scheme, owner, repo string) {
 	tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
 	if !strings.HasPrefix(tokens[0], "http") {
 		tokens = append([]string{"https:"}, tokens...)
