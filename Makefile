@@ -6,6 +6,7 @@ build:
 
 test: build
 	go test -v -count=1 ./testing
+	go test -v -count=1 ./validation
 
 release:
 	@echo "Generating binaries for version $(version)..."
