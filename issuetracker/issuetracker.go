@@ -39,7 +39,7 @@ func TaskURLSuffixFor(taskID string, issueTracker config.IssueTracker) string {
 	switch issueTracker {
 	case config.IssueTrackerRedmine:
 		return taskID + ".json"
-	case config.IssueTrackerPivotal:
+	case config.IssueTrackerPivotal, config.IssueTrackerGithub:
 		if len(taskID) > 0 && taskID[0] == '#' {
 			return taskID[1:]
 		}

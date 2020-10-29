@@ -72,6 +72,26 @@ func TestFirstlineMalformedTodo(t *testing.T) {
 	}
 }
 
+func TestFirstlineMalformedTodoWithJSONOutput(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/firstline_comment").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithJSONOutput().
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/firstline_comment/main.cpp", 1)).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/firstline_comment/other.cpp", 1)).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestMultiLineMalformedTodos(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
@@ -138,6 +158,37 @@ func TestAnnotatedTodos(t *testing.T) {
 				ExpectLine(" * TODO J456:").
 				ExpectLine(" * This issue doesn't exist").
 				ExpectLine(" */")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestAnnotatedTodosWithJSONOutput(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/annotated_todos").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("J123", issuetracker.StatusClosed).
+		WithIssue("J321", issuetracker.StatusOpen).
+		WithJSONOutput().
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/annotated_todos/main.go", 3)).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/annotated_todos/main.go", 7)).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/annotated_todos/main.go", 14)).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/annotated_todos/main.go", 19)).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
@@ -508,6 +559,36 @@ func TestConfigAutoDetectWithHTTPSGitConfig(t *testing.T) {
 				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/auto_detect_config/main.go", 3).
 				ExpectLine("// TODO - malformed todo")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestHashTagTodosWithGithub(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/hashtag_todos_with_github").
+		WithTestEnvConfig("./test_configs/valid_github_access.yaml").
+		WithGitConfig("https://github.com/preslavmihaylov/todocheck").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/hashtag_todos_with_github/main.go", 3).
+				ExpectLine("// TODO 2: closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/hashtag_todos_with_github/main.go", 5).
+				ExpectLine("// TODO #9999999: non-existent issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/hashtag_todos_with_github/main.go", 7).
+				ExpectLine("/*").
+				ExpectLine(" * This is an invalid TODO #3:").
+				ExpectLine(" * as the issue is closed").
+				ExpectLine(" */")).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
