@@ -514,6 +514,36 @@ func TestConfigAutoDetectWithHTTPSGitConfig(t *testing.T) {
 	}
 }
 
+func TestHashTagTodosWithGithub(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/hashtag_todos_with_github").
+		WithTestEnvConfig("./test_configs/valid_github_access.yaml").
+		WithGitConfig("https://github.com/preslavmihaylov/todocheck").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/hashtag_todos_with_github/main.go", 3).
+				ExpectLine("// TODO 2: closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/hashtag_todos_with_github/main.go", 5).
+				ExpectLine("// TODO #9999999: non-existent issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/hashtag_todos_with_github/main.go", 7).
+				ExpectLine("/*").
+				ExpectLine(" * This is an invalid TODO #3:").
+				ExpectLine(" * as the issue is closed").
+				ExpectLine(" */")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestGroovyTodos(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
