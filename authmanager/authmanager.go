@@ -37,7 +37,7 @@ func AcquireToken(cfg *config.Local) error {
 	case config.AuthTypeOffline:
 		return acquireOfflineToken(cfg.Auth)
 	default:
-		panic("this shouldn't have happened, don't know what to do here")
+		panic("It's on us! Don't know how to handle this authentication token type. Please file an issue here - https://github.com/preslavmihaylov/todocheck/issues/new")
 	}
 }
 

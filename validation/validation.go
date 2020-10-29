@@ -27,10 +27,6 @@ func Validate(cfg *config.Local) []error {
 		errs = append(errs, err)
 	}
 
-	if err := validateAuthType(cfg); err != nil {
-		errs = append(errs, err)
-	}
-
 	if cfg.Auth.Token == "" && cfg.IssueTracker == config.IssueTrackerGithub {
 		fmt.Fprintln(color.Output, color.YellowString(
 			"WARNING: Github has API rate limits for all requests which do not contain a token.\n"+
@@ -77,15 +73,6 @@ func validateIssueTrackerExists(cfg *config.Local) error {
 
 	if !fetcher.IsHealthy(cfg.IssueTracker, url) {
 		return fmt.Errorf("repository %s not found. Is the repository private? More info: https://github.com/preslavmihaylov/todocheck#github", url)
-	}
-
-	return nil
-}
-
-func validateAuthType(cfg *config.Local) error {
-
-	if !cfg.Auth.Type.IsValid() {
-		return fmt.Errorf("invalid auth type: %q. valid auth types are: %q", cfg.Auth.Type, config.ValidAuthTypes)
 	}
 
 	return nil
