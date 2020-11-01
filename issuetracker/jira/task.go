@@ -1,4 +1,4 @@
-package models
+package jira
 
 import "github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 
@@ -12,13 +12,13 @@ type Fields struct {
 	Status `json:"status"`
 }
 
-// JiraTask JSON model as returned by Rest API
-type JiraTask struct {
+// Task JSON model as returned by the Jira Rest API
+type Task struct {
 	Fields `json:"fields"`
 }
 
 // GetStatus of jira task, based on underlying structure
-func (t *JiraTask) GetStatus() taskstatus.TaskStatus {
+func (t *Task) GetStatus() taskstatus.TaskStatus {
 	switch t.Fields.Status.Name {
 	case "Done":
 		fallthrough

@@ -1,14 +1,14 @@
-package models
+package github
 
 import "github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 
-// GitlabTask model
-type GitlabTask struct {
+// Task model
+type Task struct {
 	State string `json:"state"`
 }
 
-// GetStatus of gitlab task, based on underlying structure
-func (t *GitlabTask) GetStatus() taskstatus.TaskStatus {
+// GetStatus of github task, based on underlying structure
+func (t *Task) GetStatus() taskstatus.TaskStatus {
 	switch t.State {
 	case "closed":
 		return taskstatus.Closed

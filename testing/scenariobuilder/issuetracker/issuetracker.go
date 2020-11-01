@@ -3,7 +3,7 @@ package issuetracker
 import (
 	"encoding/json"
 
-	"github.com/preslavmihaylov/todocheck/issuetracker/models"
+	"github.com/preslavmihaylov/todocheck/issuetracker/jira"
 )
 
 // Type is an enum specifying the target mock issue tracker to use
@@ -41,9 +41,9 @@ func IssueURLFrom(t Type, issue string) string {
 func BuildResponseFor(t Type, issue string, status Status) []byte {
 	switch t {
 	case Jira:
-		return must(json.Marshal(&models.JiraTask{
-			Fields: models.Fields{
-				Status: models.Status{
+		return must(json.Marshal(&jira.Task{
+			Fields: jira.Fields{
+				Status: jira.Status{
 					Name: string(status),
 				},
 			},
