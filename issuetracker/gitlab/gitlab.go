@@ -27,7 +27,7 @@ func (it *IssueTracker) TaskURLFrom(taskID string) string {
 // IssueAPIOrigin returns the URL for github's issue-fetching API
 func (it *IssueTracker) IssueAPIOrigin() string {
 	tokens := common.RemoveEmptyTokens(strings.Split(it.Origin, "/"))
-	if tokens[0] != "http:" && tokens[0] != "https:" {
+	if !strings.HasPrefix(tokens[0], "http:") && !strings.HasPrefix(tokens[0], "https:") {
 		tokens = append([]string{"https:"}, tokens...)
 	}
 
