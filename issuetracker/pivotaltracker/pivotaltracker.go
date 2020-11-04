@@ -20,7 +20,7 @@ func (it *IssueTracker) TaskModel() issuetracker.Task {
 
 // TaskURLFrom taskID returns the url for the target pivotaltracker task ID to fetch
 func (it *IssueTracker) TaskURLFrom(taskID string) string {
-	if len(taskID) > 0 && strings.HasPrefix(taskID, string('#')) {
+	if strings.HasPrefix(taskID, string('#')) {
 		return taskID[1:]
 	}
 
