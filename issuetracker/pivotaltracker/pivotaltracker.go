@@ -20,7 +20,7 @@ func (it *IssueTracker) TaskModel() issuetracker.Task {
 
 // TaskURLFrom taskID returns the url for the target pivotaltracker task ID to fetch
 func (it *IssueTracker) TaskURLFrom(taskID string) string {
-	if strings.HasPrefix(taskID, string('#')) {
+	if strings.HasPrefix(taskID, "#") {
 		return taskID[1:]
 	}
 
@@ -30,12 +30,12 @@ func (it *IssueTracker) TaskURLFrom(taskID string) string {
 // IssueAPIOrigin returns the URL for pivotaltracker's issue-fetching API
 func (it *IssueTracker) IssueAPIOrigin() string {
 	tokens := common.RemoveEmptyTokens(strings.Split(it.Origin, "/"))
-	if strings.HasPrefix(tokens[0], "pivotaltracker.com") {
+	if tokens[0] == "pivotaltracker.com" {
 		tokens = append([]string{"https:"}, tokens...)
 	}
 
 	scheme, project := tokens[0], tokens[3]
-	if strings.HasPrefix(tokens[2], "n") {
+	if tokens[2] == "n" {
 		project = tokens[4]
 	}
 
