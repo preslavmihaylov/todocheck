@@ -20,7 +20,7 @@ func (it *IssueTracker) TaskModel() issuetracker.Task {
 
 // TaskURLFrom taskID returns the url for the target github task ID to fetch
 func (it *IssueTracker) TaskURLFrom(taskID string) string {
-	if len(taskID) > 0 && taskID[0] == '#' {
+	if strings.HasPrefix(taskID, "#") {
 		return taskID[1:]
 	}
 
