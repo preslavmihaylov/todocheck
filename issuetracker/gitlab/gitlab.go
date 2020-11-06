@@ -21,6 +21,10 @@ func (it *IssueTracker) TaskModel() issuetracker.Task {
 
 // TaskURLFrom taskID returns the url for the target gitlab task ID to fetch
 func (it *IssueTracker) TaskURLFrom(taskID string) string {
+	if strings.HasPrefix(taskID, "#") {
+		return taskID[1:]
+	}
+
 	return taskID
 }
 
