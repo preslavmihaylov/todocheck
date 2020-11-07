@@ -24,16 +24,6 @@ type IssueTracker interface {
 	// returns a Task model, specific to the given issue tracker, which can be unmarshaled from JSON
 	TaskModel() Task
 
-	// TaskURLFrom the given task ID. Returns the appropriate task ID to append to rest api request.
-	// In most use-cases, the taskID is returned as-is as it is simply appended to the issue tracker URL origin
-	// (e.g. issuetracker.com/issues/{taskID}.
-	//
-	// However, some issue trackers might expect the taskID to be appended in a special format
-	TaskURLFrom(taskID string) string
-
-	// IssueAPIOrigin returns the task-fetching base url for the given issue tracker
-	IssueAPIOrigin() string
-
 	// IssueURLFor Returns the full URL for the issue
 	IssueURLFor(taskID string) string
 }
