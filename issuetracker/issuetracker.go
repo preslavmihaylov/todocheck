@@ -33,6 +33,9 @@ type IssueTracker interface {
 
 	// IssueAPIOrigin returns the task-fetching base url for the given issue tracker
 	IssueAPIOrigin() string
+
+	// IssueURLFor Returns the full URL for the issue
+	IssueURLFor(taskID string) string
 }
 
 // HealthcheckURL returns the health check base url given the issue tracker type and the site origin
