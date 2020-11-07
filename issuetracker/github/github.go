@@ -37,3 +37,8 @@ func (it *IssueTracker) IssueAPIOrigin() string {
 	scheme, owner, repo := tokens[0], tokens[2], tokens[3]
 	return fmt.Sprintf("%s//api.github.com/repos/%s/%s/issues/", scheme, owner, repo)
 }
+
+// IssueURLFor Returns the full URL for the github issue
+func (it *IssueTracker) IssueURLFor(taskID string) string {
+	return it.IssueAPIOrigin() + it.TaskURLFrom(taskID)
+}

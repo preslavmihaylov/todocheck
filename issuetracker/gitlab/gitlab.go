@@ -39,3 +39,8 @@ func (it *IssueTracker) IssueAPIOrigin() string {
 	urlEncodedProject := url.QueryEscape(fmt.Sprintf("%s/%s", owner, repo))
 	return fmt.Sprintf("%s//%s/api/v4/projects/%s/issues/", scheme, host, urlEncodedProject)
 }
+
+// IssueURLFor Returns the full URL for the gitlab issue
+func (it *IssueTracker) IssueURLFor(taskID string) string {
+	return it.IssueAPIOrigin() + it.TaskURLFrom(taskID)
+}

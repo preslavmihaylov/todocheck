@@ -25,3 +25,8 @@ func (it *IssueTracker) TaskURLFrom(taskID string) string {
 func (it *IssueTracker) IssueAPIOrigin() string {
 	return fmt.Sprintf("%s/rest/api/latest/issue/", it.Origin)
 }
+
+// IssueURLFor Returns the full URL for the Jira issue
+func (it *IssueTracker) IssueURLFor(taskID string) string {
+	return it.IssueAPIOrigin() + it.TaskURLFrom(taskID)
+}

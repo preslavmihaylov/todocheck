@@ -41,3 +41,8 @@ func (it *IssueTracker) IssueAPIOrigin() string {
 
 	return fmt.Sprintf("%s//www.pivotaltracker.com/services/v5/projects/%s/stories/", scheme, project)
 }
+
+// IssueURLFor Returns the full URL for the pivotaltracker issue
+func (it *IssueTracker) IssueURLFor(taskID string) string {
+	return it.IssueAPIOrigin() + it.TaskURLFrom(taskID)
+}

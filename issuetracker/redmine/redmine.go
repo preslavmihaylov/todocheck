@@ -25,3 +25,8 @@ func (it *IssueTracker) TaskURLFrom(taskID string) string {
 func (it *IssueTracker) IssueAPIOrigin() string {
 	return fmt.Sprintf("%s/issues/", it.Origin)
 }
+
+// IssueURLFor Returns the full URL for the redmine issue
+func (it *IssueTracker) IssueURLFor(taskID string) string {
+	return it.IssueAPIOrigin() + it.TaskURLFrom(taskID)
+}
