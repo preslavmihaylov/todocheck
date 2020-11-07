@@ -16,17 +16,17 @@ func (it *IssueTracker) TaskModel() issuetracker.Task {
 	return &Task{}
 }
 
+// IssueURLFor Returns the full URL for the Jira issue
+func (it *IssueTracker) IssueURLFor(taskID string) string {
+	return it.issueAPIOrigin() + it.taskURLFrom(taskID)
+}
+
 // TaskURLFrom taskID returns the url for the target Jira task ID to fetch
-func (it *IssueTracker) TaskURLFrom(taskID string) string {
+func (it *IssueTracker) taskURLFrom(taskID string) string {
 	return taskID
 }
 
 // IssueAPIOrigin returns the URL for Jira's issue-fetching API
-func (it *IssueTracker) IssueAPIOrigin() string {
+func (it *IssueTracker) issueAPIOrigin() string {
 	return fmt.Sprintf("%s/rest/api/latest/issue/", it.Origin)
-}
-
-// IssueURLFor Returns the full URL for the Jira issue
-func (it *IssueTracker) IssueURLFor(taskID string) string {
-	return it.IssueAPIOrigin() + it.TaskURLFrom(taskID)
 }

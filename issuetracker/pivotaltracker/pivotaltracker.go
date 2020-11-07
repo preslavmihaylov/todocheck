@@ -18,8 +18,13 @@ func (it *IssueTracker) TaskModel() issuetracker.Task {
 	return &Task{}
 }
 
+// IssueURLFor Returns the full URL for the pivotaltracker issue
+func (it *IssueTracker) IssueURLFor(taskID string) string {
+	return it.issueAPIOrigin() + it.taskURLFrom(taskID)
+}
+
 // TaskURLFrom taskID returns the url for the target pivotaltracker task ID to fetch
-func (it *IssueTracker) TaskURLFrom(taskID string) string {
+func (it *IssueTracker) taskURLFrom(taskID string) string {
 	if strings.HasPrefix(taskID, "#") {
 		return taskID[1:]
 	}
@@ -28,7 +33,7 @@ func (it *IssueTracker) TaskURLFrom(taskID string) string {
 }
 
 // IssueAPIOrigin returns the URL for pivotaltracker's issue-fetching API
-func (it *IssueTracker) IssueAPIOrigin() string {
+func (it *IssueTracker) issueAPIOrigin() string {
 	tokens := common.RemoveEmptyTokens(strings.Split(it.Origin, "/"))
 	if tokens[0] == "pivotaltracker.com" {
 		tokens = append([]string{"https:"}, tokens...)
@@ -40,9 +45,4 @@ func (it *IssueTracker) IssueAPIOrigin() string {
 	}
 
 	return fmt.Sprintf("%s//www.pivotaltracker.com/services/v5/projects/%s/stories/", scheme, project)
-}
-
-// IssueURLFor Returns the full URL for the pivotaltracker issue
-func (it *IssueTracker) IssueURLFor(taskID string) string {
-	return it.IssueAPIOrigin() + it.TaskURLFrom(taskID)
 }
