@@ -28,6 +28,7 @@ func main() {
 	var basepath = flag.String("basepath", ".", "The path for the project to todocheck. Defaults to current directory")
 	var cfgPath = flag.String("config", "", "The project configuration file to use. Will use the one from the basepath if not specified")
 	var format = flag.String("format", "standard", "The output format to use. Available formats - standard, json")
+	var verboseRequested = flag.Bool("verbose", false, "Verbose mode")
 	var versionRequested = flag.Bool("version", false, "Show the current version of todocheck")
 	flag.BoolVar(versionRequested, "v", *versionRequested, "Show the current version of todocheck (shorthand)")
 	flag.Parse()
@@ -63,7 +64,7 @@ func main() {
 	f := fetcher.NewFetcher(tracker, authmiddleware.For(localCfg))
 
 	todoErrs := []*todocheckerrors.TODO{}
-	traverser := todoerrs.NewTraverser(f, localCfg.IgnoredPaths, func(todoErr *todocheckerrors.TODO) error {
+	traverser := todoerrs.NewTraverser(f, localCfg.IgnoredPaths, *verboseRequested, func(todoErr *todocheckerrors.TODO) error {
 		todoErrs = append(todoErrs, todoErr)
 		return nil
 	})

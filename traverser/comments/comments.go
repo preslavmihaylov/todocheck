@@ -7,12 +7,13 @@ import (
 )
 
 // NewTraverser for comments
-func NewTraverser(ignoredPaths []string, callback state.CommentCallback) *Traverser {
+func NewTraverser(ignoredPaths []string, verbose bool, callback state.CommentCallback) *Traverser {
 	return &Traverser{
 		ignoredPaths:            ignoredPaths,
 		supportedFileExtensions: matchers.SupportedFileExtensions(),
 		state:                   state.NonComment,
 		callback:                callback,
+		verbose:                 verbose,
 	}
 }
 
@@ -27,12 +28,14 @@ type Traverser struct {
 
 	callbackErr error
 	state       state.CommentState
+
+	verbose bool
 }
 
 // TraversePath and perform a callback on each line in each file
 func (t *Traverser) TraversePath(path string) error {
 	var prev, curr, next rune
-	return lines.TraversePath(path, t.ignoredPaths, t.supportedFileExtensions, func(filename, line string, linecnt int) error {
+	return lines.TraversePath(path, t.ignoredPaths, t.supportedFileExtensions, t.verbose, func(filename, line string, linecnt int) error {
 		for _, b := range line {
 			curr = next
 			next = b
