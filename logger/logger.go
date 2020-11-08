@@ -1,7 +1,11 @@
 package logger
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
+var lock sync.Mutex
 var log *Logger
 
 // Logger provided simple logger.
@@ -11,8 +15,13 @@ type Logger struct {
 
 // Setup configures logger
 func Setup(verbose bool) *Logger {
-	log = &Logger{
-		verbose,
+	lock.Lock()
+	defer lock.Unlock()
+
+	if log == nil {
+		log = &Logger{
+			verbose,
+		}
 	}
 	return log
 }
