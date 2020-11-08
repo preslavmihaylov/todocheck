@@ -16,16 +16,14 @@ import (
 type lineCallback func(filename, line string, linecnt int) error
 
 // TraversePath and perform a callback on each line in each file
-func TraversePath(path string, ignoredPaths, supportedFileExtensions []string, verbose bool, callback lineCallback) error {
+func TraversePath(path string, ignoredPaths, supportedFileExtensions []string, callback lineCallback) error {
 	return filepath.Walk(path, func(file string, info os.FileInfo, err error) error {
 		if err != nil {
 			return fmt.Errorf("couldn't traverse %s: %w", file, err)
 		}
 
 		if isIgnored(ignoredPaths, file) {
-			if verbose {
-				fmt.Println("Skipping ignored file", file)
-			}
+			fmt.Println("Skipping ignored file", file)
 			if info.IsDir() {
 				return filepath.SkipDir
 			}
