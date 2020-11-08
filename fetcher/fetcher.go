@@ -25,7 +25,7 @@ func NewFetcher(issueTracker issuetracker.IssueTracker, authMw authmiddleware.Fu
 
 // Fetch a task's status based on task ID
 func (f *Fetcher) Fetch(taskID string) (taskstatus.TaskStatus, error) {
-	req, err := http.NewRequest("GET", f.IssueTracker.IssueAPIOrigin()+f.IssueTracker.TaskURLFrom(taskID), nil)
+	req, err := http.NewRequest("GET", f.IssueTracker.IssueURLFor(taskID), nil)
 	if err != nil {
 		return taskstatus.None, fmt.Errorf("failed creating new GET request: %w", err)
 	}
