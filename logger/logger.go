@@ -14,7 +14,7 @@ type Logger struct {
 }
 
 // Setup configures logger
-func Setup(verbose bool) *Logger {
+func Setup(verbose bool) {
 	lock.Lock()
 	defer lock.Unlock()
 
@@ -23,7 +23,6 @@ func Setup(verbose bool) *Logger {
 			verbose,
 		}
 	}
-	return log
 }
 
 // Info prints in verbose mode to standart output. Format according to fmt.Println.
