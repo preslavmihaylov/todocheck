@@ -18,8 +18,13 @@ func (it *IssueTracker) TaskModel() issuetracker.Task {
 	return &Task{}
 }
 
+// IssueURLFor Returns the full URL for the github issue
+func (it *IssueTracker) IssueURLFor(taskID string) string {
+	return it.issueAPIOrigin() + it.taskURLFrom(taskID)
+}
+
 // TaskURLFrom taskID returns the url for the target github task ID to fetch
-func (it *IssueTracker) TaskURLFrom(taskID string) string {
+func (it *IssueTracker) taskURLFrom(taskID string) string {
 	if strings.HasPrefix(taskID, "#") {
 		return taskID[1:]
 	}
@@ -28,7 +33,7 @@ func (it *IssueTracker) TaskURLFrom(taskID string) string {
 }
 
 // IssueAPIOrigin returns the URL for github's issue-fetching API
-func (it *IssueTracker) IssueAPIOrigin() string {
+func (it *IssueTracker) issueAPIOrigin() string {
 	tokens := common.RemoveEmptyTokens(strings.Split(it.Origin, "/"))
 	if !strings.HasPrefix(tokens[0], "http") {
 		tokens = append([]string{"https:"}, tokens...)
