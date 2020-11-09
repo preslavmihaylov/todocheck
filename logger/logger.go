@@ -18,10 +18,8 @@ func Setup(verbose bool) {
 	lock.Lock()
 	defer lock.Unlock()
 
-	if log == nil {
-		log = &Logger{
-			verbose,
-		}
+	log = &Logger{
+		verbose,
 	}
 }
 
