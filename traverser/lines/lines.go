@@ -10,6 +10,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/preslavmihaylov/todocheck/logger"
+
 	"github.com/bmatcuk/doublestar"
 )
 
@@ -23,7 +25,7 @@ func TraversePath(path string, ignoredPaths, supportedFileExtensions []string, c
 		}
 
 		if isIgnored(ignoredPaths, file) {
-			fmt.Println("Skipping ignored file", file)
+			logger.Info("Skipping ignored file", file)
 			if info.IsDir() {
 				return filepath.SkipDir
 			}
