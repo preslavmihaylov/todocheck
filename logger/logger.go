@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-var lock sync.Mutex
+var once sync.Once
 var log *Logger
 
 // Logger provided simple logger.
@@ -15,14 +15,11 @@ type Logger struct {
 
 // Setup configures logger
 func Setup(verbose bool) {
-	lock.Lock()
-	defer lock.Unlock()
-
-	if log == nil {
+	once.Do(func() {
 		log = &Logger{
 			verbose,
 		}
-	}
+	})
 }
 
 // Info prints in verbose mode to standart output. Format according to fmt.Println.
