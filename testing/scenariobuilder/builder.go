@@ -32,10 +32,11 @@ type TodocheckScenario struct {
 	expectedAuthToken      string
 	userOfflineToken       string
 	gitOriginURL           string
+	authTokenEnvVariable   string
 	versionFlagRequested   bool
 	deleteTokensCacheAfter bool
 	expectedExitCode       int
-	expectJsonFormat       bool
+	expectJSONFormat       bool
 	issueTracker           issuetracker.Type
 	issues                 map[string]issuetracker.Status
 	envVariables           map[string]string
@@ -86,6 +87,13 @@ func (s *TodocheckScenario) WithGitConfig(origunURL string) *TodocheckScenario {
 // WithVersionFlag sets the --version flag when calling the todocheck binary
 func (s *TodocheckScenario) WithVersionFlag() *TodocheckScenario {
 	s.versionFlagRequested = true
+	return s
+}
+
+// WithAuthTokenFromEnv sets the TODOCHECK_AUTH_TOKEN environment variable by copying the token
+// from the provided environment variable
+func (s *TodocheckScenario) WithAuthTokenFromEnv(envVariable string) *TodocheckScenario {
+	s.authTokenEnvVariable = envVariable
 	return s
 }
 
@@ -177,7 +185,7 @@ func (s *TodocheckScenario) ExpectExecutionError() *TodocheckScenario {
 
 // WithJSONOutput sets the output to be in JSON format
 func (s *TodocheckScenario) WithJSONOutput() *TodocheckScenario {
-	s.expectJsonFormat = true
+	s.expectJSONFormat = true
 	return s
 }
 
@@ -194,8 +202,17 @@ func (s *TodocheckScenario) Run() error {
 		cmd.Args = append(cmd.Args, "--version")
 	}
 
+	cmd.Env = os.Environ()
+	if s.authTokenEnvVariable != "" {
+		if os.Getenv(s.authTokenEnvVariable) == "" {
+			return fmt.Errorf("expected environment variable %s to be set as auth token", s.authTokenEnvVariable)
+		}
+
+		cmd.Env = append(cmd.Env, fmt.Sprintf("TODOCHECK_AUTH_TOKEN=%s", os.Getenv(s.authTokenEnvVariable)))
+	}
+
 	format := ""
-	if s.expectJsonFormat {
+	if s.expectJSONFormat {
 		format = "json"
 		cmd.Args = append(cmd.Args, "--format", format)
 	}
@@ -220,6 +237,8 @@ func (s *TodocheckScenario) Run() error {
 	fmt.Println(stdout.String())
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); !ok || exitError.ExitCode() != s.expectedExitCode {
+			fmt.Println("(unexpected error occurred. standard error output follows...)")
+			fmt.Println(stderr.String())
 			return fmt.Errorf("program exited with an unexpected exit code: %s", err)
 		}
 	}
@@ -253,8 +272,7 @@ func (s *TodocheckScenario) Run() error {
 
 func (s *TodocheckScenario) setupTestEnvironment(cmd *exec.Cmd) (teardownFunc, error) {
 	s.setupEnvironmentVariables(cmd, s.envVariables)
-	mockSrv := s.setupMockIssueTrackerServer()
-	teardownIssueTrackerCfg, err := setupMockIssueTrackerCfg(s.testCfgPath, mockSrv.URL)
+	teardownMockIssueTracker, err := s.setupMockIssueTrackerServer()
 	if err != nil {
 		return nil, fmt.Errorf("couldn't setup mock issue tracker: %w", err)
 	}
@@ -269,20 +287,22 @@ func (s *TodocheckScenario) setupTestEnvironment(cmd *exec.Cmd) (teardownFunc, e
 		}
 
 		defer s.teardownGitConfig()
-		defer teardownIssueTrackerCfg()
-		defer mockSrv.Close()
+		defer teardownMockIssueTracker()
 	}, nil
 }
 
 func (s *TodocheckScenario) setupEnvironmentVariables(cmd *exec.Cmd, envVariables map[string]string) {
-	cmd.Env = os.Environ()
 	for key, value := range envVariables {
 		cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", key, value))
 	}
 }
 
-func (s *TodocheckScenario) setupMockIssueTrackerServer() *httptest.Server {
-	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func (s *TodocheckScenario) setupMockIssueTrackerServer() (teardownFunc, error) {
+	if s.issueTracker == "" {
+		return func() {}, nil
+	}
+
+	mockSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if s.expectedAuthToken != "" && r.Header.Get("Authorization") != "Bearer "+s.expectedAuthToken {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
@@ -297,6 +317,16 @@ func (s *TodocheckScenario) setupMockIssueTrackerServer() *httptest.Server {
 
 		w.WriteHeader(http.StatusNotFound)
 	}))
+
+	teardownIssueTrackerCfg, err := setupMockIssueTrackerCfg(s.testCfgPath, mockSrv.URL)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't setup mock issue tracker: %w", err)
+	}
+
+	return func() {
+		defer teardownIssueTrackerCfg()
+		defer mockSrv.Close()
+	}, nil
 }
 
 func setupMockIssueTrackerCfg(cfgPath string, mockOrigin string) (teardownFunc, error) {

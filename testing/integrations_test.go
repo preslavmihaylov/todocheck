@@ -1,8 +1,6 @@
 package testing
 
 import (
-	"fmt"
-	"os"
 	"testing"
 
 	"github.com/preslavmihaylov/todocheck/checker/errors"
@@ -10,15 +8,11 @@ import (
 )
 
 func TestPublicGithubIntegration(t *testing.T) {
-	fmt.Println(os.Getenv("FOOBAR"))
-	if os.Getenv("TESTS_GITHUB_APITOKEN") != "" {
-		fmt.Println("github apitoken is present!")
-	}
-
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/integrations/github").
 		WithConfig("./test_configs/integrations/github.yaml").
+		WithAuthTokenFromEnv("TESTS_GITHUB_APITOKEN").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
