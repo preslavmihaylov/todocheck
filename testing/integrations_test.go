@@ -9,7 +9,7 @@ import (
 
 func TestPublicGithubIntegration(t *testing.T) {
 	err := baseGithubScenario().
-		WithConfig("./test_configs/integrations/github.yaml").
+		WithConfig("./test_configs/integrations/github_public.yaml").
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
