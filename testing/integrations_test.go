@@ -9,6 +9,7 @@ import (
 
 func TestPublicGithubIntegration(t *testing.T) {
 	err := scenariobuilder.NewScenario().
+		OnlyRunOnCI().
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/integrations/github").
 		WithConfig("./test_configs/integrations/github.yaml").

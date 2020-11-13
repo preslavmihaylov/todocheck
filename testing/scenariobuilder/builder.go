@@ -34,6 +34,7 @@ type TodocheckScenario struct {
 	gitOriginURL           string
 	authTokenEnvVariable   string
 	versionFlagRequested   bool
+	onlyRunOnCI            bool
 	deleteTokensCacheAfter bool
 	expectedExitCode       int
 	expectJSONFormat       bool
@@ -87,6 +88,14 @@ func (s *TodocheckScenario) WithGitConfig(origunURL string) *TodocheckScenario {
 // WithVersionFlag sets the --version flag when calling the todocheck binary
 func (s *TodocheckScenario) WithVersionFlag() *TodocheckScenario {
 	s.versionFlagRequested = true
+	return s
+}
+
+// OnlyRunOnCI configures this scenario to only execute when executed in a CI environment.
+// If ran locally, this scenario will succeed unconditionally.
+// This is useful in situations when a certain scenario needs specific data available on the CI environment only
+func (s *TodocheckScenario) OnlyRunOnCI() *TodocheckScenario {
+	s.onlyRunOnCI = true
 	return s
 }
 
@@ -191,6 +200,11 @@ func (s *TodocheckScenario) WithJSONOutput() *TodocheckScenario {
 
 // Run sets up the environment & executes the configured scenario
 func (s *TodocheckScenario) Run() error {
+	if s.onlyRunOnCI && os.Getenv("TODOCHECK_ENV") != "ci" {
+		fmt.Println("(skipping test as it's marked CI-only...)")
+		return nil
+	}
+
 	var err error
 	s.cfg, err = config.NewLocal(s.testCfgPath, s.basepath)
 	if err != nil {
