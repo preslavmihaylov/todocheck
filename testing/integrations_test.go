@@ -9,6 +9,7 @@ import (
 
 func TestPublicGithubIntegration(t *testing.T) {
 	err := baseGithubScenario().
+		OnlyRunOnCI().
 		WithConfig("./test_configs/integrations/github_public.yaml").
 		Run()
 	if err != nil {
@@ -18,6 +19,7 @@ func TestPublicGithubIntegration(t *testing.T) {
 
 func TestPrivateGithubIntegration(t *testing.T) {
 	err := baseGithubScenario().
+		OnlyRunOnCI().
 		WithConfig("./test_configs/integrations/github_private.yaml").
 		Run()
 	if err != nil {
@@ -27,7 +29,6 @@ func TestPrivateGithubIntegration(t *testing.T) {
 
 func baseGithubScenario() *scenariobuilder.TodocheckScenario {
 	return scenariobuilder.NewScenario().
-		OnlyRunOnCI().
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/integrations/github").
 		WithAuthTokenFromEnv("TESTS_GITHUB_APITOKEN").
