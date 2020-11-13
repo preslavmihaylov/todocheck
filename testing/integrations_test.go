@@ -8,11 +8,28 @@ import (
 )
 
 func TestPublicGithubIntegration(t *testing.T) {
-	err := scenariobuilder.NewScenario().
+	err := baseGithubScenario().
+		WithConfig("./test_configs/integrations/github.yaml").
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestPrivateGithubIntegration(t *testing.T) {
+	err := baseGithubScenario().
+		WithConfig("./test_configs/integrations/github_private.yaml").
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func baseGithubScenario() *scenariobuilder.TodocheckScenario {
+	return scenariobuilder.NewScenario().
 		OnlyRunOnCI().
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/integrations/github").
-		WithConfig("./test_configs/integrations/github.yaml").
 		WithAuthTokenFromEnv("TESTS_GITHUB_APITOKEN").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
@@ -33,9 +50,5 @@ func TestPublicGithubIntegration(t *testing.T) {
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/integrations/github/main.go", 9).
-				ExpectLine("// TODO #3: A non-existent issue")).
-		Run()
-	if err != nil {
-		t.Errorf("%s", err)
-	}
+				ExpectLine("// TODO #3: A non-existent issue"))
 }
