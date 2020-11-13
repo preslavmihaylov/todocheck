@@ -23,6 +23,7 @@ type Local struct {
 	Origin       string       `yaml:"origin"`
 	IssueTracker IssueTracker `yaml:"issue_tracker"`
 	IgnoredPaths []string     `yaml:"ignored"`
+	CustomTodos  []string     `yaml:"custom_todos"`
 	Auth         *Auth        `yaml:"auth"`
 }
 
