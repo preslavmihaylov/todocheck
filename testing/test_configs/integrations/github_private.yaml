@@ -1,0 +1,4 @@
+origin: https://github.com/todocheck-tests/test-private
+issue_tracker: GITHUB
+auth:
+  type: apitoken

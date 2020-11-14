@@ -20,4 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run tests
+        env:
+          TODOCHECK_ENV: "ci"
+          TESTS_GITHUB_APITOKEN: ${{ secrets.TESTS_GITHUB_APITOKEN }}
         run: make test
