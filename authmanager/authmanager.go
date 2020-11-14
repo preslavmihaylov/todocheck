@@ -24,7 +24,6 @@ const (
 
 // AcquireToken stores the issue tracker's auth token based on the auth type specified
 func AcquireToken(cfg *config.Local) error {
-
 	if !cfg.Auth.Type.IsValid() {
 		return fmt.Errorf("invalid auth type: %q. valid auth types are: %q", cfg.Auth.Type, config.ValidAuthTypes)
 	}
