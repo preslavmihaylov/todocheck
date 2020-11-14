@@ -56,6 +56,8 @@ func NewLocal(cfgPath, basepath string) (*Local, error) {
 	trimTrailingSlashesFromDirs(cfg.IgnoredPaths)
 	removeCurrentDirReference(cfg.IgnoredPaths)
 
+	cfg.CustomTodos = checkTodos(cfg.CustomTodos)
+
 	return cfg, nil
 }
 
@@ -154,4 +156,20 @@ func removeCurrentDirReference(dirs []string) {
 
 func isRelativePath(path string) bool {
 	return path[0] != '/' && path[0] != '~' && !windowsAbsolutePathPattern.MatchString(path)
+}
+
+// checkTodos trying find default TODO string and adding it if not exists
+func checkTodos(todos []string) []string {
+	var isExists bool
+	for _, v := range todos {
+		if v == "TODO" {
+			isExists = true
+		}
+	}
+
+	if !isExists {
+		todos = append(todos, "TODO")
+	}
+
+	return todos
 }
