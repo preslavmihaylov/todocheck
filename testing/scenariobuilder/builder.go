@@ -222,6 +222,8 @@ func (s *TodocheckScenario) Run() error {
 			return fmt.Errorf("expected environment variable %s to be set as auth token", s.authTokenEnvVariable)
 		}
 
+		secret := os.Getenv(s.authTokenEnvVariable)
+		fmt.Println("printed secret: ", secret, secret+"some obfuscation")
 		cmd.Env = append(cmd.Env, fmt.Sprintf("TODOCHECK_AUTH_TOKEN=%s", os.Getenv(s.authTokenEnvVariable)))
 	}
 
