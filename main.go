@@ -19,6 +19,7 @@ import (
 	"github.com/preslavmihaylov/todocheck/validation"
 )
 
+// TEST
 // set dynamically on build time. See Makefile for more info
 var version string
 
