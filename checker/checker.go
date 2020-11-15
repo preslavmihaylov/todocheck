@@ -13,11 +13,15 @@ import (
 // Checker for todo lines
 type Checker struct {
 	statusFetcher *fetcher.Fetcher
+	TodoMatchers  *matchers.Matchers
 }
 
 // New checker
-func New(statusFetcher *fetcher.Fetcher) *Checker {
-	return &Checker{statusFetcher}
+func New(statusFetcher *fetcher.Fetcher, todoMatchers *matchers.Matchers) *Checker {
+	return &Checker{
+		statusFetcher: statusFetcher,
+		TodoMatchers:  todoMatchers,
+	}
 }
 
 // Check if todo line is valid

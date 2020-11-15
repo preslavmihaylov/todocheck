@@ -2,27 +2,49 @@ package scripts
 
 import (
 	"regexp"
+	"sync"
 
 	"github.com/preslavmihaylov/todocheck/matchers/errors"
 )
 
-var singleLineTodoPattern = regexp.MustCompile("^\\s*#.*TODO")
-var singleLineValidTodoPattern = regexp.MustCompile("^\\s*# TODO (#?[a-zA-Z0-9\\-]+):.*")
+var lock sync.Mutex
+
+var singleLineTodoPattern *regexp.Regexp
+var singleLineValidTodoPattern *regexp.Regexp
 
 // NewTodoMatcher for scripts comments
-func NewTodoMatcher() *TodoMatcher { return &TodoMatcher{} }
+func NewTodoMatcher(todos string) *TodoMatcher {
+	lock.Lock()
+	defer lock.Unlock()
+
+	// Single line
+	if singleLineTodoPattern == nil {
+		singleLineTodoPattern = regexp.MustCompile("^\\s*#.*" + todos)
+	}
+	if singleLineValidTodoPattern == nil {
+		singleLineValidTodoPattern = regexp.MustCompile("^\\s*# " + todos + " (#?[a-zA-Z0-9\\-]+):.*")
+	}
+
+	return &TodoMatcher{
+		singleLineTodoPattern:      singleLineTodoPattern,
+		singleLineValidTodoPattern: singleLineValidTodoPattern,
+	}
+}
 
 // TodoMatcher for scripts comments
-type TodoMatcher struct{}
+type TodoMatcher struct {
+	singleLineTodoPattern      *regexp.Regexp
+	singleLineValidTodoPattern *regexp.Regexp
+}
 
 // IsMatch checks if the current expression matches a standard comment
 func (m *TodoMatcher) IsMatch(expr string) bool {
-	return singleLineTodoPattern.Match([]byte(expr))
+	return m.singleLineTodoPattern.Match([]byte(expr))
 }
 
 // IsValid checks if the expression is a valid todo comment
 func (m *TodoMatcher) IsValid(expr string) bool {
-	return singleLineValidTodoPattern.Match([]byte(expr))
+	return m.singleLineValidTodoPattern.Match([]byte(expr))
 }
 
 // ExtractIssueRef from the given expression.
@@ -32,7 +54,7 @@ func (m *TodoMatcher) ExtractIssueRef(expr string) (string, error) {
 		return "", errors.ErrInvalidTODO
 	}
 
-	singleLineRes := singleLineValidTodoPattern.FindStringSubmatch(expr)
+	singleLineRes := m.singleLineValidTodoPattern.FindStringSubmatch(expr)
 	if len(singleLineRes) >= 2 {
 		return singleLineRes[1], nil
 	}
