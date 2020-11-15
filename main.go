@@ -15,6 +15,7 @@ import (
 	"github.com/preslavmihaylov/todocheck/fetcher"
 	"github.com/preslavmihaylov/todocheck/issuetracker/factory"
 	"github.com/preslavmihaylov/todocheck/logger"
+	"github.com/preslavmihaylov/todocheck/matchers"
 	"github.com/preslavmihaylov/todocheck/traverser/todoerrs"
 	"github.com/preslavmihaylov/todocheck/validation"
 )
