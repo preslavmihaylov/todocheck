@@ -161,3 +161,10 @@ func SupportedFileExtensions() []string {
 
 	return exts
 }
+
+func prepareTodosForRegex(todos []string) string {
+	if len(todos) == 0 {
+		panic("Empty list of todo strings")
+	}
+	return fmt.Sprintf("(?:%s)", strings.Join(todos, "|"))
+}
