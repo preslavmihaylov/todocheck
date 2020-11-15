@@ -26,7 +26,6 @@ var version string
 // * Add a --closes option which indicates that an issue is to be closed as a result of a PR
 // * Add caching for task statuses
 func main() {
-	os.Exit(1)
 	var basepath = flag.String("basepath", ".", "The path for the project to todocheck. Defaults to current directory")
 	var cfgPath = flag.String("config", "", "The project configuration file to use. Will use the one from the basepath if not specified")
 	var format = flag.String("format", "standard", "The output format to use. Available formats - standard, json")

@@ -35,7 +35,7 @@ func baseGithubScenario() *scenariobuilder.TodocheckScenario {
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
-				WithLocation("scenarios/integrations/github/main.go", 4).
+				WithLocation("scenarios/integrations/github/main.go", 3).
 				ExpectLine("// TODO 2: A closed issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
