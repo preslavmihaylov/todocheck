@@ -1285,3 +1285,161 @@ func TestSwiftCustomTodos(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+func TestPHPCustomTodos(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/custom_todos/php").
+		WithConfig("./test_configs/no_issue_tracker_and_custom_todos.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("1", issuetracker.StatusOpen).
+		WithIssue("2", issuetracker.StatusClosed).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/php/main.php", 2).
+				ExpectLine("// TODO: malformed todo")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/php/main.php", 4).
+				ExpectLine("// TODO 2: The issue is closed")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/custom_todos/php/main.php", 5).
+				ExpectLine("// TODO 3: The issue is non-existent")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/php/main.php", 7).
+				ExpectLine("# TODO: malformed todo")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/php/main.php", 9).
+				ExpectLine("# TODO 2: The issue is closed")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/custom_todos/php/main.php", 10).
+				ExpectLine("# TODO 3: The issue is non-existent")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/php/main.php", 19).
+				ExpectLine("/*").
+				ExpectLine(" * TODO: Multi-line invalid todo").
+				ExpectLine(" */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/php/main.php", 27).
+				ExpectLine("/*").
+				ExpectLine(" * TODO 2: issue is closed").
+				ExpectLine(" */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/custom_todos/php/main.php", 31).
+				ExpectLine("/*").
+				ExpectLine(" * TODO 3: issue is non-existent").
+				ExpectLine(" */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/php/main.php", 35).
+				ExpectLine("/**").
+				ExpectLine(" * TODO: docstring invalid todo").
+				ExpectLine(" */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/php/main.php", 43).
+				ExpectLine("/**").
+				ExpectLine(" * TODO 2: issue is closed").
+				ExpectLine(" */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/custom_todos/php/main.php", 47).
+				ExpectLine("/**").
+				ExpectLine(" * TODO 3: issue is non-existent").
+				ExpectLine(" */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/php/main.php", 52).
+				ExpectLine("// @fix: malformed todo")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/php/main.php", 54).
+				ExpectLine("// @fix 2: The issue is closed")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/custom_todos/php/main.php", 55).
+				ExpectLine("// @fix 3: The issue is non-existent")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/php/main.php", 57).
+				ExpectLine("# @fix: malformed todo")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/php/main.php", 59).
+				ExpectLine("# @fix 2: The issue is closed")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/custom_todos/php/main.php", 60).
+				ExpectLine("# @fix 3: The issue is non-existent")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/php/main.php", 69).
+				ExpectLine("/*").
+				ExpectLine(" * @fix: Multi-line invalid todo").
+				ExpectLine(" */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/php/main.php", 77).
+				ExpectLine("/*").
+				ExpectLine(" * @fix 2: issue is closed").
+				ExpectLine(" */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/custom_todos/php/main.php", 81).
+				ExpectLine("/*").
+				ExpectLine(" * @fix 3: issue is non-existent").
+				ExpectLine(" */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/php/main.php", 85).
+				ExpectLine("/**").
+				ExpectLine(" * @fix: docstring invalid todo").
+				ExpectLine(" */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/php/main.php", 93).
+				ExpectLine("/**").
+				ExpectLine(" * @fix 2: issue is closed").
+				ExpectLine(" */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/custom_todos/php/main.php", 97).
+				ExpectLine("/**").
+				ExpectLine(" * @fix 3: issue is non-existent").
+				ExpectLine(" */")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
