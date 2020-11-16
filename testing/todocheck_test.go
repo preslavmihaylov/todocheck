@@ -998,3 +998,109 @@ func TestStandartCustomTodos(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+func TestPythonCustomTodos(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/custom_todos/python").
+		WithConfig("./test_configs/no_issue_tracker_and_custom_todos.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("1", issuetracker.StatusOpen).
+		WithIssue("234", issuetracker.StatusClosed).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/python/main.py", 3).
+				ExpectLine("# This is a single-line malformed TODO")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/python/main.py", 5).
+				ExpectLine("\"\"\"").
+				ExpectLine("And this is a multiline malformed TODO").
+				ExpectLine("It should be parsed properly").
+				ExpectLine("\"\"\"")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/python/main.py", 10).
+				ExpectLine("'''").
+				ExpectLine("This is the same multiline malformed TODO").
+				ExpectLine("but with single-quotes").
+				ExpectLine("'''")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/python/main.py", 15).
+				ExpectLine("myvar = 5 # This is a malformed TODO at the end of a line")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/python/main.py", 19).
+				ExpectLine("hello = \"hello\" # TODO 234: This is an invalid todo, with a closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/python/main.py", 21).
+				ExpectLine("\"\"\"").
+				ExpectLine("TODO 234: This is an invalid todo, marked against a closed issue").
+				ExpectLine("\"\"\"")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/python/main.py", 25).
+				ExpectLine("'''").
+				ExpectLine("TODO 234: This is an invalid todo,").
+				ExpectLine("marked against a closed issue with single quotes").
+				ExpectLine("'''")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/python/main.py", 31).
+				ExpectLine("# This is a single-line malformed @fix")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/python/main.py", 33).
+				ExpectLine("\"\"\"").
+				ExpectLine("And this is a multiline malformed @fix").
+				ExpectLine("It should be parsed properly").
+				ExpectLine("\"\"\"")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/python/main.py", 38).
+				ExpectLine("'''").
+				ExpectLine("This is the same multiline malformed @fix").
+				ExpectLine("but with single-quotes").
+				ExpectLine("'''")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/python/main.py", 43).
+				ExpectLine("myvar = 5 # This is a malformed @fix at the end of a line")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/python/main.py", 47).
+				ExpectLine("hello = \"hello\" # @fix 234: This is an invalid todo, with a closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/python/main.py", 49).
+				ExpectLine("\"\"\"").
+				ExpectLine("@fix 234: This is an invalid todo, marked against a closed issue").
+				ExpectLine("\"\"\"")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/python/main.py", 53).
+				ExpectLine("'''").
+				ExpectLine("@fix 234: This is an invalid todo,").
+				ExpectLine("marked against a closed issue with single quotes").
+				ExpectLine("'''")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
