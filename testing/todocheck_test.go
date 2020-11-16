@@ -1204,3 +1204,84 @@ func TestGroovyCustomTodos(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+// Also tests Rust TODOs as rust uses the same comment syntax
+func TestSwiftCustomTodos(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/custom_todos/swift").
+		WithConfig("./test_configs/no_issue_tracker_and_custom_todos.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("1", issuetracker.StatusOpen).
+		WithIssue("2", issuetracker.StatusClosed).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/swift/main.swift", 4).
+				ExpectLine("print(\"Hello, World!\") // TODO: An invalid todo")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/swift/main.swift", 6).
+				ExpectLine("/*").
+				ExpectLine(" * TODO: An invalid multi-line todo").
+				ExpectLine(" */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/swift/main.swift", 10).
+				ExpectLine("/// TODO: An invalid docstring todo")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/swift/main.swift", 12).
+				ExpectLine("/*").
+				ExpectLine(" /* TODO: An invalid nested todo */").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/swift/main.swift", 22).
+				ExpectLine("/*").
+				ExpectLine(" /*").
+				ExpectLine("    /* TODO 2: invalid todo as issue is closed */").
+				ExpectLine(" */").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/swift/main.swift", 29).
+				ExpectLine("print(\"Hello, World!\") // @fix: An invalid todo")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/swift/main.swift", 31).
+				ExpectLine("/*").
+				ExpectLine(" * @fix: An invalid multi-line todo").
+				ExpectLine(" */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/swift/main.swift", 35).
+				ExpectLine("/// @fix: An invalid docstring todo")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/swift/main.swift", 37).
+				ExpectLine("/*").
+				ExpectLine(" /* @fix: An invalid nested todo */").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/swift/main.swift", 47).
+				ExpectLine("/*").
+				ExpectLine(" /*").
+				ExpectLine("    /* @fix 2: invalid todo as issue is closed */").
+				ExpectLine(" */").
+				ExpectLine("*/")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
