@@ -1104,3 +1104,103 @@ func TestPythonCustomTodos(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+func TestGroovyCustomTodos(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/custom_todos/groovy").
+		WithConfig("./test_configs/no_issue_tracker_and_custom_todos.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("1", issuetracker.StatusOpen).
+		WithIssue("2", issuetracker.StatusClosed).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/groovy/main.groovy", 1).
+				ExpectLine("//TODO: regular inline comment")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/groovy/main.groovy", 11).
+				ExpectLine("/*").
+				ExpectLine("* TODO: Multi-line invalid todo").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/groovy/main.groovy", 15).
+				ExpectLine("/**").
+				ExpectLine("* TODO: groovydoc invalid todo").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/groovy/main.groovy", 19).
+				ExpectLine("// TODO 2: The issue is closed")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/custom_todos/groovy/main.groovy", 21).
+				ExpectLine("// TODO 3: The issue is non-existent")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/groovy/main.groovy", 52).
+				ExpectLine("/*").
+				ExpectLine("* TODO 2: Invalid todo as issue is closed").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/groovy/main.groovy", 56).
+				ExpectLine("/**").
+				ExpectLine("* TODO 2: Invalid todo as issue is closed").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/groovy/main.groovy", 61).
+				ExpectLine("//@fix: regular inline comment")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/groovy/main.groovy", 71).
+				ExpectLine("/*").
+				ExpectLine("* @fix: Multi-line invalid todo").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/groovy/main.groovy", 75).
+				ExpectLine("/**").
+				ExpectLine("* @fix: groovydoc invalid todo").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/groovy/main.groovy", 79).
+				ExpectLine("// @fix 2: The issue is closed")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/custom_todos/groovy/main.groovy", 81).
+				ExpectLine("// @fix 3: The issue is non-existent")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/groovy/main.groovy", 112).
+				ExpectLine("/*").
+				ExpectLine("* @fix 2: Invalid todo as issue is closed").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/groovy/main.groovy", 116).
+				ExpectLine("/**").
+				ExpectLine("* @fix 2: Invalid todo as issue is closed").
+				ExpectLine("*/")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
