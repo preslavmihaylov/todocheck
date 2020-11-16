@@ -802,3 +802,117 @@ func TestPrintingVersionFlagStopsProgram(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+func TestScriptsCustomTodos(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/custom_todos/scripts/").
+		WithConfig("./test_configs/no_issue_tracker_and_custom_todos.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("123", issuetracker.StatusOpen).
+		WithIssue("321", issuetracker.StatusClosed).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/scripts/script.sh", 1).
+				ExpectLine("# This is a malformed TODO")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/scripts/script.sh", 3).
+				ExpectLine("curl \"localhost:8080\" # This is a TODO comment at the end of the line")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/scripts/script.sh", 5).
+				ExpectLine("# This is a malformed ToDo")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/scripts/script.sh", 7).
+				ExpectLine("curl \"localhost:8080\" # This is a ToDo comment at the end of the line")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/scripts/script.sh", 9).
+				ExpectLine("# This is a malformed @fixme")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/scripts/script.sh", 11).
+				ExpectLine("curl \"localhost:8080\" # This is a @fixme comment at the end of the line")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/scripts/script.sh", 13).
+				ExpectLine("# This is a malformed @fix")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/scripts/script.sh", 15).
+				ExpectLine("curl \"localhost:8080\" # This is a @fix comment at the end of the line")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/scripts/script.bash", 3).
+				ExpectLine("# A malformed TODO comment")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/scripts/script.bash", 5).
+				ExpectLine("# TODO 321: This is an invalid todo, marked against a closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/custom_todos/scripts/script.bash", 6).
+				ExpectLine("curl \"localhost:8080\" # TODO 567: This is an invalid todo, marked against a non-existent issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/scripts/script.bash", 8).
+				ExpectLine("# A malformed ToDo comment")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/scripts/script.bash", 10).
+				ExpectLine("# ToDo 321: This is an invalid todo, marked against a closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/custom_todos/scripts/script.bash", 11).
+				ExpectLine("curl \"localhost:8080\" # ToDo 567: This is an invalid todo, marked against a non-existent issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/scripts/script.bash", 13).
+				ExpectLine("# A malformed @fixme comment")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/scripts/script.bash", 15).
+				ExpectLine("# @fixme 321: This is an invalid todo, marked against a closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/custom_todos/scripts/script.bash", 16).
+				ExpectLine("curl \"localhost:8080\" # @fixme 567: This is an invalid todo, marked against a non-existent issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/custom_todos/scripts/script.bash", 18).
+				ExpectLine("# A malformed @fix comment")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/custom_todos/scripts/script.bash", 20).
+				ExpectLine("# @fix 321: This is an invalid todo, marked against a closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/custom_todos/scripts/script.bash", 21).
+				ExpectLine("curl \"localhost:8080\" # @fix 567: This is an invalid todo, marked against a non-existent issue")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}

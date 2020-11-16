@@ -1,0 +1,8 @@
+origin: http://myjira.com
+issue_tracker: JIRA
+auth:
+  type: none
+custom_todos:
+  - ToDo
+  - \@fixme
+  - "@fix"
