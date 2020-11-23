@@ -56,6 +56,7 @@ func NewLocal(cfgPath, basepath string) (*Local, error) {
 	trimTrailingSlashesFromDirs(cfg.IgnoredPaths)
 	removeCurrentDirReference(cfg.IgnoredPaths)
 
+	cfg.CustomTodos = decodeEscapedReservedCharacters(cfg.CustomTodos)
 	cfg.CustomTodos = addDefaultFormatIfMissing(cfg.CustomTodos)
 
 	return cfg, nil
@@ -161,15 +162,10 @@ func isRelativePath(path string) bool {
 // addDefaultFormatIfMissing trying find default TODO string and adding it if not exists
 func addDefaultFormatIfMissing(todos []string) []string {
 	var isExists bool
-	for i, v := range todos {
+	for _, v := range todos {
 		if v == "TODO" {
 			isExists = true
 			continue
-		}
-		// Remove escaping "\" for "@". YAML can't start scalar from @.
-		// "@" in YAML is reserved indicator https://yaml.org/spec/1.2/spec.html#id2772075
-		if strings.HasPrefix(v, "\\@") {
-			todos[i] = v[1:]
 		}
 	}
 
@@ -178,4 +174,16 @@ func addDefaultFormatIfMissing(todos []string) []string {
 	}
 
 	return todos
+}
+
+func decodeEscapedReservedCharacters(slice []string) []string {
+	// Remove leading escaping "\" for reserved strings.
+	// "@", "`" in YAML is reserved indicators
+	//  https://yaml.org/spec/1.2/spec.html#id2772075
+	for i, v := range slice {
+		if strings.HasPrefix(v, "\\@") || strings.HasPrefix(v, "\\`") {
+			slice[i] = v[1:]
+		}
+	}
+	return slice
 }
