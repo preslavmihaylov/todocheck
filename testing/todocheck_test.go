@@ -920,7 +920,7 @@ func TestScriptsCustomTodos(t *testing.T) {
 func TestStandartCustomTodos(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
-		WithBasepath("./scenarios/custom_todos/standart/").
+		WithBasepath("./scenarios/custom_todos/standard/").
 		WithConfig("./test_configs/no_issue_tracker_and_custom_todos.yaml").
 		WithIssueTracker(issuetracker.Jira).
 		WithIssue("123", issuetracker.StatusOpen).
@@ -928,68 +928,68 @@ func TestStandartCustomTodos(t *testing.T) {
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).
-				WithLocation("scenarios/custom_todos/standart/main.go", 3).
+				WithLocation("scenarios/custom_todos/standard/main.go", 3).
 				ExpectLine("// A malformed TODO comment")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
-				WithLocation("scenarios/custom_todos/standart/main.go", 5).
+				WithLocation("scenarios/custom_todos/standard/main.go", 5).
 				ExpectLine("// TODO 321: This is an invalid todo, marked against a closed issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).
-				WithLocation("scenarios/custom_todos/standart/main.go", 6).
+				WithLocation("scenarios/custom_todos/standard/main.go", 6).
 				ExpectLine("/*").
 				ExpectLine(" * TODO 567: This is an invalid multiline todo, marked against a non-existent issue").
 				ExpectLine(" */")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).
-				WithLocation("scenarios/custom_todos/standart/main.go", 10).
+				WithLocation("scenarios/custom_todos/standard/main.go", 10).
 				ExpectLine("// A malformed ToDo comment")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
-				WithLocation("scenarios/custom_todos/standart/main.go", 12).
+				WithLocation("scenarios/custom_todos/standard/main.go", 12).
 				ExpectLine("// ToDo 321: This is an invalid todo, marked against a closed issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).
-				WithLocation("scenarios/custom_todos/standart/main.go", 13).
+				WithLocation("scenarios/custom_todos/standard/main.go", 13).
 				ExpectLine("/*").
 				ExpectLine(" * ToDo 567: This is an invalid multiline todo, marked against a non-existent issue").
 				ExpectLine(" */")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).
-				WithLocation("scenarios/custom_todos/standart/main.go", 17).
+				WithLocation("scenarios/custom_todos/standard/main.go", 17).
 				ExpectLine("// A malformed @fixme comment")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
-				WithLocation("scenarios/custom_todos/standart/main.go", 19).
+				WithLocation("scenarios/custom_todos/standard/main.go", 19).
 				ExpectLine("// @fixme 321: This is an invalid todo, marked against a closed issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).
-				WithLocation("scenarios/custom_todos/standart/main.go", 20).
+				WithLocation("scenarios/custom_todos/standard/main.go", 20).
 				ExpectLine("/*").
 				ExpectLine(" * @fixme 567: This is an invalid multiline todo, marked against a non-existent issue").
 				ExpectLine(" */")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).
-				WithLocation("scenarios/custom_todos/standart/main.go", 24).
+				WithLocation("scenarios/custom_todos/standard/main.go", 24).
 				ExpectLine("// A malformed @fix comment")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
-				WithLocation("scenarios/custom_todos/standart/main.go", 26).
+				WithLocation("scenarios/custom_todos/standard/main.go", 26).
 				ExpectLine("// @fix 321: This is an invalid todo, marked against a closed issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).
-				WithLocation("scenarios/custom_todos/standart/main.go", 27).
+				WithLocation("scenarios/custom_todos/standard/main.go", 27).
 				ExpectLine("/*").
 				ExpectLine(" * @fix 567: This is an invalid multiline todo, marked against a non-existent issue").
 				ExpectLine(" */")).
