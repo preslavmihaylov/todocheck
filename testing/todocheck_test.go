@@ -917,7 +917,7 @@ func TestScriptsCustomTodos(t *testing.T) {
 	}
 }
 
-func TestStandartCustomTodos(t *testing.T) {
+func TestStandardCustomTodos(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/custom_todos/standard/").
