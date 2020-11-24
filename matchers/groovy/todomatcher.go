@@ -21,20 +21,22 @@ func NewTodoMatcher(todos []string) *TodoMatcher {
 	lock.Lock()
 	defer lock.Unlock()
 
+	pattern := common.ArrayAsRegexAnyMatchExpression(todos)
+
 	// Single line
 	if singleLineTodoPattern == nil {
-		singleLineTodoPattern = regexp.MustCompile("^\\s*//.*" + common.ArrayAsRegexAnyMatchExpression(todos))
+		singleLineTodoPattern = regexp.MustCompile("^\\s*//.*" + pattern)
 	}
 	if singleLineValidTodoPattern == nil {
-		singleLineValidTodoPattern = regexp.MustCompile("^\\s*// " + common.ArrayAsRegexAnyMatchExpression(todos) + " (#?[a-zA-Z0-9\\-]+):.*")
+		singleLineValidTodoPattern = regexp.MustCompile("^\\s*// " + pattern + " (#?[a-zA-Z0-9\\-]+):.*")
 	}
 
 	// Multiline line
 	if multiLineTodoPattern == nil {
-		multiLineTodoPattern = regexp.MustCompile("(?s)^\\s*/\\*.*" + common.ArrayAsRegexAnyMatchExpression(todos))
+		multiLineTodoPattern = regexp.MustCompile("(?s)^\\s*/\\*.*" + pattern)
 	}
 	if multiLineValidTodoPattern == nil {
-		multiLineValidTodoPattern = regexp.MustCompile("(?s)^\\s*/\\*.*" + common.ArrayAsRegexAnyMatchExpression(todos) + " (#?[a-zA-Z0-9\\-]+):.*")
+		multiLineValidTodoPattern = regexp.MustCompile("(?s)^\\s*/\\*.*" + pattern + " (#?[a-zA-Z0-9\\-]+):.*")
 	}
 
 	return &TodoMatcher{
