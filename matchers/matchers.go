@@ -118,23 +118,11 @@ var supportedMatchers = map[string]*matcherFactory{
 	".py": pythonMatcherFactory,
 }
 
-// Matchers for comments and todo strings
-type Matchers struct {
-	todos []string
-}
-
-// NewMatchers returns Matcher instance
-func NewMatchers(customTodos []string) *Matchers {
-	return &Matchers{
-		todos: customTodos,
-	}
-}
-
 // TodoMatcherForFile gets the correct todo matcher for the given filename
-func (m *Matchers) TodoMatcherForFile(filename string) TodoMatcher {
+func TodoMatcherForFile(filename string, todos []string) TodoMatcher {
 	extension := filepath.Ext(filename)
 	if matcherFactory, ok := supportedMatchers[extension]; ok {
-		return matcherFactory.newTodoMatcher(m.todos)
+		return matcherFactory.newTodoMatcher(todos)
 	}
 
 	return nil

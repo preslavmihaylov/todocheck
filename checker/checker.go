@@ -13,14 +13,14 @@ import (
 // Checker for todo lines
 type Checker struct {
 	statusFetcher *fetcher.Fetcher
-	TodoMatchers  *matchers.Matchers
+	CustomTodos   []string
 }
 
 // New checker
-func New(statusFetcher *fetcher.Fetcher, todoMatchers *matchers.Matchers) *Checker {
+func New(statusFetcher *fetcher.Fetcher, todos []string) *Checker {
 	return &Checker{
 		statusFetcher: statusFetcher,
-		TodoMatchers:  todoMatchers,
+		CustomTodos:   todos,
 	}
 }
 
