@@ -1,9 +1,7 @@
 package matchers
 
 import (
-	"fmt"
 	"path/filepath"
-	"strings"
 
 	"github.com/preslavmihaylov/todocheck/matchers/groovy"
 	"github.com/preslavmihaylov/todocheck/matchers/php"
@@ -30,13 +28,13 @@ type CommentMatcher interface {
 }
 
 type matcherFactory struct {
-	newTodoMatcher     func(string) TodoMatcher
+	newTodoMatcher     func([]string) TodoMatcher
 	newCommentsMatcher func(callback state.CommentCallback) CommentMatcher
 }
 
 var (
 	standardMatcherFactory = &matcherFactory{
-		func(customTodos string) TodoMatcher {
+		func(customTodos []string) TodoMatcher {
 			return standard.NewTodoMatcher(customTodos)
 		},
 		func(callback state.CommentCallback) CommentMatcher {
@@ -44,7 +42,7 @@ var (
 		},
 	}
 	standardMatcherWithNestedMultilineCommentsFactory = &matcherFactory{
-		func(customTodos string) TodoMatcher {
+		func(customTodos []string) TodoMatcher {
 			return standard.NewTodoMatcher(customTodos)
 		},
 		func(callback state.CommentCallback) CommentMatcher {
@@ -52,7 +50,7 @@ var (
 		},
 	}
 	scriptsMatcherFactory = &matcherFactory{
-		func(customTodos string) TodoMatcher {
+		func(customTodos []string) TodoMatcher {
 			return scripts.NewTodoMatcher(customTodos)
 		},
 		func(callback state.CommentCallback) CommentMatcher {
@@ -60,7 +58,7 @@ var (
 		},
 	}
 	phpMatcherFactory = &matcherFactory{
-		func(customTodos string) TodoMatcher {
+		func(customTodos []string) TodoMatcher {
 			return php.NewTodoMatcher(customTodos)
 		},
 		func(callback state.CommentCallback) CommentMatcher {
@@ -68,7 +66,7 @@ var (
 		},
 	}
 	pythonMatcherFactory = &matcherFactory{
-		func(customTodos string) TodoMatcher {
+		func(customTodos []string) TodoMatcher {
 			return python.NewTodoMatcher(customTodos)
 		},
 		func(callback state.CommentCallback) CommentMatcher {
@@ -76,7 +74,7 @@ var (
 		},
 	}
 	groovyMatcherFactory = &matcherFactory{
-		func(customTodos string) TodoMatcher {
+		func(customTodos []string) TodoMatcher {
 			return groovy.NewTodoMatcher(customTodos)
 		},
 		func(callback state.CommentCallback) CommentMatcher {
@@ -136,7 +134,7 @@ func NewMatchers(customTodos []string) *Matchers {
 func (m *Matchers) TodoMatcherForFile(filename string) TodoMatcher {
 	extension := filepath.Ext(filename)
 	if matcherFactory, ok := supportedMatchers[extension]; ok {
-		return matcherFactory.newTodoMatcher(prepareTodosForRegex(m.todos))
+		return matcherFactory.newTodoMatcher(m.todos)
 	}
 
 	return nil
@@ -160,11 +158,4 @@ func SupportedFileExtensions() []string {
 	}
 
 	return exts
-}
-
-func prepareTodosForRegex(todos []string) string {
-	if len(todos) == 0 {
-		panic("Empty list of todo strings")
-	}
-	return fmt.Sprintf("(?:%s)", strings.Join(todos, "|"))
 }

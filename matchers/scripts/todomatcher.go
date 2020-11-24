@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"sync"
 
+	"github.com/preslavmihaylov/todocheck/common"
 	"github.com/preslavmihaylov/todocheck/matchers/errors"
 )
 
@@ -13,16 +14,16 @@ var singleLineTodoPattern *regexp.Regexp
 var singleLineValidTodoPattern *regexp.Regexp
 
 // NewTodoMatcher for scripts comments
-func NewTodoMatcher(todos string) *TodoMatcher {
+func NewTodoMatcher(todos []string) *TodoMatcher {
 	lock.Lock()
 	defer lock.Unlock()
 
 	// Single line
 	if singleLineTodoPattern == nil {
-		singleLineTodoPattern = regexp.MustCompile("^\\s*#.*" + todos)
+		singleLineTodoPattern = regexp.MustCompile("^\\s*#.*" + common.ArrayAsRegexAnyMatchExpression(todos))
 	}
 	if singleLineValidTodoPattern == nil {
-		singleLineValidTodoPattern = regexp.MustCompile("^\\s*# " + todos + " (#?[a-zA-Z0-9\\-]+):.*")
+		singleLineValidTodoPattern = regexp.MustCompile("^\\s*# " + common.ArrayAsRegexAnyMatchExpression(todos) + " (#?[a-zA-Z0-9\\-]+):.*")
 	}
 
 	return &TodoMatcher{

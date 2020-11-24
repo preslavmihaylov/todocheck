@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"sync"
 
+	"github.com/preslavmihaylov/todocheck/common"
 	"github.com/preslavmihaylov/todocheck/matchers/errors"
 )
 
@@ -19,32 +20,32 @@ var multiLineTodoPattern *regexp.Regexp
 var multiLineValidTodoPattern *regexp.Regexp
 
 // NewTodoMatcher for php comments
-func NewTodoMatcher(todos string) *TodoMatcher {
+func NewTodoMatcher(todos []string) *TodoMatcher {
 	lock.Lock()
 	defer lock.Unlock()
 
 	// Single line
 	if singleLineTodoPattern == nil {
-		singleLineTodoPattern = regexp.MustCompile("^\\s*//.*" + todos)
+		singleLineTodoPattern = regexp.MustCompile("^\\s*//.*" + common.ArrayAsRegexAnyMatchExpression(todos))
 	}
 	if singleLineValidTodoPattern == nil {
-		singleLineValidTodoPattern = regexp.MustCompile("^\\s*// " + todos + " (#?[a-zA-Z0-9\\-]+):.*")
+		singleLineValidTodoPattern = regexp.MustCompile("^\\s*// " + common.ArrayAsRegexAnyMatchExpression(todos) + " (#?[a-zA-Z0-9\\-]+):.*")
 	}
 
 	// Script line
 	if singleLineScriptTodoPattern == nil {
-		singleLineScriptTodoPattern = regexp.MustCompile("^\\s*#.*" + todos)
+		singleLineScriptTodoPattern = regexp.MustCompile("^\\s*#.*" + common.ArrayAsRegexAnyMatchExpression(todos))
 	}
 	if singleLineScriptValidTodoPattern == nil {
-		singleLineScriptValidTodoPattern = regexp.MustCompile("^\\s*# " + todos + " (#?[a-zA-Z0-9\\-]+):.*")
+		singleLineScriptValidTodoPattern = regexp.MustCompile("^\\s*# " + common.ArrayAsRegexAnyMatchExpression(todos) + " (#?[a-zA-Z0-9\\-]+):.*")
 	}
 
 	// Multiline line
 	if multiLineTodoPattern == nil {
-		multiLineTodoPattern = regexp.MustCompile("(?s)^\\s*/\\*.*" + todos)
+		multiLineTodoPattern = regexp.MustCompile("(?s)^\\s*/\\*.*" + common.ArrayAsRegexAnyMatchExpression(todos))
 	}
 	if multiLineValidTodoPattern == nil {
-		multiLineValidTodoPattern = regexp.MustCompile("(?s)^\\s*/\\*.*" + todos + " (#?[a-zA-Z0-9\\-]+):.*")
+		multiLineValidTodoPattern = regexp.MustCompile("(?s)^\\s*/\\*.*" + common.ArrayAsRegexAnyMatchExpression(todos) + " (#?[a-zA-Z0-9\\-]+):.*")
 	}
 
 	return &TodoMatcher{
