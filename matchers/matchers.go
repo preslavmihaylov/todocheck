@@ -2,6 +2,7 @@ package matchers
 
 import (
 	"path/filepath"
+	"sync"
 
 	"github.com/preslavmihaylov/todocheck/matchers/groovy"
 	"github.com/preslavmihaylov/todocheck/matchers/php"
@@ -33,9 +34,23 @@ type matcherFactory struct {
 }
 
 var (
+	once            sync.Once
+	standardMatcher TodoMatcher
+	scriptsMatcher  TodoMatcher
+	phpMatcher      TodoMatcher
+	pythonMatcher   TodoMatcher
+	groovyMatcher   TodoMatcher
+)
+
+var (
 	standardMatcherFactory = &matcherFactory{
 		func(customTodos []string) TodoMatcher {
-			return standard.NewTodoMatcher(customTodos)
+			once.Do(func() {
+				if standardMatcher == nil {
+					standardMatcher = standard.NewTodoMatcher(customTodos)
+				}
+			})
+			return standardMatcher
 		},
 		func(callback state.CommentCallback) CommentMatcher {
 			return standard.NewCommentMatcher(callback, false)
@@ -43,7 +58,12 @@ var (
 	}
 	standardMatcherWithNestedMultilineCommentsFactory = &matcherFactory{
 		func(customTodos []string) TodoMatcher {
-			return standard.NewTodoMatcher(customTodos)
+			once.Do(func() {
+				if standardMatcher == nil {
+					standardMatcher = standard.NewTodoMatcher(customTodos)
+				}
+			})
+			return standardMatcher
 		},
 		func(callback state.CommentCallback) CommentMatcher {
 			return standard.NewCommentMatcher(callback, true)
@@ -51,7 +71,10 @@ var (
 	}
 	scriptsMatcherFactory = &matcherFactory{
 		func(customTodos []string) TodoMatcher {
-			return scripts.NewTodoMatcher(customTodos)
+			once.Do(func() {
+				scriptsMatcher = scripts.NewTodoMatcher(customTodos)
+			})
+			return scriptsMatcher
 		},
 		func(callback state.CommentCallback) CommentMatcher {
 			return scripts.NewCommentMatcher(callback)
@@ -59,7 +82,10 @@ var (
 	}
 	phpMatcherFactory = &matcherFactory{
 		func(customTodos []string) TodoMatcher {
-			return php.NewTodoMatcher(customTodos)
+			once.Do(func() {
+				phpMatcher = php.NewTodoMatcher(customTodos)
+			})
+			return phpMatcher
 		},
 		func(callback state.CommentCallback) CommentMatcher {
 			return php.NewCommentMatcher(callback)
@@ -67,7 +93,10 @@ var (
 	}
 	pythonMatcherFactory = &matcherFactory{
 		func(customTodos []string) TodoMatcher {
-			return python.NewTodoMatcher(customTodos)
+			once.Do(func() {
+				pythonMatcher = python.NewTodoMatcher(customTodos)
+			})
+			return pythonMatcher
 		},
 		func(callback state.CommentCallback) CommentMatcher {
 			return python.NewCommentMatcher(callback)
@@ -75,7 +104,10 @@ var (
 	}
 	groovyMatcherFactory = &matcherFactory{
 		func(customTodos []string) TodoMatcher {
-			return groovy.NewTodoMatcher(customTodos)
+			once.Do(func() {
+				groovyMatcher = groovy.NewTodoMatcher(customTodos)
+			})
+			return groovyMatcher
 		},
 		func(callback state.CommentCallback) CommentMatcher {
 			return groovy.NewCommentMatcher(callback)

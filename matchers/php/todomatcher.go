@@ -2,53 +2,26 @@ package php
 
 import (
 	"regexp"
-	"sync"
 
 	"github.com/preslavmihaylov/todocheck/common"
 	"github.com/preslavmihaylov/todocheck/matchers/errors"
 )
 
-var lock sync.Mutex
-
-var singleLineTodoPattern *regexp.Regexp
-var singleLineValidTodoPattern *regexp.Regexp
-
-var singleLineScriptTodoPattern *regexp.Regexp
-var singleLineScriptValidTodoPattern *regexp.Regexp
-
-var multiLineTodoPattern *regexp.Regexp
-var multiLineValidTodoPattern *regexp.Regexp
-
 // NewTodoMatcher for php comments
 func NewTodoMatcher(todos []string) *TodoMatcher {
-	lock.Lock()
-	defer lock.Unlock()
-
 	pattern := common.ArrayAsRegexAnyMatchExpression(todos)
 
 	// Single line
-	if singleLineTodoPattern == nil {
-		singleLineTodoPattern = regexp.MustCompile("^\\s*//.*" + pattern)
-	}
-	if singleLineValidTodoPattern == nil {
-		singleLineValidTodoPattern = regexp.MustCompile("^\\s*// " + pattern + " (#?[a-zA-Z0-9\\-]+):.*")
-	}
+	singleLineTodoPattern := regexp.MustCompile("^\\s*//.*" + pattern)
+	singleLineValidTodoPattern := regexp.MustCompile("^\\s*// " + pattern + " (#?[a-zA-Z0-9\\-]+):.*")
 
 	// Script line
-	if singleLineScriptTodoPattern == nil {
-		singleLineScriptTodoPattern = regexp.MustCompile("^\\s*#.*" + pattern)
-	}
-	if singleLineScriptValidTodoPattern == nil {
-		singleLineScriptValidTodoPattern = regexp.MustCompile("^\\s*# " + pattern + " (#?[a-zA-Z0-9\\-]+):.*")
-	}
+	singleLineScriptTodoPattern := regexp.MustCompile("^\\s*#.*" + pattern)
+	singleLineScriptValidTodoPattern := regexp.MustCompile("^\\s*# " + pattern + " (#?[a-zA-Z0-9\\-]+):.*")
 
 	// Multiline line
-	if multiLineTodoPattern == nil {
-		multiLineTodoPattern = regexp.MustCompile("(?s)^\\s*/\\*.*" + pattern)
-	}
-	if multiLineValidTodoPattern == nil {
-		multiLineValidTodoPattern = regexp.MustCompile("(?s)^\\s*/\\*.*" + pattern + " (#?[a-zA-Z0-9\\-]+):.*")
-	}
+	multiLineTodoPattern := regexp.MustCompile("(?s)^\\s*/\\*.*" + pattern)
+	multiLineValidTodoPattern := regexp.MustCompile("(?s)^\\s*/\\*.*" + pattern + " (#?[a-zA-Z0-9\\-]+):.*")
 
 	return &TodoMatcher{
 		singleLineTodoPattern:            singleLineTodoPattern,
