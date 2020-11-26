@@ -3,7 +3,7 @@
 
 todocheck is a static code analyzer for annotated `TODO` comments.
 
-It let's you create actionable `TODOs` by annotating them with issues from any of the [supported issue trackers](#supported-issue-trackers).  
+It let's you create actionable `TODOs` by annotating them with issues from any of the [supported issue trackers](#supported-issue-trackers).
 No longer will you discover arcane, undocumented `TODO` comments, scattered across your code base.
 
 See [How it works](#how-it-works) for more info.
@@ -20,6 +20,7 @@ See [How it works](#how-it-works) for more info.
   * [Redmine](#redmine)
 - [Supported Programming Languages](#supported-programming-languages)
 - [Ignored Files & Directories](#ignored-files--directories)
+- [Custom todos](#custom-todos)
 - [Supported Output Formats](#supported-output-formats)
 - [Authentication](#authentication)
   * [None](#none)
@@ -38,7 +39,7 @@ func fuu() {
 }
 ```
 
-In case the linked issue `J123` is open, `todocheck` will not report any error. In case it is closed or doesn't exist, todocheck will show an error:  
+In case the linked issue `J123` is open, `todocheck` will not report any error. In case it is closed or doesn't exist, todocheck will show an error:
 ```
 ERROR: Issue is closed.
 myproject/main.go:12: // TODO J123: Fix this typo
@@ -55,9 +56,9 @@ myproject/main.go:16: // TODO - This is not a valid annotated todo
 
 ![todocheck demo gif](images/todocheck-demo.gif)
 
-Only `TODO`s with valid, open issues are allowed to exist in the codebase.  
+Only `TODO`s with valid, open issues are allowed to exist in the codebase.
 
-By integrating todocheck in your development workflow & CI pipeline, you can ensure that there will be no half-baked issue closed with pending `TODO`s in the codebase.  
+By integrating todocheck in your development workflow & CI pipeline, you can ensure that there will be no half-baked issue closed with pending `TODO`s in the codebase.
 
 # Installation
 Download the binary for your OS from the [latest release](https://github.com/preslavmihaylov/todocheck/releases/latest).
@@ -66,7 +67,7 @@ Optionally verify the `sha256` checksum:
  * For macos, run `shasum -a 256 <binary>` & verify it's the same as `<binary>.sha256`
  * For linux, run `sha256sum <binary>`
  * For windows, use [a SHA256 checksum utility](https://kanguru.zendesk.com/hc/en-us/articles/235228027-SHA256-Checksum-Utilities)
- 
+
  Afterwards, verify the shasum is the same as `<binary>.sha256`.
 
 Place the binary in a folder, shined upon by your `$PATH`.
@@ -93,7 +94,7 @@ In case you are running `todocheck` from a different directory, you can specify 
 $ todocheck --basepath path/to/project --config path/to/config/.todocheck.yaml
 ```
 
-If the `--config` option is not specified, the configuration in the basepath will be used.  
+If the `--config` option is not specified, the configuration in the basepath will be used.
 In the example above, it would look for it in `path/to/project/.todocheck.yaml`.
 
 # Supported Issue Trackers
@@ -164,12 +165,12 @@ After you run todocheck for the first time, it will request your offline token:
 Example offline token page:
 ![Offline token page example](images/offline-token-page.png)
 
-After you've given the offline token to `todocheck`'s prompt, it will store it in the auth tokens cache for subsequent executions.  
+After you've given the offline token to `todocheck`'s prompt, it will store it in the auth tokens cache for subsequent executions.
 
 See the [Authentication](#authentication) section for more info.
 
 ## [Pivotal Tracker](https://pivotaltracker.com/)
-To integrate with a pivotal tracker project, specify the origin of your project and the `PIVOTAL_TRACKER` issue tracker in your `.todocheck.yaml` configuration.  
+To integrate with a pivotal tracker project, specify the origin of your project and the `PIVOTAL_TRACKER` issue tracker in your `.todocheck.yaml` configuration.
 You should also specify the `apitoken` as an auth type:
 ```
 origin: pivotaltracker.com/projects/PROJECT_ID
@@ -183,7 +184,7 @@ The first time you run the application, it will ask for your [API Token](https:/
 After you've specified it, it will store it in the auth tokens cache for subsequent executions. See the [Authentication](#authentication) section for more info.
 
 ## [Redmine](https://redmine.org)
-To integrate with a redmine issue tracker project, specify the origin of your installation (without project path) and the `REDMINE` issue tracker in your `.todocheck.yaml` configuration.  
+To integrate with a redmine issue tracker project, specify the origin of your installation (without project path) and the `REDMINE` issue tracker in your `.todocheck.yaml` configuration.
 
 You should also specify the `apitoken` as an auth type if you have authentication enabled on your server:
 ```
@@ -242,10 +243,22 @@ ignored:
 Ignored files/folders can be specified via standard pattern-matching.
 Hidden files (dotfiles, i.e. `.git`, `.gitignore`, etc) are ignored by default.
 
-# Supported Output Formats
-Currently, todocheck supports two kinds of output - standard & json.  
+# Custom Todos
+You can customize your set of variables to be considered as todos. Specify it in the `custom_todos` section in the `.todocheck.yaml`:
+```
+origin: some.origin.com
+issue_tracker: JIRA
+custom_todos:
+  - "@fix"
+  - ToDo
+```
 
-The standard format is meant to be user-friendly & used in the normal day-to-day workflow.  
+Note that no matter what list is specified a default "TODO" will always be added to it.
+
+# Supported Output Formats
+Currently, todocheck supports two kinds of output - standard & json.
+
+The standard format is meant to be user-friendly & used in the normal day-to-day workflow.
 ```
 ERROR: Malformed todo
 tmp/main.groovy:2: // TODO: Invalid todo
@@ -259,7 +272,7 @@ ERROR: Issue doesn't exist
 tmp/main.groovy:15: // TODO 3: A non-existent issue
 ```
 
-The json output is meant to be used for integrating todocheck in third-party systems, such as an IDE plugin.  
+The json output is meant to be used for integrating todocheck in third-party systems, such as an IDE plugin.
 To use json output, use the `--format json` flag.
 ```json
 [
@@ -291,21 +304,21 @@ In this case, you need not specify any `auth` section in your configuration or e
 ```
 origin: github.com/user/repository
 issue_tracker: GITHUB
-auth: 
+auth:
   type: none
 ```
 
 ## API Token/Offline Token
 For private repositories, todocheck requires an authentication token which the user specifies via a secure prompt.
 
-For github & gitlab, there is a **personal access token** one can get in his user settings & todocheck can use that to read your repository's issues. 
+For github & gitlab, there is a **personal access token** one can get in his user settings & todocheck can use that to read your repository's issues.
 [Github docs](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) [Gitlab docs](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)
 
 To use this authentication type, configure the auth type as `apitoken`:
 ```
 origin: github.com/user/repository
 issue_tracker: GITHUB
-auth: 
+auth:
   type: apitoken
 ```
 
@@ -318,12 +331,12 @@ auth:
   offline_url: https://myjira.awesomeorg.com/offline
 ```
 
-An offline token is one which your user can get by accessing a specific page, where your server generates an access token.  
+An offline token is one which your user can get by accessing a specific page, where your server generates an access token.
 
 Example offline token page:
 ![Offline token page example](images/offline-token-page.png)
 
-After you've received either an api token (github/gitlab) or an offline token, you can paste it in todocheck's secure prompt when asked.  
+After you've received either an api token (github/gitlab) or an offline token, you can paste it in todocheck's secure prompt when asked.
 Example with github PAT prompt:
 ![todocheck Github PAT Prompt](images/todocheck-github-pat-prompt.png)
 
@@ -334,7 +347,7 @@ Whenever a user grants todocheck an auth token, the token will be stored in a fi
 
 If that file doesn't already exist, it will be created with read/write permissions for current user only (permission `0700`).
 
-This file stores a key-value mapping of project origin to auth token.  
+This file stores a key-value mapping of project origin to auth token.
 Whenever todocheck runs, it first checks this file for an existing authentication token before contacting the issue tracker's server.
 
 If you want to specify a different tokens cache, you can set the `tokens_cache` section in your `.todocheck.yaml` configuration:
@@ -360,6 +373,7 @@ In your `.todocheck.yaml` configuration, you have the following configuration op
  * origin - the origin of your remote repository/issue tracker (example: `github.com/golang/go`)
  * issue_tracker - the issue tracker type you're using. Possible options - `GITHUB`, `GITLAB`, `JIRA`
  * ignored - a list of directories/files todocheck should ignore. Supports pattern-macthing, e.g. `*.sh`.
+ * custom_todos - a list of custom todos variables. `TODO` will always be added. (example: `"@fix"`)
  * auth - the authentication configuration for your issue tracker. If not present, it defaults to auth `type: none`
    * type - the type of authentication. Possible options - `none` (default), `offline`, `apitoken`A
    * offline_url - the url for fetching offline tokens. Only used when type is `offline`
@@ -373,10 +387,10 @@ tokens:
   https://jira.awesomeorg.com/offline: SECRET_TOKEN_3
 ```
 
-If you'd like to explicitly specify an access token in this file, feel free to do so. 
-This will let the user not have to manually input the token on the first todocheck execution.  
+If you'd like to explicitly specify an access token in this file, feel free to do so.
+This will let the user not have to manually input the token on the first todocheck execution.
 
-This can be used e.g. in a CI environment, in an initial laptop setup script, etc.  
+This can be used e.g. in a CI environment, in an initial laptop setup script, etc.
 Alternatively, use an [Auth Token via Environment Variable](#auth-token-via-environment-variable)
 
 # Contributing
