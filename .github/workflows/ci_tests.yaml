@@ -7,6 +7,9 @@ on:
     types: 
       - completed
       - requested
+  pull_request_target:
+    branches:
+      - master
 
 jobs:
   ci_tests:
