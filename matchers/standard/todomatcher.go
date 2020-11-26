@@ -12,12 +12,12 @@ func NewTodoMatcher(todos []string) *TodoMatcher {
 	pattern := common.ArrayAsRegexAnyMatchExpression(todos)
 
 	// Single line
-	singleLineTodoPattern := regexp.MustCompile("^\\s*//.*" + pattern)
-	singleLineValidTodoPattern := regexp.MustCompile("^\\s*// " + pattern + " (#?[a-zA-Z0-9\\-]+):.*")
+	singleLineTodoPattern := regexp.MustCompile(`^\s*//.*` + pattern)
+	singleLineValidTodoPattern := regexp.MustCompile(`^\s*// ` + pattern + ` (#?[a-zA-Z0-9\-]+):.*`)
 
 	// Multiline line
-	multiLineTodoPattern := regexp.MustCompile("(?s)^\\s*/\\*.*" + pattern)
-	multiLineValidTodoPattern := regexp.MustCompile("(?s)^\\s*/\\*.*" + pattern + " (#?[a-zA-Z0-9\\-]+):.*")
+	multiLineTodoPattern := regexp.MustCompile(`(?s)^\s*/\*.*` + pattern)
+	multiLineValidTodoPattern := regexp.MustCompile(`(?s)^\s*/\*.*` + pattern + ` (#?[a-zA-Z0-9\-]+):.*`)
 
 	return &TodoMatcher{
 		singleLineTodoPattern:      singleLineTodoPattern,
