@@ -35,4 +35,4 @@ jobs:
           name: todocheck.build
           path: ./
       - name: Run tests
-        run: todocheck
+        run: ./todocheck
