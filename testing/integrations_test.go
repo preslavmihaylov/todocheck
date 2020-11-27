@@ -1,6 +1,8 @@
 package testing
 
 import (
+	"fmt"
+	"os"
 	"testing"
 
 	"github.com/preslavmihaylov/todocheck/checker/errors"
@@ -8,6 +10,7 @@ import (
 )
 
 func TestPublicGithubIntegration(t *testing.T) {
+	fmt.Println(os.Getenv("TESTS_GITHUB_APITOKEN"))
 	err := baseGithubScenario().
 		OnlyRunOnCI().
 		WithConfig("./test_configs/integrations/github_public.yaml").
