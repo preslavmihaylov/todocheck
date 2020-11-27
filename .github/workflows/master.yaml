@@ -24,6 +24,7 @@ jobs:
           path: todocheck.build
   test:
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - uses: actions/checkout@v2
         with:
