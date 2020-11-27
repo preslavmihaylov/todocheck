@@ -52,4 +52,4 @@ jobs:
         env:
           TODOCHECK_ENV: "ci"
           TESTS_GITHUB_APITOKEN: ${{ secrets.TESTS_GITHUB_APITOKEN }}
-        run: make test
+        run: make ci_test
