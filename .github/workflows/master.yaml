@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - ci-tests-job
   pull_request_target:
     branches:
       - master
