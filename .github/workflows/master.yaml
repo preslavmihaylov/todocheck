@@ -16,8 +16,10 @@ jobs:
           repository: ${{github.event.pull_request.head.repo.full_name}}
       - name: Build binary
         run: make build
+      - name: 'Tar files'
+        run: tar -cvf todocheck.tar todocheck
       - name: Prepare build artifact
-        run: mkdir -p todocheck.build && cp todocheck todocheck.build/
+        run: mkdir -p todocheck.build && cp todocheck.tar todocheck.build/
       - uses: actions/upload-artifact@master
         with:
           name: todocheck.build
@@ -33,6 +35,8 @@ jobs:
       - uses: actions/download-artifact@master
         with:
           name: todocheck.build
-          path: ./
+          path: todocheck.build
+      - name: Untar files
+        run: tar xf todocheck.build/todocheck.tar
       - name: Run tests
         run: ./todocheck
