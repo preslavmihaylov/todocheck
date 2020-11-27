@@ -27,16 +27,4 @@ jobs:
           ref: master
           repository: ${{ github.repository }}
       - name: Run tests
-        run: todocheck && cat main.go
-  ci_tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: master
-          repository: ${{ github.repository }}
-      - name: Run tests
-        env:
-          TODOCHECK_ENV: "ci"
-          TESTS_GITHUB_APITOKEN: ${{ secrets.TESTS_GITHUB_APITOKEN }}
-        run: todocheck
+        run: ls && cat main.go
