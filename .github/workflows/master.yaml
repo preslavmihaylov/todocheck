@@ -13,12 +13,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
+        with: # code from pull request
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
       - name: Build binary
         run: make build
-  test:
+      - name: Prepare build artifact
+        run: mkdir -p todocheck.build && tar -cvf todocheck.build/todocheck.tar todocheck
+      - uses: actions/upload-artifact@master
+        with:
+          name: todocheck.${{ github.run_id }}-${{ github.run_number }}.build
+          path: todocheck.build
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -26,7 +32,23 @@ jobs:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
       - name: Run tests
+        run: make test
+  ci_tests:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: master
+          repository: ${{ github.repository }}
+      - uses: actions/download-artifact@master
+        with:
+          name: todocheck.${{ github.run_id }}-${{ github.run_number }}.build
+          path: todocheck.build
+      - name: Untar files
+        run: tar xf todocheck.build/todocheck.tar
+      - name: Run CI tests
         env:
           TODOCHECK_ENV: "ci"
           TESTS_GITHUB_APITOKEN: ${{ secrets.TESTS_GITHUB_APITOKEN }}
-        run: make test
+        run: make ci_test
