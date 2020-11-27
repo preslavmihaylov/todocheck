@@ -34,6 +34,7 @@ func main() {
 	flag.BoolVar(versionRequested, "v", *versionRequested, "Show the current version of todocheck (shorthand)")
 	flag.Parse()
 
+	fmt.Println("DBG")
 	logger.Setup(*verboseRequested)
 
 	if *versionRequested {
