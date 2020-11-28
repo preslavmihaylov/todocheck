@@ -7,9 +7,6 @@ build:
 test: build
 	go test -v -count=1 ./testing
 
-ci_test:
-	go test -v -count=1 ./testing
-
 release:
 	@echo "Generating binaries for version $(version)..."
 	./release.sh $(RELEASE_BINARIES) $(version)
