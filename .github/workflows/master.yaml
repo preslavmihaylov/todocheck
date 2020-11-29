@@ -30,4 +30,5 @@ jobs:
         env:
           TODOCHECK_ENV: "ci"
           TESTS_GITHUB_APITOKEN: ${{ secrets.TESTS_GITHUB_APITOKEN }}
+          TESTS_GITLAB_APITOKEN: ${{ secrets.TESTS_GITLAB_APITOKEN }}
         run: make test

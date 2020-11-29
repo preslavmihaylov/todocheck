@@ -27,11 +27,31 @@ func TestPrivateGithubIntegration(t *testing.T) {
 	}
 }
 
+func TestPublicGitlabIntegration(t *testing.T) {
+	err := baseGitlabScenario().
+		OnlyRunOnCI().
+		WithConfig("./test_configs/integrations/gitlab_public.yaml").
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestPrivateGitlabIntegration(t *testing.T) {
+	err := baseGitlabScenario().
+		OnlyRunOnCI().
+		WithConfig("./test_configs/integrations/gitlab_private.yaml").
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func baseGithubScenario() *scenariobuilder.TodocheckScenario {
 	return scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/integrations/github").
-		WithAuthTokenFromEnv("TESTS_GITHUB_APITOKEN").
+		WithAuthTokenFromEnv("TESTS_GITLAB_APITOKEN").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
@@ -52,4 +72,8 @@ func baseGithubScenario() *scenariobuilder.TodocheckScenario {
 				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/integrations/github/main.go", 9).
 				ExpectLine("// TODO #3: A non-existent issue"))
+}
+
+func baseGitlabScenario() *scenariobuilder.TodocheckScenario {
+	return baseGithubScenario()
 }
