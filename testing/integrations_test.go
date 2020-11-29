@@ -10,6 +10,7 @@ import (
 func TestPublicGithubIntegration(t *testing.T) {
 	err := baseGithubScenario().
 		OnlyRunOnCI().
+		WithAuthTokenFromEnv("TESTS_GITHUB_APITOKEN").
 		WithConfig("./test_configs/integrations/github_public.yaml").
 		Run()
 	if err != nil {
@@ -20,6 +21,7 @@ func TestPublicGithubIntegration(t *testing.T) {
 func TestPrivateGithubIntegration(t *testing.T) {
 	err := baseGithubScenario().
 		OnlyRunOnCI().
+		WithAuthTokenFromEnv("TESTS_GITHUB_APITOKEN").
 		WithConfig("./test_configs/integrations/github_private.yaml").
 		Run()
 	if err != nil {
@@ -30,6 +32,7 @@ func TestPrivateGithubIntegration(t *testing.T) {
 func TestPublicGitlabIntegration(t *testing.T) {
 	err := baseGitlabScenario().
 		OnlyRunOnCI().
+		WithAuthTokenFromEnv("TESTS_GITLAB_APITOKEN").
 		WithConfig("./test_configs/integrations/gitlab_public.yaml").
 		Run()
 	if err != nil {
@@ -40,6 +43,7 @@ func TestPublicGitlabIntegration(t *testing.T) {
 func TestPrivateGitlabIntegration(t *testing.T) {
 	err := baseGitlabScenario().
 		OnlyRunOnCI().
+		WithAuthTokenFromEnv("TESTS_GITLAB_APITOKEN").
 		WithConfig("./test_configs/integrations/gitlab_private.yaml").
 		Run()
 	if err != nil {
@@ -51,7 +55,6 @@ func baseGithubScenario() *scenariobuilder.TodocheckScenario {
 	return scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/integrations/github").
-		WithAuthTokenFromEnv("TESTS_GITLAB_APITOKEN").
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
