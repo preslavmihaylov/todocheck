@@ -34,81 +34,92 @@ type matcherFactory struct {
 }
 
 var (
-	once            sync.Once
-	standardMatcher TodoMatcher
-	scriptsMatcher  TodoMatcher
-	phpMatcher      TodoMatcher
-	pythonMatcher   TodoMatcher
-	groovyMatcher   TodoMatcher
-)
-
-var (
 	standardMatcherFactory = &matcherFactory{
-		func(customTodos []string) TodoMatcher {
-			once.Do(func() {
-				if standardMatcher == nil {
-					standardMatcher = standard.NewTodoMatcher(customTodos)
-				}
-			})
-			return standardMatcher
-		},
+		func() func([]string) TodoMatcher {
+			var once sync.Once
+			var matcher TodoMatcher
+			return func(customTodos []string) TodoMatcher {
+				once.Do(func() {
+					matcher = standard.NewTodoMatcher(customTodos)
+				})
+				return matcher
+			}
+		}(),
 		func(callback state.CommentCallback) CommentMatcher {
 			return standard.NewCommentMatcher(callback, false)
 		},
 	}
 	standardMatcherWithNestedMultilineCommentsFactory = &matcherFactory{
-		func(customTodos []string) TodoMatcher {
-			once.Do(func() {
-				if standardMatcher == nil {
-					standardMatcher = standard.NewTodoMatcher(customTodos)
-				}
-			})
-			return standardMatcher
-		},
+		func() func([]string) TodoMatcher {
+			var once sync.Once
+			var matcher TodoMatcher
+			return func(customTodos []string) TodoMatcher {
+				once.Do(func() {
+					matcher = standard.NewTodoMatcher(customTodos)
+				})
+				return matcher
+			}
+		}(),
 		func(callback state.CommentCallback) CommentMatcher {
 			return standard.NewCommentMatcher(callback, true)
 		},
 	}
 	scriptsMatcherFactory = &matcherFactory{
-		func(customTodos []string) TodoMatcher {
-			once.Do(func() {
-				scriptsMatcher = scripts.NewTodoMatcher(customTodos)
-			})
-			return scriptsMatcher
-		},
+		func() func([]string) TodoMatcher {
+			return func(customTodos []string) TodoMatcher {
+				var once sync.Once
+				var matcher TodoMatcher
+				once.Do(func() {
+					matcher = scripts.NewTodoMatcher(customTodos)
+				})
+				return matcher
+			}
+		}(),
 		func(callback state.CommentCallback) CommentMatcher {
 			return scripts.NewCommentMatcher(callback)
 		},
 	}
 	phpMatcherFactory = &matcherFactory{
-		func(customTodos []string) TodoMatcher {
-			once.Do(func() {
-				phpMatcher = php.NewTodoMatcher(customTodos)
-			})
-			return phpMatcher
-		},
+		func() func([]string) TodoMatcher {
+			return func(customTodos []string) TodoMatcher {
+				var once sync.Once
+				var matcher TodoMatcher
+				once.Do(func() {
+					matcher = php.NewTodoMatcher(customTodos)
+				})
+				return matcher
+			}
+		}(),
 		func(callback state.CommentCallback) CommentMatcher {
 			return php.NewCommentMatcher(callback)
 		},
 	}
 	pythonMatcherFactory = &matcherFactory{
-		func(customTodos []string) TodoMatcher {
-			once.Do(func() {
-				pythonMatcher = python.NewTodoMatcher(customTodos)
-			})
-			return pythonMatcher
-		},
+		func() func([]string) TodoMatcher {
+			return func(customTodos []string) TodoMatcher {
+				var once sync.Once
+				var matcher TodoMatcher
+				once.Do(func() {
+					matcher = python.NewTodoMatcher(customTodos)
+				})
+				return matcher
+			}
+		}(),
 		func(callback state.CommentCallback) CommentMatcher {
 			return python.NewCommentMatcher(callback)
 		},
 	}
 	groovyMatcherFactory = &matcherFactory{
-		func(customTodos []string) TodoMatcher {
-			once.Do(func() {
-				groovyMatcher = groovy.NewTodoMatcher(customTodos)
-			})
-			return groovyMatcher
-		},
+		func() func([]string) TodoMatcher {
+			return func(customTodos []string) TodoMatcher {
+				var once sync.Once
+				var matcher TodoMatcher
+				once.Do(func() {
+					matcher = groovy.NewTodoMatcher(customTodos)
+				})
+				return matcher
+			}
+		}(),
 		func(callback state.CommentCallback) CommentMatcher {
 			return groovy.NewCommentMatcher(callback)
 		},
