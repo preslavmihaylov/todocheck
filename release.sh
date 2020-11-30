@@ -26,3 +26,4 @@ create_build windows amd64 x86_64.exe
 create_build darwin amd64 x86_64
 create_build linux amd64 x86_64
 create_build linux arm64
+# foo
