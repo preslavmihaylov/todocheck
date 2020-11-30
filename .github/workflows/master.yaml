@@ -29,4 +29,5 @@ jobs:
           TODOCHECK_ENV: "ci"
           TESTS_GITHUB_APITOKEN: ${{ secrets.TESTS_GITHUB_APITOKEN }}
           TESTS_GITLAB_APITOKEN: ${{ secrets.TESTS_GITLAB_APITOKEN }}
+          TESTS_PIVOTALTRACKER_APITOKEN: ${{ secrets.TESTS_PIVOTALTRACKER_APITOKEN }}
         run: make test
