@@ -1,0 +1,4 @@
+origin: https://gitlab.com/todocheck-tests/test-public
+issue_tracker: GITLAB
+auth:
+  type: apitoken

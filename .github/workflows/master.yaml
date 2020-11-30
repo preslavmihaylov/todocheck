@@ -2,8 +2,6 @@ name: master
 
 on:
   push:
-    branches:
-      - master
   pull_request_target:
     branches:
       - master
@@ -13,20 +11,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
+        with: # code from pull request
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
       - name: Build binary
         run: make build
-  test:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
+          persist-credentials: false
       - name: Run tests
         env:
           TODOCHECK_ENV: "ci"
           TESTS_GITHUB_APITOKEN: ${{ secrets.TESTS_GITHUB_APITOKEN }}
+          TESTS_GITLAB_APITOKEN: ${{ secrets.TESTS_GITLAB_APITOKEN }}
         run: make test
