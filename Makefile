@@ -5,7 +5,7 @@ build:
 	go build -ldflags "-X main.version=$(version)"
 
 test: build
-	go test -v -count=1 ./testing
+	go test -count=1 ./testing
 
 release:
 	@echo "Generating binaries for version $(version)..."
