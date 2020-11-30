@@ -802,3 +802,31 @@ func TestPrintingVersionFlagStopsProgram(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+// Testing multiple todo matchers created for different file types
+func TestMultipleTodoMatchers(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/multiple_matchers").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/multiple_matchers/file1.sh", 1).
+				ExpectLine("# This is a malformed TODO with first matcher")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/multiple_matchers/file2.sh", 1).
+				ExpectLine("# This is a malformed TODO with first matcher in second file")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/multiple_matchers/file3.go", 3).
+				ExpectLine("// TODO: This is a todo in a file of other type with different matcher")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
