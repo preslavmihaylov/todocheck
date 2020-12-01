@@ -66,9 +66,9 @@ var (
 	}
 	scriptsMatcherFactory = &matcherFactory{
 		func() func([]string) TodoMatcher {
+			var once sync.Once
+			var matcher TodoMatcher
 			return func(customTodos []string) TodoMatcher {
-				var once sync.Once
-				var matcher TodoMatcher
 				once.Do(func() {
 					matcher = scripts.NewTodoMatcher(customTodos)
 				})
@@ -81,9 +81,9 @@ var (
 	}
 	phpMatcherFactory = &matcherFactory{
 		func() func([]string) TodoMatcher {
+			var once sync.Once
+			var matcher TodoMatcher
 			return func(customTodos []string) TodoMatcher {
-				var once sync.Once
-				var matcher TodoMatcher
 				once.Do(func() {
 					matcher = php.NewTodoMatcher(customTodos)
 				})
@@ -96,9 +96,9 @@ var (
 	}
 	pythonMatcherFactory = &matcherFactory{
 		func() func([]string) TodoMatcher {
+			var once sync.Once
+			var matcher TodoMatcher
 			return func(customTodos []string) TodoMatcher {
-				var once sync.Once
-				var matcher TodoMatcher
 				once.Do(func() {
 					matcher = python.NewTodoMatcher(customTodos)
 				})
@@ -111,9 +111,9 @@ var (
 	}
 	groovyMatcherFactory = &matcherFactory{
 		func() func([]string) TodoMatcher {
+			var once sync.Once
+			var matcher TodoMatcher
 			return func(customTodos []string) TodoMatcher {
-				var once sync.Once
-				var matcher TodoMatcher
 				once.Do(func() {
 					matcher = groovy.NewTodoMatcher(customTodos)
 				})
