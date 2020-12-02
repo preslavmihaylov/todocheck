@@ -67,7 +67,7 @@ func main() {
 	f := fetcher.NewFetcher(tracker, authmiddleware.For(localCfg))
 
 	todoErrs := []*todocheckerrors.TODO{}
-	traverser := todoerrs.NewTraverser(f, localCfg.IgnoredPaths, func(todoErr *todocheckerrors.TODO) error {
+	traverser := todoerrs.NewTraverser(f, localCfg.IgnoredPaths, localCfg.CustomTodos, func(todoErr *todocheckerrors.TODO) error {
 		todoErrs = append(todoErrs, todoErr)
 		return nil
 	})

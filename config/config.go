@@ -23,6 +23,7 @@ type Local struct {
 	Origin       string       `yaml:"origin"`
 	IssueTracker IssueTracker `yaml:"issue_tracker"`
 	IgnoredPaths []string     `yaml:"ignored"`
+	CustomTodos  []string     `yaml:"custom_todos"`
 	Auth         *Auth        `yaml:"auth"`
 }
 
@@ -54,6 +55,9 @@ func NewLocal(cfgPath, basepath string) (*Local, error) {
 	prependDoublestarGlob(cfg.IgnoredPaths, basepath)
 	trimTrailingSlashesFromDirs(cfg.IgnoredPaths)
 	removeCurrentDirReference(cfg.IgnoredPaths)
+
+	cfg.CustomTodos = decodeEscapedReservedCharacters(cfg.CustomTodos)
+	cfg.CustomTodos = addDefaultFormatIfMissing(cfg.CustomTodos)
 
 	return cfg, nil
 }
@@ -153,4 +157,33 @@ func removeCurrentDirReference(dirs []string) {
 
 func isRelativePath(path string) bool {
 	return path[0] != '/' && path[0] != '~' && !windowsAbsolutePathPattern.MatchString(path)
+}
+
+// addDefaultFormatIfMissing trying find default TODO string and adding it if not exists
+func addDefaultFormatIfMissing(todos []string) []string {
+	var isExists bool
+	for _, v := range todos {
+		if v == "TODO" {
+			isExists = true
+			continue
+		}
+	}
+
+	if !isExists {
+		todos = append(todos, "TODO")
+	}
+
+	return todos
+}
+
+func decodeEscapedReservedCharacters(slice []string) []string {
+	// Remove leading escaping "\" for reserved strings.
+	// "@", "`" in YAML is reserved indicators
+	//  https://yaml.org/spec/1.2/spec.html#id2772075
+	for i, v := range slice {
+		if strings.HasPrefix(v, "\\@") || strings.HasPrefix(v, "\\`") {
+			slice[i] = v[1:]
+		}
+	}
+	return slice
 }
