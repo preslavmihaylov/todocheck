@@ -1,4 +1,4 @@
-origin: "no_issue_tracker"
+origin: http://myjira.com
 issue_tracker: JIRA
 ignored:
   - ignored_dir1/

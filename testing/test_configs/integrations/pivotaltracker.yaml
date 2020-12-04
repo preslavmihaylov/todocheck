@@ -1,0 +1,4 @@
+origin: https://www.pivotaltracker.com/n/projects/2459511
+issue_tracker: PIVOTAL_TRACKER
+auth:
+  type: apitoken

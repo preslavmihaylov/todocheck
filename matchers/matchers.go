@@ -2,6 +2,7 @@ package matchers
 
 import (
 	"path/filepath"
+	"sync"
 
 	"github.com/preslavmihaylov/todocheck/matchers/groovy"
 	"github.com/preslavmihaylov/todocheck/matchers/php"
@@ -28,55 +29,97 @@ type CommentMatcher interface {
 }
 
 type matcherFactory struct {
-	newTodoMatcher     func() TodoMatcher
+	newTodoMatcher     func([]string) TodoMatcher
 	newCommentsMatcher func(callback state.CommentCallback) CommentMatcher
 }
 
 var (
 	standardMatcherFactory = &matcherFactory{
-		func() TodoMatcher {
-			return standard.NewTodoMatcher()
-		},
+		func() func([]string) TodoMatcher {
+			var once sync.Once
+			var matcher TodoMatcher
+			return func(customTodos []string) TodoMatcher {
+				once.Do(func() {
+					matcher = standard.NewTodoMatcher(customTodos)
+				})
+				return matcher
+			}
+		}(),
 		func(callback state.CommentCallback) CommentMatcher {
 			return standard.NewCommentMatcher(callback, false)
 		},
 	}
 	standardMatcherWithNestedMultilineCommentsFactory = &matcherFactory{
-		func() TodoMatcher {
-			return standard.NewTodoMatcher()
-		},
+		func() func([]string) TodoMatcher {
+			var once sync.Once
+			var matcher TodoMatcher
+			return func(customTodos []string) TodoMatcher {
+				once.Do(func() {
+					matcher = standard.NewTodoMatcher(customTodos)
+				})
+				return matcher
+			}
+		}(),
 		func(callback state.CommentCallback) CommentMatcher {
 			return standard.NewCommentMatcher(callback, true)
 		},
 	}
 	scriptsMatcherFactory = &matcherFactory{
-		func() TodoMatcher {
-			return scripts.NewTodoMatcher()
-		},
+		func() func([]string) TodoMatcher {
+			var once sync.Once
+			var matcher TodoMatcher
+			return func(customTodos []string) TodoMatcher {
+				once.Do(func() {
+					matcher = scripts.NewTodoMatcher(customTodos)
+				})
+				return matcher
+			}
+		}(),
 		func(callback state.CommentCallback) CommentMatcher {
 			return scripts.NewCommentMatcher(callback)
 		},
 	}
 	phpMatcherFactory = &matcherFactory{
-		func() TodoMatcher {
-			return php.NewTodoMatcher()
-		},
+		func() func([]string) TodoMatcher {
+			var once sync.Once
+			var matcher TodoMatcher
+			return func(customTodos []string) TodoMatcher {
+				once.Do(func() {
+					matcher = php.NewTodoMatcher(customTodos)
+				})
+				return matcher
+			}
+		}(),
 		func(callback state.CommentCallback) CommentMatcher {
 			return php.NewCommentMatcher(callback)
 		},
 	}
 	pythonMatcherFactory = &matcherFactory{
-		func() TodoMatcher {
-			return python.NewTodoMatcher()
-		},
+		func() func([]string) TodoMatcher {
+			var once sync.Once
+			var matcher TodoMatcher
+			return func(customTodos []string) TodoMatcher {
+				once.Do(func() {
+					matcher = python.NewTodoMatcher(customTodos)
+				})
+				return matcher
+			}
+		}(),
 		func(callback state.CommentCallback) CommentMatcher {
 			return python.NewCommentMatcher(callback)
 		},
 	}
 	groovyMatcherFactory = &matcherFactory{
-		func() TodoMatcher {
-			return groovy.NewTodoMatcher()
-		},
+		func() func([]string) TodoMatcher {
+			var once sync.Once
+			var matcher TodoMatcher
+			return func(customTodos []string) TodoMatcher {
+				once.Do(func() {
+					matcher = groovy.NewTodoMatcher(customTodos)
+				})
+				return matcher
+			}
+		}(),
 		func(callback state.CommentCallback) CommentMatcher {
 			return groovy.NewCommentMatcher(callback)
 		},
@@ -119,10 +162,10 @@ var supportedMatchers = map[string]*matcherFactory{
 }
 
 // TodoMatcherForFile gets the correct todo matcher for the given filename
-func TodoMatcherForFile(filename string) TodoMatcher {
+func TodoMatcherForFile(filename string, todos []string) TodoMatcher {
 	extension := filepath.Ext(filename)
 	if matcherFactory, ok := supportedMatchers[extension]; ok {
-		return matcherFactory.newTodoMatcher()
+		return matcherFactory.newTodoMatcher(todos)
 	}
 
 	return nil

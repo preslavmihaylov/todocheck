@@ -20,6 +20,7 @@ See [How it works](#how-it-works) for more info.
   * [Redmine](#redmine)
 - [Supported Programming Languages](#supported-programming-languages)
 - [Ignored Files & Directories](#ignored-files--directories)
+- [Custom todos](#custom-todos)
 - [Supported Output Formats](#supported-output-formats)
 - [Authentication](#authentication)
   * [None](#none)
@@ -242,6 +243,27 @@ ignored:
 Ignored files/folders can be specified via standard pattern-matching.
 Hidden files (dotfiles, i.e. `.git`, `.gitignore`, etc) are ignored by default.
 
+# Custom Todos
+By default, `todocheck` looks for todos in the format `// TODO #231: ...` Most projects stick to this format.
+
+However, if you have some special todo format, which is different from the default one, you can specify a list of custom todo formats in your `.todocheck.yaml`  
+```
+origin: some.origin.com
+issue_tracker: JIRA
+custom_todos:
+  - "@fix"
+  - ToDo
+```
+
+Note that this list adds additional formats the tool should match, but doesn't substitute the default one - `TODO`.
+
+With the above configuration, `todocheck` will start matching todo comments in the following formats:
+```
+// @fix #234: a leftover task...
+// ToDo #15: A funky-looking todo comment
+```
+
+
 # Supported Output Formats
 Currently, todocheck supports two kinds of output - standard & json.  
 
@@ -360,6 +382,7 @@ In your `.todocheck.yaml` configuration, you have the following configuration op
  * origin - the origin of your remote repository/issue tracker (example: `github.com/golang/go`)
  * issue_tracker - the issue tracker type you're using. Possible options - `GITHUB`, `GITLAB`, `JIRA`
  * ignored - a list of directories/files todocheck should ignore. Supports pattern-macthing, e.g. `*.sh`.
+ * custom_todos - a list of custom todos variables. `TODO` will always be added. (example: `"@fix"`)
  * auth - the authentication configuration for your issue tracker. If not present, it defaults to auth `type: none`
    * type - the type of authentication. Possible options - `none` (default), `offline`, `apitoken`A
    * offline_url - the url for fetching offline tokens. Only used when type is `offline`
