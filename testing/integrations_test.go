@@ -117,7 +117,7 @@ func TestPublicRedmineIntegration(t *testing.T) {
 				ExpectLine("// TODO 6: A rejected issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(errors.TODOErrTypeIssueClosed).
+				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/integrations/redmine/main.go", 9).
 				ExpectLine("// TODO 14: a non-existent issue")).
 		ExpectTodoErr(
