@@ -2,6 +2,7 @@ package redmine
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 )
@@ -23,6 +24,10 @@ func (it *IssueTracker) IssueURLFor(taskID string) string {
 
 // TaskURLFrom taskID returns the url for the target redmine task ID to fetch
 func (it *IssueTracker) taskURLFrom(taskID string) string {
+	if strings.HasPrefix(taskID, "#") {
+		taskID = taskID[1:]
+	}
+
 	return taskID + ".json"
 }
 
