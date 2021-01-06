@@ -244,7 +244,7 @@ Ignored files/folders can be specified via standard pattern-matching.
 Hidden files (dotfiles, i.e. `.git`, `.gitignore`, etc) are ignored by default.
 
 # Custom Todos
-By default, `todocheck` looks for todos in the format `// TODO #231: ...` Most projects stick to this format.
+By default, `todocheck` looks for todos in the format `// TODO 231: ...` Most projects stick to this format.
 
 However, if you have some special todo format, which is different from the default one, you can specify a list of custom todo formats in your `.todocheck.yaml`  
 ```
@@ -259,8 +259,8 @@ Note that this list adds additional formats the tool should match, but doesn't s
 
 With the above configuration, `todocheck` will start matching todo comments in the following formats:
 ```
-// @fix #234: a leftover task...
-// ToDo #15: A funky-looking todo comment
+// @fix 234: a leftover task...
+// ToDo 15: A funky-looking todo comment
 ```
 
 
