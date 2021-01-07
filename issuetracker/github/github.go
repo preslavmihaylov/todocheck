@@ -2,7 +2,6 @@ package github
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/preslavmihaylov/todocheck/common"
@@ -26,17 +25,21 @@ func (it *IssueTracker) IssueURLFor(taskID string) string {
 
 // Exists verifies if the issue tracker exists based on the provided configuration
 func (it *IssueTracker) Exists() bool {
-	res, err := http.Head(it.repositoryURL())
-	if err != nil {
-		return false
-	} else if res.StatusCode == http.StatusNotFound {
-		return false
-	} else if res.StatusCode != http.StatusOK {
-		panic(fmt.Sprintf("received unexpected status code when making a request to the url - %s: %d",
-			it.repositoryURL(), res.StatusCode))
-	}
-
+	// in order to enable this feature for github, we first have to migrate the authMiddleware functionality from authmanager in the issuetracker interface
+	// only then can we plug in the necessary apitoken to correctly check if the repository exists
 	return true
+
+	// res, err := http.Head(it.repositoryURL())
+	// if err != nil {
+	// 	return false
+	// } else if res.StatusCode == http.StatusNotFound {
+	// 	return false
+	// } else if res.StatusCode != http.StatusOK {
+	// 	panic(fmt.Sprintf("received unexpected status code when making a request to the url - %s: %d",
+	// 		it.repositoryURL(), res.StatusCode))
+	// }
+
+	// return true
 }
 
 // taskURLFrom taskID returns the url for the target github task ID to fetch
