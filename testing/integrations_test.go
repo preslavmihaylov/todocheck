@@ -89,6 +89,91 @@ func TestPivotalTrackerIntegration(t *testing.T) {
 	}
 }
 
+func TestPublicRedmineIntegration(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		OnlyRunOnCI().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/integrations/redmine_public").
+		WithConfig("./test_configs/integrations/redmine_public.yaml").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/integrations/redmine_public/main.go", 5).
+				ExpectLine("// TODO 3: A closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/integrations/redmine_public/main.go", 6).
+				ExpectLine("// TODO 4: An issue with feedback")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/integrations/redmine_public/main.go", 7).
+				ExpectLine("// TODO 5: A resolved issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/integrations/redmine_public/main.go", 8).
+				ExpectLine("// TODO 6: A rejected issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/integrations/redmine_public/main.go", 9).
+				ExpectLine("// TODO 14: a non-existent issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/integrations/redmine_public/main.go", 13).
+				ExpectLine("// TODO #3: A closed issue")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestPrivateRedmineIntegration(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		OnlyRunOnCI().
+		WithAuthTokenFromEnv("TESTS_REDMINE_PRIVATE_APITOKEN").
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/integrations/redmine_private").
+		WithConfig("./test_configs/integrations/redmine_private.yaml").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/integrations/redmine_private/main.go", 5).
+				ExpectLine("// TODO 9: A closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/integrations/redmine_private/main.go", 6).
+				ExpectLine("// TODO 10: An issue with feedback")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/integrations/redmine_private/main.go", 7).
+				ExpectLine("// TODO 11: A resolved issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/integrations/redmine_private/main.go", 8).
+				ExpectLine("// TODO 12: A rejected issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/integrations/redmine_private/main.go", 9).
+				ExpectLine("// TODO 14: a non-existent issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/integrations/redmine_private/main.go", 13).
+				ExpectLine("// TODO #9: A closed issue")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func baseGithubScenario() *scenariobuilder.TodocheckScenario {
 	return scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
