@@ -51,17 +51,17 @@ func main() {
 		log.Fatalf("couldn't acquire token from config: %s\n", err)
 	}
 
-	if errors := validation.Validate(localCfg); len(errors) > 0 {
+	tracker, err := factory.NewIssueTrackerFrom(localCfg.IssueTracker, localCfg.Origin)
+	if err != nil {
+		log.Fatalf("couldn't create new issue tracker: %s\n", err)
+	}
+
+	if errors := validation.Validate(localCfg, tracker); len(errors) > 0 {
 		for _, err := range errors {
 			log.Println(err)
 		}
 
 		os.Exit(1)
-	}
-
-	tracker, err := factory.NewIssueTrackerFrom(localCfg.IssueTracker, localCfg.Origin)
-	if err != nil {
-		log.Fatalf("couldn't create new issue tracker: %s\n", err)
 	}
 
 	f := fetcher.NewFetcher(tracker, authmiddleware.For(localCfg))

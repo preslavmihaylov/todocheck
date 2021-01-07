@@ -2,11 +2,7 @@ package issuetracker
 
 import (
 	"errors"
-	"fmt"
-	"strings"
 
-	"github.com/preslavmihaylov/todocheck/common"
-	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 )
 
@@ -26,25 +22,7 @@ type IssueTracker interface {
 
 	// IssueURLFor Returns the full URL for the issue
 	IssueURLFor(taskID string) string
-}
 
-// HealthcheckURL returns the health check base url given the issue tracker type and the site origin
-func HealthcheckURL(issueTracker config.IssueTracker, origin string) (string, error) {
-	switch issueTracker {
-	case config.IssueTrackerGithub:
-		scheme, owner, repo := parseGithubDetails(origin)
-		return fmt.Sprintf("%s//api.github.com/repos/%s/%s", scheme, owner, repo), nil
-	default:
-		return "", ErrUnsupportedHealthCheck
-	}
-}
-
-func parseGithubDetails(origin string) (scheme, owner, repo string) {
-	tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
-	if !strings.HasPrefix(tokens[0], "http") {
-		tokens = append([]string{"https:"}, tokens...)
-	}
-
-	scheme, owner, repo = tokens[0], tokens[2], tokens[3]
-	return
+	// Exists verifies if the issue tracker exists based on the provided configuration
+	Exists() bool
 }
