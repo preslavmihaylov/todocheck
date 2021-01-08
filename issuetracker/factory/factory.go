@@ -5,11 +5,11 @@ import (
 
 	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/issuetracker"
-	"github.com/preslavmihaylov/todocheck/issuetracker/github"
-	"github.com/preslavmihaylov/todocheck/issuetracker/gitlab"
-	"github.com/preslavmihaylov/todocheck/issuetracker/jira"
-	"github.com/preslavmihaylov/todocheck/issuetracker/pivotaltracker"
-	"github.com/preslavmihaylov/todocheck/issuetracker/redmine"
+	"github.com/preslavmihaylov/todocheck/issuetracker/internal/github"
+	"github.com/preslavmihaylov/todocheck/issuetracker/internal/gitlab"
+	"github.com/preslavmihaylov/todocheck/issuetracker/internal/jira"
+	"github.com/preslavmihaylov/todocheck/issuetracker/internal/pivotaltracker"
+	"github.com/preslavmihaylov/todocheck/issuetracker/internal/redmine"
 )
 
 // NewIssueTrackerFrom is a static factory method for creating an issuetracker.IssueTracker instance based on the chosen issue tracker type
