@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/preslavmihaylov/todocheck/authmanager/authmiddleware"
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 	"github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 )
@@ -14,12 +13,11 @@ import (
 // Fetcher for task statuses by contacting task management web apps' rest api
 type Fetcher struct {
 	issuetracker.IssueTracker
-	authMiddleware authmiddleware.Func
 }
 
 // NewFetcher instance
-func NewFetcher(issueTracker issuetracker.IssueTracker, authMw authmiddleware.Func) *Fetcher {
-	return &Fetcher{issueTracker, authMw}
+func NewFetcher(issueTracker issuetracker.IssueTracker) *Fetcher {
+	return &Fetcher{issueTracker}
 }
 
 // Fetch a task's status based on task ID

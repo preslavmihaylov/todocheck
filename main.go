@@ -9,7 +9,6 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/preslavmihaylov/todocheck/authmanager"
-	"github.com/preslavmihaylov/todocheck/authmanager/authmiddleware"
 	todocheckerrors "github.com/preslavmihaylov/todocheck/checker/errors"
 	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/fetcher"
@@ -64,7 +63,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	f := fetcher.NewFetcher(tracker, authmiddleware.For(localCfg))
+	f := fetcher.NewFetcher(tracker)
 
 	todoErrs := []*todocheckerrors.TODO{}
 	traverser := todoerrs.NewTraverser(f, localCfg.IgnoredPaths, localCfg.CustomTodos, func(todoErr *todocheckerrors.TODO) error {
