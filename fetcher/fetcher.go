@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/preslavmihaylov/todocheck/authmanager/authmiddleware"
-	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 	"github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 )
@@ -55,27 +54,4 @@ func (f *Fetcher) Fetch(taskID string) (taskstatus.TaskStatus, error) {
 	}
 
 	return task.GetStatus(), nil
-}
-
-// IsHealthy returns true if the user has access to the repo
-func IsHealthy(issueTracker config.IssueTracker, url string) bool {
-	switch issueTracker {
-	case config.IssueTrackerGithub:
-		return healthCheck(url)
-	default:
-		return true
-	}
-}
-
-func healthCheck(url string) bool {
-	res, err := http.Head(url)
-	if err != nil {
-		return false
-	}
-
-	if res.StatusCode != http.StatusOK {
-		return false
-	}
-
-	return true
 }

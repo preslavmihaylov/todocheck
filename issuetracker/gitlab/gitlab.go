@@ -24,6 +24,12 @@ func (it *IssueTracker) IssueURLFor(taskID string) string {
 	return it.issueAPIOrigin() + it.taskURLFrom(taskID)
 }
 
+// Exists verifies if the issue tracker exists based on the provided configuration
+func (it *IssueTracker) Exists() bool {
+	// feature not supported for gitlab yet
+	return true
+}
+
 // TaskURLFrom taskID returns the url for the target gitlab task ID to fetch
 func (it *IssueTracker) taskURLFrom(taskID string) string {
 	if strings.HasPrefix(taskID, "#") {
