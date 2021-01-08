@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/preslavmihaylov/todocheck/config"
@@ -22,6 +23,11 @@ func (m *mockIssueTracker) IssueURLFor(taskID string) string {
 // Exists verifies if the issue tracker exists based on the provided configuration
 func (m *mockIssueTracker) Exists() bool {
 	return true
+}
+
+// InstrumentMiddleware is a hook to instrument any necessary middleware for connecting with the issue tracker
+func (m *mockIssueTracker) InstrumentMiddleware(r *http.Request) error {
+	panic("not implemented") // TODO: Implement
 }
 
 func TestInvalidOrigins(t *testing.T) {

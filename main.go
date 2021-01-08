@@ -51,7 +51,7 @@ func main() {
 		log.Fatalf("couldn't acquire token from config: %s\n", err)
 	}
 
-	tracker, err := factory.NewIssueTrackerFrom(localCfg.IssueTracker, localCfg.Origin)
+	tracker, err := factory.NewIssueTrackerFrom(localCfg.IssueTracker, localCfg.Auth, localCfg.Origin)
 	if err != nil {
 		log.Fatalf("couldn't create new issue tracker: %s\n", err)
 	}

@@ -29,7 +29,10 @@ func (f *Fetcher) Fetch(taskID string) (taskstatus.TaskStatus, error) {
 		return taskstatus.None, fmt.Errorf("failed creating new GET request: %w", err)
 	}
 
-	f.authMiddleware(req)
+	err = f.IssueTracker.InstrumentMiddleware(req)
+	if err != nil {
+		return taskstatus.None, fmt.Errorf("couldn't instrument authentication middleware: %w", err)
+	}
 
 	hclient := &http.Client{}
 	resp, err := hclient.Do(req)

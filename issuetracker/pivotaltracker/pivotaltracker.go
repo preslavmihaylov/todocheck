@@ -2,15 +2,18 @@ package pivotaltracker
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/preslavmihaylov/todocheck/common"
+	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 )
 
 // IssueTracker implementation for integrating with public pivotaltracker issue trackers
 type IssueTracker struct {
-	Origin string
+	Origin  string
+	AuthCfg *config.Auth
 }
 
 // TaskModel returns the model representing a deserialized pivotaltracker task
@@ -27,6 +30,19 @@ func (it *IssueTracker) IssueURLFor(taskID string) string {
 func (it *IssueTracker) Exists() bool {
 	// feature not supported for pivotaltracker yet
 	return true
+}
+
+// InstrumentMiddleware is a hook to instrument any necessary middleware for connecting with the issue tracker
+func (it *IssueTracker) InstrumentMiddleware(r *http.Request) error {
+	if it.AuthCfg == nil || it.AuthCfg.Type == config.AuthTypeNone {
+		return nil
+	} else if it.AuthCfg.Type != config.AuthTypeAPIToken {
+		return fmt.Errorf("unsupported authentication token type for pivotaltracker: %s", it.AuthCfg.Type)
+	}
+
+	common.Assert(it.AuthCfg.Token != "", "authentication token is empty")
+	r.Header.Add("X-TrackerToken", it.AuthCfg.Token)
+	return nil
 }
 
 // TaskURLFrom taskID returns the url for the target pivotaltracker task ID to fetch

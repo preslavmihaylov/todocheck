@@ -56,3 +56,7 @@ func (a AuthType) IsValid() bool {
 
 	return false
 }
+
+func (a AuthType) String() string {
+	return string(a)
+}
