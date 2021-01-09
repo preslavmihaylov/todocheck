@@ -2,6 +2,7 @@ package issuetracker
 
 import (
 	"errors"
+	"net/http"
 
 	"github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 )
@@ -25,4 +26,7 @@ type IssueTracker interface {
 
 	// Exists verifies if the issue tracker exists based on the provided configuration
 	Exists() bool
+
+	// InstrumentMiddleware is a hook to instrument any necessary middleware for connecting with the issue tracker
+	InstrumentMiddleware(r *http.Request) error
 }

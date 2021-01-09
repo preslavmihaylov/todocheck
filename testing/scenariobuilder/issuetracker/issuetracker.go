@@ -3,7 +3,7 @@ package issuetracker
 import (
 	"encoding/json"
 
-	"github.com/preslavmihaylov/todocheck/issuetracker/jira"
+	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder/issuetracker/jira"
 )
 
 // Type is an enum specifying the target mock issue tracker to use

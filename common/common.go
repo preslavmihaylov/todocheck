@@ -25,3 +25,10 @@ func ArrayAsRegexAnyMatchExpression(todos []string) string {
 	}
 	return fmt.Sprintf("(?:%s)", strings.Join(todos, "|"))
 }
+
+// Assert panics if the provided condition is not met
+func Assert(condition bool, msg string) {
+	if !condition {
+		panic("Invariant violated: " + msg)
+	}
+}
