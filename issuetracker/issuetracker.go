@@ -29,4 +29,7 @@ type IssueTracker interface {
 
 	// InstrumentMiddleware is a hook to instrument any necessary middleware for connecting with the issue tracker
 	InstrumentMiddleware(r *http.Request) error
+
+	// TokenAcquisitionInstructions returns instructions for manually acquiring the authentication token
+	TokenAcquisitionInstructions() string
 }

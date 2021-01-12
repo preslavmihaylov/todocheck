@@ -11,6 +11,11 @@ import (
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 )
 
+// New creates a new gitlab issuetracker instance
+func New(origin string, authCfg *config.Auth) (*IssueTracker, error) {
+	return &IssueTracker{origin, authCfg}, nil
+}
+
 // IssueTracker is an issue tracker implementation for integrating with public & private gitlab issue trackers
 type IssueTracker struct {
 	Origin  string
@@ -46,6 +51,17 @@ func (it *IssueTracker) InstrumentMiddleware(r *http.Request) error {
 	return nil
 }
 
+// TokenAcquisitionInstructions returns instructions for manually acquiring the authentication token
+// for gitlab and the given authentication type
+func (it *IssueTracker) TokenAcquisitionInstructions() string {
+	if it.AuthCfg.Type == config.AuthTypeNone {
+		return ""
+	}
+
+	return fmt.Sprintf("Please go to %s/profile/personal_access_tokens, "+
+		"create a read-only access token & paste it here.", extractBaseURL(it.Origin))
+}
+
 // TaskURLFrom taskID returns the url for the target gitlab task ID to fetch
 func (it *IssueTracker) taskURLFrom(taskID string) string {
 	if strings.HasPrefix(taskID, "#") {
@@ -65,4 +81,13 @@ func (it *IssueTracker) issueAPIOrigin() string {
 	scheme, host, owner, repo := tokens[0], tokens[1], tokens[2], tokens[3]
 	urlEncodedProject := url.QueryEscape(fmt.Sprintf("%s/%s", owner, repo))
 	return fmt.Sprintf("%s//%s/api/v4/projects/%s/issues/", scheme, host, urlEncodedProject)
+}
+
+func extractBaseURL(origin string) string {
+	tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
+	if tokens[0] != "http:" && tokens[0] != "https:" {
+		return fmt.Sprintf("https://%s", tokens[0])
+	}
+
+	return fmt.Sprintf("%s//%s", tokens[0], tokens[1])
 }

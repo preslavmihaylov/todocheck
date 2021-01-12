@@ -17,15 +17,15 @@ import (
 func NewIssueTrackerFrom(issueTrackerType config.IssueTracker, authCfg *config.Auth, origin string) (issuetracker.IssueTracker, error) {
 	switch issueTrackerType {
 	case config.IssueTrackerGithub:
-		return &github.IssueTracker{Origin: origin, AuthCfg: authCfg}, nil
+		return github.New(origin, authCfg)
 	case config.IssueTrackerJira:
-		return &jira.IssueTracker{Origin: origin, AuthCfg: authCfg}, nil
+		return jira.New(origin, authCfg)
 	case config.IssueTrackerGitlab:
-		return &gitlab.IssueTracker{Origin: origin, AuthCfg: authCfg}, nil
+		return gitlab.New(origin, authCfg)
 	case config.IssueTrackerRedmine:
-		return &redmine.IssueTracker{Origin: origin, AuthCfg: authCfg}, nil
+		return redmine.New(origin, authCfg)
 	case config.IssueTrackerPivotal:
-		return &pivotaltracker.IssueTracker{Origin: origin, AuthCfg: authCfg}, nil
+		return pivotaltracker.New(origin, authCfg)
 	}
 
 	return nil, errors.New("unknown issue tracker " + string(issueTrackerType))

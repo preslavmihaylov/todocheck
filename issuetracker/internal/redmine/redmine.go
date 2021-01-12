@@ -10,6 +10,11 @@ import (
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 )
 
+// New creates a new redmine issuetracker instance
+func New(origin string, authCfg *config.Auth) (*IssueTracker, error) {
+	return &IssueTracker{origin, authCfg}, nil
+}
+
 // IssueTracker implementation for integrating with public & private redmine issue trackers
 type IssueTracker struct {
 	Origin  string
@@ -43,6 +48,16 @@ func (it *IssueTracker) InstrumentMiddleware(r *http.Request) error {
 	common.Assert(it.AuthCfg.Token != "", "authentication token is empty")
 	r.Header.Add("X-Redmine-API-Key", it.AuthCfg.Token)
 	return nil
+}
+
+// TokenAcquisitionInstructions returns instructions for manually acquiring the authentication token
+// for pivotaltracker and the given authentication type
+func (it *IssueTracker) TokenAcquisitionInstructions() string {
+	if it.AuthCfg.Type == config.AuthTypeNone {
+		return ""
+	}
+
+	return fmt.Sprintf("Please go to %s/my/account, create a new API token & paste it here.", it.Origin)
 }
 
 // TaskURLFrom taskID returns the url for the target redmine task ID to fetch

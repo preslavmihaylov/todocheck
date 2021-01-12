@@ -8,8 +8,8 @@ import (
 	"syscall"
 
 	"github.com/preslavmihaylov/todocheck/authmanager/authstore"
-	"github.com/preslavmihaylov/todocheck/common"
 	"github.com/preslavmihaylov/todocheck/config"
+	"github.com/preslavmihaylov/todocheck/issuetracker"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
@@ -23,51 +23,28 @@ const (
 )
 
 // AcquireToken stores the issue tracker's auth token based on the auth type specified
-func AcquireToken(cfg *config.Local) error {
+func AcquireToken(cfg *config.Local, tracker issuetracker.IssueTracker) error {
 	if !cfg.Auth.Type.IsValid() {
 		return fmt.Errorf("invalid auth type: %q. valid auth types are: %q", cfg.Auth.Type, config.ValidAuthTypes)
-	}
-
-	switch cfg.Auth.Type {
-	case config.AuthTypeNone:
+	} else if cfg.Auth.Type == config.AuthTypeNone {
 		return nil
-	case config.AuthTypeAPIToken:
-		return acquireAPIToken(cfg)
-	case config.AuthTypeOffline:
-		return acquireOfflineToken(cfg.Auth)
-	default:
-		panic("It's on us! Don't know how to handle this authentication token type. Please file an issue here - https://github.com/preslavmihaylov/todocheck/issues/new")
 	}
+
+	tokenKey := cfg.Origin
+	if cfg.Auth.Type == config.AuthTypeOffline {
+		tokenKey = cfg.Auth.OfflineURL
+	}
+
+	instructions := tracker.TokenAcquisitionInstructions()
+	if instructions == "" {
+		panic("It's on us! We don't know how to handle this authentication token type." +
+			" Please file an issue here - https://github.com/preslavmihaylov/todocheck/issues/new")
+	}
+
+	return acquireToken(cfg.Auth, tokenKey, instructions)
 }
 
-func acquireAPIToken(cfg *config.Local) error {
-	return acquireToken(cfg.Auth, cfg.Origin, func() ([]byte, error) {
-		var msg string
-		if cfg.IssueTracker == config.IssueTrackerGithub {
-			msg = githubAPITokenMsg
-		} else if cfg.IssueTracker == config.IssueTrackerGitlab {
-			msg = fmt.Sprintf(gitlabAPITokenMsg, extractBaseURL(cfg.Origin))
-		} else if cfg.IssueTracker == config.IssueTrackerPivotal {
-			msg = pivotalAPITokenMsg
-		} else if cfg.IssueTracker == config.IssueTrackerRedmine {
-			msg = fmt.Sprintf(redmineAPITokenMsg, cfg.Origin)
-		} else {
-			panic("attempt to acquire token for unsupported issue tracker " + cfg.IssueTracker)
-		}
-
-		fmt.Printf(msg)
-		return readPassword()
-	})
-}
-
-func acquireOfflineToken(a *config.Auth) error {
-	return acquireToken(a, a.OfflineURL, func() ([]byte, error) {
-		fmt.Printf("Please go to %v and paste the offline token below:\nToken: ", a.OfflineURL)
-		return readPassword()
-	})
-}
-
-func acquireToken(authCfg *config.Auth, tokenKey string, promptCallback func() ([]byte, error)) error {
+func acquireToken(authCfg *config.Auth, tokenKey string, instructions string) error {
 	store, err := authstore.CreateIfNotExists(authCfg.TokensCache, authstore.DefaultConfigPermissions)
 	if err != nil {
 		return fmt.Errorf("couldn't read auth tokens config: %w", err)
@@ -80,7 +57,8 @@ func acquireToken(authCfg *config.Auth, tokenKey string, promptCallback func() (
 		return setAndPersistToken(authCfg, store, tokenKey, envToken)
 	}
 
-	tokenBs, err := promptCallback()
+	fmt.Printf("%s\nToken: ", instructions)
+	tokenBs, err := readPassword()
 	if err != nil {
 		return fmt.Errorf("couldn't acquire token: %w", err)
 	}
@@ -104,13 +82,4 @@ func setAndPersistToken(authCfg *config.Auth, store *authstore.Config, key, toke
 	authCfg.Token = token
 	store.Tokens[key] = authCfg.Token
 	return store.Save(authCfg.TokensCache)
-}
-
-func extractBaseURL(origin string) string {
-	tokens := common.RemoveEmptyTokens(strings.Split(origin, "/"))
-	if tokens[0] != "http:" && tokens[0] != "https:" {
-		return fmt.Sprintf("https://%s", tokens[0])
-	}
-
-	return fmt.Sprintf("%s//%s", tokens[0], tokens[1])
 }
