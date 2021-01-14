@@ -45,14 +45,14 @@ func main() {
 		log.Fatalf("couldn't open configuration file: %s\n", err)
 	}
 
-	err = authmanager.AcquireToken(localCfg)
-	if err != nil {
-		log.Fatalf("couldn't acquire token from config: %s\n", err)
-	}
-
 	tracker, err := factory.NewIssueTrackerFrom(localCfg.IssueTracker, localCfg.Auth, localCfg.Origin)
 	if err != nil {
 		log.Fatalf("couldn't create new issue tracker: %s\n", err)
+	}
+
+	err = authmanager.AcquireToken(localCfg, tracker)
+	if err != nil {
+		log.Fatalf("couldn't acquire token from config: %s\n", err)
 	}
 
 	if errors := validation.Validate(localCfg, tracker); len(errors) > 0 {

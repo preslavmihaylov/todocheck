@@ -10,6 +10,11 @@ import (
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 )
 
+// New creates a new github issuetracker instance
+func New(origin string, authCfg *config.Auth) (*IssueTracker, error) {
+	return &IssueTracker{origin, authCfg}, nil
+}
+
 // IssueTracker implementation for integrating with public & private github issue trackers
 type IssueTracker struct {
 	Origin  string
@@ -44,6 +49,16 @@ func (it *IssueTracker) InstrumentMiddleware(r *http.Request) error {
 	common.Assert(it.AuthCfg.Token != "", "authentication token is empty")
 	r.Header.Add("Authorization", "Bearer "+it.AuthCfg.Token)
 	return nil
+}
+
+// TokenAcquisitionInstructions returns instructions for manually acquiring the authentication token
+// for github and the given authentication type
+func (it *IssueTracker) TokenAcquisitionInstructions() string {
+	if it.AuthCfg.Type == config.AuthTypeNone {
+		return ""
+	}
+
+	return "Please go to https://github.com/settings/tokens, create a read-only access token & paste it here."
 }
 
 // taskURLFrom taskID returns the url for the target github task ID to fetch

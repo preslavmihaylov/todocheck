@@ -9,6 +9,11 @@ import (
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 )
 
+// New creates a new jira issuetracker instance
+func New(origin string, authCfg *config.Auth) (*IssueTracker, error) {
+	return &IssueTracker{origin, authCfg}, nil
+}
+
 // IssueTracker is an issue tracker implementation for integrating with private Jira servers
 type IssueTracker struct {
 	Origin  string
@@ -42,6 +47,12 @@ func (it *IssueTracker) InstrumentMiddleware(r *http.Request) error {
 	common.Assert(it.AuthCfg.Token != "", "authentication token is empty")
 	r.Header.Add("Authorization", "Bearer "+it.AuthCfg.Token)
 	return nil
+}
+
+// TokenAcquisitionInstructions returns instructions for manually acquiring the authentication token
+// for jira and the given authentication type
+func (it *IssueTracker) TokenAcquisitionInstructions() string {
+	return fmt.Sprintf("Please go to %s and paste the offline token below.", it.AuthCfg.OfflineURL)
 }
 
 // TaskURLFrom taskID returns the url for the target Jira task ID to fetch

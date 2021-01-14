@@ -30,6 +30,11 @@ func (m *mockIssueTracker) InstrumentMiddleware(r *http.Request) error {
 	panic("not implemented") // TODO: Implement
 }
 
+// TokenAcquisitionInstructions returns instructions for manually acquiring the authentication token
+func (m *mockIssueTracker) TokenAcquisitionInstructions() string {
+	panic("not implemented") // TODO: Implement
+}
+
 func TestInvalidOrigins(t *testing.T) {
 	invalidConfigPaths := []string{
 		"./fixtures/invalid/invalid_github_https.yaml",

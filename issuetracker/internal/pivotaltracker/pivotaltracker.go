@@ -10,6 +10,11 @@ import (
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 )
 
+// New creates a new pivotaltracker issuetracker instance
+func New(origin string, authCfg *config.Auth) (*IssueTracker, error) {
+	return &IssueTracker{origin, authCfg}, nil
+}
+
 // IssueTracker implementation for integrating with public pivotaltracker issue trackers
 type IssueTracker struct {
 	Origin  string
@@ -43,6 +48,12 @@ func (it *IssueTracker) InstrumentMiddleware(r *http.Request) error {
 	common.Assert(it.AuthCfg.Token != "", "authentication token is empty")
 	r.Header.Add("X-TrackerToken", it.AuthCfg.Token)
 	return nil
+}
+
+// TokenAcquisitionInstructions returns instructions for manually acquiring the authentication token
+// for pivotaltracker and the given authentication type
+func (it *IssueTracker) TokenAcquisitionInstructions() string {
+	return "Please go to https://www.pivotaltracker.com/profile, create a new API token & paste it here."
 }
 
 // TaskURLFrom taskID returns the url for the target pivotaltracker task ID to fetch
