@@ -7,6 +7,12 @@ build:
 test: build
 	go test -v -count=1 ./...
 
+install: build
+	cp todocheck /usr/local/bin/todocheck
+
+uninstall:
+	rm -rf /usr/local/bin/todocheck || true
+
 release:
 	@echo "Generating binaries for version $(version)..."
 	./release.sh $(RELEASE_BINARIES) $(version)
