@@ -273,7 +273,13 @@ func (s *TodocheckScenario) Run() error {
 
 	validateFuncs := []validateFunc{
 		validateTodoFunc,
-		validateAuthTokensCache(s.cfg.Auth.TokensCache, s.cfg.Auth.OfflineURL, s.expectedAuthToken),
+	}
+
+	// only run the TokenCache validation when the environment variable is not set
+	// this test will always fail since the cache is not generated when the
+	// token is set via an environment variable
+	if s.authTokenEnvVariable == "" {
+		validateFuncs = append(validateFuncs,validateAuthTokensCache(s.cfg.Auth.TokensCache, s.cfg.Auth.OfflineURL, s.expectedAuthToken))
 	}
 
 	if s.expectedExitCode == 1 {
