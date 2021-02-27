@@ -19,8 +19,7 @@ func Validate(cfg *config.Local, tracker issuetracker.IssueTracker) []error {
 	if cfg.Auth.Type == config.AuthTypeOffline{
 		if err := validateAuthOfflineURL(cfg); err != nil {
 			errs = append(errs, err)
-		}
-		if err := validateAuthOfflineUrlIsSet(cfg); err != nil {
+		}else if err := validateAuthOfflineURLIsSet(cfg); err != nil {
 			errs = append(errs,err)
 		}
 	}
@@ -60,7 +59,7 @@ func validateAuthOfflineURL(cfg *config.Local) error {
 	return nil
 }
 
-func validateAuthOfflineUrlIsSet(cfg *config.Local) error {
+func validateAuthOfflineURLIsSet(cfg *config.Local) error {
 	if cfg.Auth.OfflineURL==""{
 		return fmt.Errorf("auth type chosen was %q but \"offline_url\" is not set", cfg.Auth.Type)
 	}
