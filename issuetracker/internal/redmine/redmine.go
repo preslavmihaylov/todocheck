@@ -11,8 +11,13 @@ import (
 )
 
 // New creates a new redmine issuetracker instance
-func New(origin string, authCfg *config.Auth) (*IssueTracker, error) {
-	return &IssueTracker{origin, authCfg}, nil
+func New(issueTrackerType config.IssueTracker, authCfg *config.Auth, origin string) (*IssueTracker, error) {
+	for _, authType := range config.ValidIssueTrackerAuthTypes[issueTrackerType]{
+		if authType == authCfg.Type{
+			return &IssueTracker{origin, authCfg}, nil
+		}
+	}
+	return nil, fmt.Errorf("unsupported authentication type for %s: %s", issueTrackerType,authCfg.Type.String())
 }
 
 // IssueTracker implementation for integrating with public & private redmine issue trackers

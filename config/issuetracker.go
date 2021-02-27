@@ -15,6 +15,14 @@ const (
 	IssueTrackerRedmine              = "REDMINE"
 )
 
+var ValidIssueTrackerAuthTypes = map[IssueTracker][]AuthType{
+	IssueTrackerGithub: { AuthTypeNone , AuthTypeAPIToken},
+	IssueTrackerGitlab: { AuthTypeNone , AuthTypeAPIToken},
+	IssueTrackerPivotal: { AuthTypeNone , AuthTypeAPIToken },
+	IssueTrackerRedmine: { AuthTypeNone , AuthTypeAPIToken },
+	IssueTrackerJira : { AuthTypeOffline },
+}
+
 var validIssueTrackers = []IssueTracker{
 	IssueTrackerJira,
 	IssueTrackerGithub,
