@@ -11,13 +11,8 @@ import (
 )
 
 // New creates a new pivotaltracker issuetracker instance
-func New(issueTrackerType config.IssueTracker, authCfg *config.Auth, origin string) (*IssueTracker, error) {
-	for _, authType := range config.ValidIssueTrackerAuthTypes[issueTrackerType]{
-		if authType == authCfg.Type{
-			return &IssueTracker{origin, authCfg}, nil
-		}
-	}
-	return nil, fmt.Errorf("unsupported authentication type for %s: %s", issueTrackerType,authCfg.Type.String())
+func New(authCfg *config.Auth, origin string) (*IssueTracker, error) {
+	return &IssueTracker{origin, authCfg}, nil
 }
 
 // IssueTracker implementation for integrating with public pivotaltracker issue trackers
