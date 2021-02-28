@@ -55,7 +55,6 @@ func acquireToken(authCfg *config.Auth, tokenKey string, instructions string) er
 		return nil
 	} else if envToken := os.Getenv(authTokenEnvVariable); envToken != "" {
 		authCfg.Token = envToken
-		store.Tokens[tokenKey] = authCfg.Token
 		return nil
 	}
 
