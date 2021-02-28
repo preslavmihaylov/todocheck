@@ -22,7 +22,7 @@ var ValidIssueTrackerAuthTypes = map[IssueTracker][]AuthType{
 	IssueTrackerGitlab:  {AuthTypeNone, AuthTypeAPIToken},
 	IssueTrackerPivotal: {AuthTypeNone, AuthTypeAPIToken},
 	IssueTrackerRedmine: {AuthTypeNone, AuthTypeAPIToken},
-	IssueTrackerJira:    {AuthTypeOffline},
+	IssueTrackerJira:    {AuthTypeNone, AuthTypeOffline},
 }
 
 var validIssueTrackers = []IssueTracker{
