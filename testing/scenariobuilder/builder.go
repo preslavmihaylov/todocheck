@@ -279,7 +279,7 @@ func (s *TodocheckScenario) Run() error {
 	// this test will always fail since the cache is not generated when the
 	// token is set via an environment variable
 	if s.authTokenEnvVariable == "" {
-		validateFuncs = append(validateFuncs,validateAuthTokensCache(s.cfg.Auth.TokensCache, s.cfg.Auth.OfflineURL, s.expectedAuthToken))
+		validateFuncs = append(validateFuncs, validateAuthTokensCache(s.cfg.Auth.TokensCache, s.cfg.Auth.OfflineURL, s.expectedAuthToken))
 	}
 
 	if s.expectedExitCode == 1 {
@@ -290,8 +290,13 @@ func (s *TodocheckScenario) Run() error {
 	return validationPipeline(validateFuncs...)
 }
 
+func (s *TodocheckScenario) setEnvironmentToken(token string) {
+	s.authTokenEnvVariable = token
+}
+
 func (s *TodocheckScenario) setupTestEnvironment(cmd *exec.Cmd) (teardownFunc, error) {
 	s.setupEnvironmentVariables(cmd, s.envVariables)
+	s.setEnvironmentToken(s.envVariables["TODOCHECK_AUTH_TOKEN"])
 	teardownMockIssueTracker, err := s.setupMockIssueTrackerServer()
 	if err != nil {
 		return nil, fmt.Errorf("couldn't setup mock issue tracker: %w", err)
