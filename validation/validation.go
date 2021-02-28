@@ -17,9 +17,9 @@ func Validate(cfg *config.Local, tracker issuetracker.IssueTracker) []error {
 	}
 
 	if cfg.Auth.Type == config.AuthTypeOffline {
-		if err := validateAuthOfflineURL(cfg); err != nil {
+		if err := validateAuthOfflineURLIsSet(cfg); err != nil {
 			errs = append(errs, err)
-		} else if err := validateAuthOfflineURLIsSet(cfg); err != nil {
+		} else if err := validateAuthOfflineURL(cfg); err != nil {
 			errs = append(errs, err)
 		}
 	}
