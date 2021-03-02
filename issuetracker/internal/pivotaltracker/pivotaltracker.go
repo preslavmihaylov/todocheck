@@ -11,7 +11,7 @@ import (
 )
 
 // New creates a new pivotaltracker issuetracker instance
-func New(authCfg *config.Auth, origin string) (*IssueTracker, error) {
+func New(origin string, authCfg *config.Auth) (*IssueTracker, error) {
 	return &IssueTracker{origin, authCfg}, nil
 }
 
