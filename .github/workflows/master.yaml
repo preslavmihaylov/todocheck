@@ -7,6 +7,26 @@ on:
       - master
 
 jobs:
+  gofmt:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+        fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
+    - name: Create local changes
+      run: |
+        go fmt ./...
+    - name: Commit files
+      run: |
+        git config --local user.email "gofmt-bot@pmihaylov.com"
+        git config --local user.name "gofmt-bot"
+        git commit -m "gofmt" -a
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
   build:
     runs-on: ubuntu-latest
     steps:
