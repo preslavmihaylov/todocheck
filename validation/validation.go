@@ -28,7 +28,7 @@ func Validate(cfg *config.Local, tracker issuetracker.IssueTracker) []error {
 		errs = append(errs, err)
 	}
 
-	if err := validateTrackerAuthType(cfg); err != nil {
+	if err := validateIssueTrackerAuthType(cfg); err != nil {
 		errs = append(errs, err)
 	}
 
@@ -79,7 +79,7 @@ func validateIssueTrackerExists(cfg *config.Local, tracker issuetracker.IssueTra
 	return fmt.Errorf("repository %s not found", cfg.Origin)
 }
 
-func validateTrackerAuthType(cfg *config.Local) error {
+func validateIssueTrackerAuthType(cfg *config.Local) error {
 	if !cfg.IssueTracker.IsValidAuthType(cfg.Auth.Type) {
 		return fmt.Errorf("unsupported authentication type for %s: %s", cfg.IssueTracker, cfg.Auth.Type.String())
 	}
