@@ -62,6 +62,7 @@ func (it IssueTracker) IsValidOrigin(origin string) bool {
 	return true
 }
 
+// IsValidAuthType checks if the given auth type is among the valid auth types for the given issue tracker
 func (it IssueTracker) IsValidAuthType(authType AuthType) bool {
 	for _, validType := range ValidIssueTrackerAuthTypes[it] {
 		if authType == validType {
