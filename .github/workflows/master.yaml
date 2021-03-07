@@ -19,7 +19,7 @@ jobs:
       - name: gofmt test run
         id: gofmt_run
         run: |
-          sh ./scripts/gofmt_check.sh
+          sh ./ci-scripts/gofmt_check.sh
       - name: gofmt test output
         run: echo ${{steps.gofmt_run.outputs.gofmt-test}}
   build:
