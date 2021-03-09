@@ -1,6 +1,8 @@
 package config
 
-import "regexp"
+import (
+	"regexp"
+)
 
 // IssueTracker enum
 type IssueTracker string
@@ -14,6 +16,14 @@ const (
 	IssueTrackerPivotal              = "PIVOTAL_TRACKER"
 	IssueTrackerRedmine              = "REDMINE"
 )
+
+var ValidIssueTrackerAuthTypes = map[IssueTracker][]AuthType{
+	IssueTrackerGithub:  {AuthTypeNone, AuthTypeAPIToken},
+	IssueTrackerGitlab:  {AuthTypeNone, AuthTypeAPIToken},
+	IssueTrackerPivotal: {AuthTypeNone, AuthTypeAPIToken},
+	IssueTrackerRedmine: {AuthTypeNone, AuthTypeAPIToken},
+	IssueTrackerJira:    {AuthTypeNone, AuthTypeOffline},
+}
 
 var validIssueTrackers = []IssueTracker{
 	IssueTrackerJira,
@@ -50,4 +60,14 @@ func (it IssueTracker) IsValidOrigin(origin string) bool {
 	}
 
 	return true
+}
+
+// IsValidAuthType checks if the given auth type is among the valid auth types for the given issue tracker
+func (it IssueTracker) IsValidAuthType(authType AuthType) bool {
+	for _, validType := range ValidIssueTrackerAuthTypes[it] {
+		if authType == validType {
+			return true
+		}
+	}
+	return false
 }

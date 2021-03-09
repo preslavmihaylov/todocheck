@@ -37,18 +37,18 @@ func (m *mockIssueTracker) TokenAcquisitionInstructions() string {
 
 func TestInvalidOrigins(t *testing.T) {
 	invalidConfigPaths := []string{
-		"./fixtures/invalid/invalid_github_https.yaml",
-		"./fixtures/invalid/invalid_github_origin.yaml",
-		"./fixtures/invalid/invalid_github_www.yaml",
-		"./fixtures/invalid/invalid_gitlab_origin.yaml",
-		"./fixtures/invalid/invalid_gitlab_port.yaml",
-		"./fixtures/invalid/invalid_issue_tracker.yaml",
-		"./fixtures/invalid/invalid_jira_origin.yaml",
-		"./fixtures/invalid/invalid_jira_port.yaml",
-		"./fixtures/invalid/invalid_offline_url.yaml",
-		"./fixtures/invalid/invalid_pivotal_origin.yaml",
-		"./fixtures/invalid/invalid_redmine_origin.yaml",
-		"./fixtures/invalid/invalid_redmine_port.yaml",
+		"./fixtures/origin/invalid/invalid_github_https.yaml",
+		"./fixtures/origin/invalid/invalid_github_origin.yaml",
+		"./fixtures/origin/invalid/invalid_github_www.yaml",
+		"./fixtures/origin/invalid/invalid_gitlab_origin.yaml",
+		"./fixtures/origin/invalid/invalid_gitlab_port.yaml",
+		"./fixtures/origin/invalid/invalid_issue_tracker.yaml",
+		"./fixtures/origin/invalid/invalid_jira_origin.yaml",
+		"./fixtures/origin/invalid/invalid_jira_port.yaml",
+		"./fixtures/origin/invalid/invalid_offline_url.yaml",
+		"./fixtures/origin/invalid/invalid_pivotal_origin.yaml",
+		"./fixtures/origin/invalid/invalid_redmine_origin.yaml",
+		"./fixtures/origin/invalid/invalid_redmine_port.yaml",
 	}
 
 	for _, path := range invalidConfigPaths {
@@ -66,19 +66,68 @@ func TestInvalidOrigins(t *testing.T) {
 
 func TestValidOrigins(t *testing.T) {
 	validConfigPaths := []string{
-		"./fixtures/valid/valid_github_https.yaml",
-		"./fixtures/valid/valid_github_origin.yaml",
-		"./fixtures/valid/valid_github_www.yaml",
-		"./fixtures/valid/valid_gitlab_origin.yaml",
-		"./fixtures/valid/valid_gitlab_port.yaml",
-		"./fixtures/valid/valid_gitlab_subdomain.yaml",
-		"./fixtures/valid/valid_jira_origin.yaml",
-		"./fixtures/valid/valid_jira_port.yaml",
-		"./fixtures/valid/valid_jira_subdomain.yaml",
-		"./fixtures/valid/valid_pivotal_origin.yaml",
-		"./fixtures/valid/valid_redmine_origin.yaml",
-		"./fixtures/valid/valid_redmine_port.yaml",
-		"./fixtures/valid/valid_redmine_subdomain.yaml",
+		"./fixtures/origin/valid/valid_github_https.yaml",
+		"./fixtures/origin/valid/valid_github_origin.yaml",
+		"./fixtures/origin/valid/valid_github_www.yaml",
+		"./fixtures/origin/valid/valid_gitlab_origin.yaml",
+		"./fixtures/origin/valid/valid_gitlab_port.yaml",
+		"./fixtures/origin/valid/valid_gitlab_subdomain.yaml",
+		"./fixtures/origin/valid/valid_jira_origin.yaml",
+		"./fixtures/origin/valid/valid_jira_port.yaml",
+		"./fixtures/origin/valid/valid_jira_subdomain.yaml",
+		"./fixtures/origin/valid/valid_pivotal_origin.yaml",
+		"./fixtures/origin/valid/valid_redmine_origin.yaml",
+		"./fixtures/origin/valid/valid_redmine_port.yaml",
+		"./fixtures/origin/valid/valid_redmine_subdomain.yaml",
+	}
+
+	for _, path := range validConfigPaths {
+		cfg, err := config.NewLocal(path, ".")
+		if err != nil {
+			t.Errorf("%s", err)
+			continue
+		}
+		errors := Validate(cfg, &mockIssueTracker{})
+		if len(errors) > 0 {
+			t.Errorf("%s should be valid but has errors: %v", path, errors)
+		}
+	}
+}
+
+func TestInvalidAuthTypes(t *testing.T) {
+	validConfigPaths := []string{
+		"./fixtures/authtype/invalid/invalid_github_offline.yaml",
+		"./fixtures/authtype/invalid/invalid_gitlab_offline.yaml",
+		"./fixtures/authtype/invalid/invalid_jira_apitoken.yaml",
+		"./fixtures/authtype/invalid/invalid_pivotal_offline.yaml",
+		"./fixtures/authtype/invalid/invalid_redmine_offline.yaml",
+	}
+
+	for _, path := range validConfigPaths {
+		cfg, err := config.NewLocal(path, ".")
+		if err != nil {
+			t.Errorf("%s", err)
+			continue
+		}
+		errors := Validate(cfg, &mockIssueTracker{})
+		if 0 == len(errors) {
+			t.Errorf("%s should be invalid", path)
+		}
+	}
+}
+
+func TestValidAuthTypes(t *testing.T) {
+	validConfigPaths := []string{
+		"./fixtures/authtype/valid/valid_github_none.yaml",
+		"./fixtures/authtype/valid/valid_github_apitoken.yaml",
+		"./fixtures/authtype/valid/valid_gitlab_none.yaml",
+		"./fixtures/authtype/valid/valid_gitlab_apitoken.yaml",
+		"./fixtures/authtype/valid/valid_jira_none.yaml",
+		"./fixtures/authtype/valid/valid_jira_offline.yaml",
+		"./fixtures/authtype/valid/valid_pivotal_none.yaml",
+		"./fixtures/authtype/valid/valid_pivotal_apitoken.yaml",
+		"./fixtures/authtype/valid/valid_redmine_none.yaml",
+		"./fixtures/authtype/valid/valid_redmine_apitoken.yaml",
 	}
 
 	for _, path := range validConfigPaths {
