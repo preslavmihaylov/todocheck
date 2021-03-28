@@ -32,6 +32,10 @@ func Validate(cfg *config.Local, tracker issuetracker.IssueTracker) []error {
 		errs = append(errs, err)
 	}
 
+	if err := validateIssueTrackerAuthType(cfg); err != nil {
+		errs = append(errs, err)
+	}
+
 	if cfg.Auth.Token == "" && cfg.IssueTracker == config.IssueTrackerGithub {
 		fmt.Fprintln(color.Output, color.YellowString(
 			"WARNING: Github has API rate limits for all requests which do not contain a token.\n"+
@@ -85,4 +89,11 @@ func validateIssueTrackerExists(cfg *config.Local, tracker issuetracker.IssueTra
 	}
 
 	return fmt.Errorf("repository %s not found", cfg.Origin)
+}
+
+func validateIssueTrackerAuthType(cfg *config.Local) error {
+	if !cfg.IssueTracker.IsValidAuthType(cfg.Auth.Type) {
+		return fmt.Errorf("unsupported authentication type for %s: %s", cfg.IssueTracker, cfg.Auth.Type.String())
+	}
+	return nil
 }

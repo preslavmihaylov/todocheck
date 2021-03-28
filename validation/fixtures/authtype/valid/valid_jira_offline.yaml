@@ -1,0 +1,5 @@
+origin: https://any-domain.com
+issue_tracker: JIRA
+auth:
+  type: offline
+  offline_url: https://any-domain.com/offline

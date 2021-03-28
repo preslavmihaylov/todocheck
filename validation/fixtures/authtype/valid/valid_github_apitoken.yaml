@@ -1,0 +1,4 @@
+origin: https://github.com/preslavmihaylov/todocheck
+issue_tracker: GITHUB
+auth:
+  type: apitoken
