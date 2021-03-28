@@ -61,6 +61,12 @@ Only `TODO`s with valid, open issues are allowed to exist in the codebase.
 By integrating todocheck in your development workflow & CI pipeline, you can ensure that there will be no half-baked issue closed with pending `TODO`s in the codebase.  
 
 # Installation
+## Via homebrew
+```bash
+brew install preslavmihaylov/taps/todocheck
+```
+
+## Download prebuilt binary
 Download the binary for your OS from the [latest release](https://github.com/preslavmihaylov/todocheck/releases/latest).
 
 Optionally verify the `sha256` checksum:
