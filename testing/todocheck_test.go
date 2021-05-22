@@ -742,6 +742,35 @@ func TestPrintingVersionFlagStopsProgram(t *testing.T) {
 	}
 }
 
+func TestVueTodos(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/vue").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("1", issuetracker.StatusOpen).
+		WithIssue("2", issuetracker.StatusClosed).
+		WithIssue("3", issuetracker.StatusOpen).
+		WithIssue("4", issuetracker.StatusOpen).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/vue/main.vue", 1).
+				ExpectLine("// oneline comment, malformed TODO")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/vue/main.vue", 5)).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/vue/main.vue", 8)).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 // Testing multiple todo matchers created for different file types
 func TestMultipleTodoMatchers(t *testing.T) {
 	err := scenariobuilder.NewScenario().
