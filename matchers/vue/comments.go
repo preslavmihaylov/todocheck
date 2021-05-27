@@ -27,7 +27,7 @@ type CommentMatcher struct {
 func (m *CommentMatcher) NonCommentState(
 	filename, line string, linecnt int, prevToken, currToken, nextToken rune,
 ) (state.CommentState, error) {
-	if currToken == '/' && prevToken == '/' {
+	if prevToken == '/' && currToken == '/' {
 		m.buffer += string(currToken)
 
 		return state.SingleLineComment, nil
@@ -35,7 +35,7 @@ func (m *CommentMatcher) NonCommentState(
 		m.stringToken = currToken
 
 		return state.String, nil
-	} else if currToken == '*' && prevToken == '/' {
+	} else if prevToken == '/' && currToken == '*'{
 		m.buffer += string(currToken)
 		m.commentType = "CSS"
 
