@@ -21,9 +21,9 @@ TODO 4: wellformed HTML multiline entry
 -->
 
 
-"this is a // TODO 1: valid comment in a string"
-"this is a /* TODO 1: valid multiline comment in a string */"
-"this is a <!-- TODO 1: valid HTML multiline comment in a string -->"
+"this is a // TODO 2: valid comment in a string with issue closed"
+"this is a /* TODO 2: valid multiline comment in a string with issue closed */"
+'this is a <!-- TODO 2: valid HTML multiline comment in a string with issue closed -->'
 
 <template>
   <div id="app">
