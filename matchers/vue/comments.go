@@ -35,7 +35,7 @@ func (m *CommentMatcher) NonCommentState(
 		m.stringToken = currToken
 
 		return state.String, nil
-	} else if prevToken == '/' && currToken == '*'{
+	} else if prevToken == '/' && currToken == '*' {
 		m.buffer += string(currToken)
 		m.commentType = "CSS"
 
