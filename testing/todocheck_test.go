@@ -759,12 +759,32 @@ func TestVueTodos(t *testing.T) {
 				ExpectLine("// oneline comment, malformed TODO")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(errors.TODOErrTypeMalformed).
-				WithLocation("scenarios/vue/main.vue", 5)).
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/vue/main.vue", 3).
+				ExpectLine("// TODO 2: oneline comment with Issue closed")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
-				WithLocation("scenarios/vue/main.vue", 8)).
+				WithLocation("scenarios/vue/main.vue", 6)).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/vue/main.vue", 7)).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/vue/main.vue", 10)).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/vue/main.vue", 0).
+				ExpectLine("TODO: malformed CS/JS multline entry, missing number").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/vue/main.vue", 49).
+				ExpectLine("  color: blue; // TODO 2: online comment wellformed in code, BUT issue closed")).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
