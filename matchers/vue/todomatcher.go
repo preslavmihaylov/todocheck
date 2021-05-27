@@ -11,11 +11,9 @@ import (
 func NewTodoMatcher(todos []string) *TodoMatcher {
 	pattern := common.ArrayAsRegexAnyMatchExpression(todos)
 
-	// Single line
 	singleLineTodoPattern := regexp.MustCompile(`^\s*//.*` + pattern)
 	singleLineValidTodoPattern := regexp.MustCompile(`^\s*// ` + pattern + ` (#?[a-zA-Z0-9\-]+):.*`)
 
-	// Multiline line
 	multiLineTodoPattern := regexp.MustCompile(`(?s)^\s*(<\!--|/*).*` + pattern)
 	multiLineValidTodoPattern := regexp.MustCompile(`(?s)^\s*(<\!--|/*).*` + pattern + ` (#?[a-zA-Z0-9\-]+):.*`)
 
@@ -37,7 +35,6 @@ type TodoMatcher struct {
 
 // IsMatch checks if the current expression matches a vue comment
 func (m *TodoMatcher) IsMatch(expr string) bool {
-	//fmt.Println("trying to find match: ", expr)
 	return m.singleLineTodoPattern.Match([]byte(expr)) || m.multiLineTodoPattern.Match([]byte(expr))
 }
 
