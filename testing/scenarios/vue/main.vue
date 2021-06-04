@@ -49,3 +49,7 @@ valid HTML multiline comment in code -->
   color: blue; // TODO 2: online comment wellformed in code, BUT issue closed
 }
 </style>
+
+<!--
+TODO : malformed HTML multiline entry
+-->
