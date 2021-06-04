@@ -36,7 +36,9 @@ func (m *CommentMatcher) NonCommentState(
 
 		return state.String, nil
 	} else if prevToken == '/' && currToken == '*' {
-		m.buffer += string(currToken)
+		m.buffer += "/*"
+		m.lines = []string{line}
+		m.linecnt = linecnt
 		m.commentType = "CSS"
 
 		return state.MultiLineComment, nil
@@ -46,6 +48,8 @@ func (m *CommentMatcher) NonCommentState(
 		return state.NonComment, nil
 	} else if m.isStartingHTML && nextToken == '-' {
 		m.buffer += "<!-"
+		m.lines = []string{line}
+		m.linecnt = linecnt
 		m.commentType = "HTML"
 
 		return state.MultiLineComment, nil
@@ -89,19 +93,21 @@ func (m *CommentMatcher) SingleLineCommentState(
 func (m *CommentMatcher) MultiLineCommentState(
 	filename, line string, linecnt int, prevToken, currToken, nextToken rune,
 ) (state.CommentState, error) {
-	if m.isExitingMultilineComment {
-		m.resetState()
-		return state.NonComment, nil
-	}
-
 	m.buffer += string(currToken)
-	if isEndOfMultilineComment(m.commentType, prevToken, currToken, nextToken) {
-		m.buffer += string(nextToken)
+
+	if m.isExitingMultilineComment {
+
 		err := m.callback(m.buffer, filename, m.lines, m.linecnt)
 		if err != nil {
 			return state.NonComment, err
 		}
 
+		m.resetState()
+
+		return state.NonComment, nil
+	}
+
+	if isEndOfMultilineComment(m.commentType, prevToken, currToken, nextToken) {
 		m.isExitingMultilineComment = true
 		return state.MultiLineComment, nil
 	}
