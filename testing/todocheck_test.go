@@ -742,6 +742,66 @@ func TestPrintingVersionFlagStopsProgram(t *testing.T) {
 	}
 }
 
+func TestVueTodos(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/vue").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("1", issuetracker.StatusOpen).
+		WithIssue("2", issuetracker.StatusClosed).
+		WithIssue("3", issuetracker.StatusOpen).
+		WithIssue("4", issuetracker.StatusOpen).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/vue/main.vue", 1).
+				ExpectLine("// oneline comment, malformed TODO")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/vue/main.vue", 3).
+				ExpectLine("// TODO 2: oneline comment with Issue closed")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/vue/main.vue", 6).
+				ExpectLine("<!-- TODO 2: wellformed HTML multiline entry, BUT issue closed -->")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/vue/main.vue", 7).
+				ExpectLine("<!-- TODO: missing number -->")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/vue/main.vue", 10).
+				ExpectLine("/* TODO 2: wellformed CS/JS multiline entry, BUT issue closed */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/vue/main.vue", 15).
+				ExpectLine("/*").
+				ExpectLine("TODO: malformed CS/JS multline entry, missing number").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/vue/main.vue", 49).
+				ExpectLine("  color: blue; // TODO 2: online comment wellformed in code, BUT issue closed")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/vue/main.vue", 53).
+				ExpectLine("<!--").
+				ExpectLine("TODO : malformed HTML multiline entry").
+				ExpectLine("-->")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 // Testing multiple todo matchers created for different file types
 func TestMultipleTodoMatchers(t *testing.T) {
 	err := scenariobuilder.NewScenario().
