@@ -232,7 +232,8 @@ Based on this, here are the supported languages:
 | R                     | `*.R` extension. Supports single-line `//` comments and multi-line `/* */` comments                                    |
 | Rust                  | `*.rs` extension. Supports single-line `//` comments and multi-line `/* */` comments                                   |
 | Scala                 | `*.scala`, `*.sc` extensions. Supports single-line `//` comments and multi-line `/* */` comments                                 |
-| Swift                 | `*.swift` extension. Supports single-line `//` comments and multi-line `/* */` comments                                |
+| Swift                 | `*.swift` extension. Supports single-line `//` comments and multi-line `/* */` comments
+| Vue                 | `*.vue` extension. Supports single-line `//` comments, multi-line `/* */` comments and multi-line `<!-- -->` HTML comments                                |
 
 If you don't see your favorite language in this table, but it does use one of the supported comment formats, submit an issue [here](https://github.com/preslavmihaylov/todocheck/issues/new)
 
