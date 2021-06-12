@@ -10,6 +10,7 @@ import (
 	"github.com/preslavmihaylov/todocheck/issuetracker/internal/jira"
 	"github.com/preslavmihaylov/todocheck/issuetracker/internal/pivotaltracker"
 	"github.com/preslavmihaylov/todocheck/issuetracker/internal/redmine"
+	"github.com/preslavmihaylov/todocheck/issuetracker/internal/youtrack"
 )
 
 // NewIssueTrackerFrom is a static factory method for creating an issuetracker.IssueTracker instance based on the chosen issue tracker type
@@ -26,6 +27,8 @@ func NewIssueTrackerFrom(issueTrackerType config.IssueTracker, authCfg *config.A
 		return redmine.New(origin, authCfg)
 	case config.IssueTrackerPivotal:
 		return pivotaltracker.New(origin, authCfg)
+	case config.IssueTrackerYoutrack:
+		return youtrack.New(origin, authCfg)
 	}
 
 	return nil, errors.New("unknown issue tracker " + string(issueTrackerType))
