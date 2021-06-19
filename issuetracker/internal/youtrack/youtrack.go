@@ -59,8 +59,11 @@ func (it *IssueTracker) TokenAcquisitionInstructions() string {
 		return ""
 	}
 
-	return fmt.Sprint(`Please go to https://www.jetbrains.com/help/youtrack/standalone/Manage-Permanent-Token.html,
-					   follow the tutorial & paste the API token here.`)
+	if strings.Contains(it.instanceURL(), ".myjetbrains.com") {
+		return fmt.Sprintf("Please go to %s/youtrack/users/me, create a new API token & paste it here.\n(More info - https://www.jetbrains.com/help/youtrack/standalone/Manage-Permanent-Token.html).", it.instanceURL())
+	}
+
+	return fmt.Sprintf("Please go to %s/users/me, create a new API token & paste it here.\n(More info - https://www.jetbrains.com/help/youtrack/standalone/Manage-Permanent-Token.html).", it.instanceURL())
 }
 
 // TaskURLFrom taskID returns the url for the target Youtrack task ID to fetch
@@ -87,5 +90,8 @@ func (it *IssueTracker) instanceURL() string {
 
 // IssueAPIOrigin returns the URL for Youtrack's issue-fetching API
 func (it *IssueTracker) issueAPIOrigin() string {
-	return fmt.Sprintf("%s/youtrack/api/issues/", it.instanceURL())
+	if strings.Contains(it.instanceURL(), ".myjetbrains.com") {
+		return fmt.Sprintf("%s/youtrack/api/issues/", it.instanceURL())
+	}
+	return fmt.Sprintf("%s/api/issues/", it.instanceURL())
 }
