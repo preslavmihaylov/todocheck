@@ -113,6 +113,7 @@ Currently, todocheck supports the following issue trackers:
 | [Jira](https://www.atlassian.com/software/jira) | Supported via offline tokens                                          |
 | [Pivotal Tracker](https://pivotaltracker.com/)  | Supported via an API token                                            |
 | [Redmine](https://redmine.org/)                 | Supports public access with no auth & private access via an API token |
+| [YouTrack](https://www.jetbrains.com/youtrack/) | Supported via an API token
 
 ## [Github](https://github.com)
 To integrate with a public github repository, there's no need to provide a `.todocheck.yaml` explicitly as it can automatically detect the issue tracker based on the git remote address.
@@ -145,7 +146,7 @@ issue_tracker: GITLAB
 
 To integrate with a private gitlab repository, you'll also need to specify the `auth` section with the `apitoken` type:
 ```
-origin: github.com/user/repository
+origin: gitlab.com/user/repository
 issue_tracker: GITLAB
 auth:
   type: apitoken
@@ -207,6 +208,30 @@ The first time you run the application, it will ask for your [API Token](https:/
 After you've specified it, it will store it in the auth tokens cache for subsequent executions. See the [Authentication](#authentication) section for more info.
 
 In order to integrate todocheck with your redmine server, you'll need to enable the server's rest API and, optionally, enable authentication - [See Docs](https://www.redmine.org/projects/redmine/wiki/rest_api#Authentication).
+
+## [YouTrack](https://www.jetbrains.com/youtrack/)
+To integrate with a pivotal tracker project, specify the origin of your project and the `YOUTRACK` issue tracker in your `.todocheck.yaml` configuration.  
+You should also specify the `apitoken` as an auth type. 
+
+For YouTrack [InCloud](https://www.jetbrains.com/help/youtrack/incloud/YouTrack-InCloud.html):
+```
+origin: youtrack-instance.myjetbrains.com
+issue_tracker: YOUTRACK
+auth:
+  type: apitoken
+```
+
+For YouTrack [Standalone](https://www.jetbrains.com/help/youtrack/standalone/YouTrack-Documentation.html):
+```
+origin: youtrack-instance.com
+issue_tracker: YOUTRACK
+auth:
+  type: apitoken
+```
+
+The first time you run the application, it will ask for your [API Token](https://www.jetbrains.com/help/youtrack/standalone/Manage-Permanent-Token.html#obtain-permanent-token).
+
+After you've specified it, it will store it in the auth tokens cache for subsequent executions. See the [Authentication](#authentication) section for more info.
 
 
 # Supported Programming Languages
