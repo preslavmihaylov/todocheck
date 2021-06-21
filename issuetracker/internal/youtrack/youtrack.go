@@ -39,9 +39,7 @@ func (it *IssueTracker) Exists() bool {
 
 // InstrumentMiddleware is a hook to instrument any necessary middleware for connecting with the issue tracker
 func (it *IssueTracker) InstrumentMiddleware(r *http.Request) error {
-	if it.AuthCfg.Type == config.AuthTypeNone {
-		return nil
-	} else if it.AuthCfg.Type != config.AuthTypeAPIToken {
+	if it.AuthCfg.Type != config.AuthTypeAPIToken {
 		return fmt.Errorf("unsupported authentication token type for youtrack: %s", it.AuthCfg.Type)
 	}
 
@@ -55,10 +53,6 @@ func (it *IssueTracker) InstrumentMiddleware(r *http.Request) error {
 // TokenAcquisitionInstructions returns instructions for manually acquiring the authentication token
 // for Youtrack and the given authentication type
 func (it *IssueTracker) TokenAcquisitionInstructions() string {
-	if it.AuthCfg.Type == config.AuthTypeNone {
-		return ""
-	}
-
 	if strings.Contains(it.instanceURL(), ".myjetbrains.com") {
 		return fmt.Sprintf("Please go to %s/youtrack/users/me, create a new API token & paste it here.\n(More info - https://www.jetbrains.com/help/youtrack/standalone/Manage-Permanent-Token.html).", it.instanceURL())
 	}
