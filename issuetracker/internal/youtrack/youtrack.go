@@ -53,7 +53,7 @@ func (it *IssueTracker) InstrumentMiddleware(r *http.Request) error {
 // TokenAcquisitionInstructions returns instructions for manually acquiring the authentication token
 // for Youtrack and the given authentication type
 func (it *IssueTracker) TokenAcquisitionInstructions() string {
-	if strings.Contains(it.instanceURL(), ".myjetbrains.com") {
+	if it.isInCloud() {
 		return fmt.Sprintf("Please go to %s/youtrack/users/me, create a new API token & paste it here.\n(More info - https://www.jetbrains.com/help/youtrack/standalone/Manage-Permanent-Token.html).", it.instanceURL())
 	}
 
@@ -84,8 +84,12 @@ func (it *IssueTracker) instanceURL() string {
 
 // IssueAPIOrigin returns the URL for Youtrack's issue-fetching API
 func (it *IssueTracker) issueAPIOrigin() string {
-	if strings.Contains(it.instanceURL(), ".myjetbrains.com") {
+	if it.isInCloud() {
 		return fmt.Sprintf("%s/youtrack/api/issues/", it.instanceURL())
 	}
 	return fmt.Sprintf("%s/api/issues/", it.instanceURL())
+}
+
+func (it *IssueTracker) isInCloud() bool {
+	return strings.Contains(it.instanceURL(), ".myjetbrains.com")
 }
