@@ -220,7 +220,7 @@ func TestPublicYoutrackIntegration(t *testing.T) {
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/integrations/youtrack_public_incloud/main.go", 5).
-				ExpectLine("// TODO DEMO-1234: a non-existent issue")).
+				ExpectLine("// TODO DEMO-1234: A non-existent issue")).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
