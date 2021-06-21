@@ -210,7 +210,7 @@ After you've specified it, it will store it in the auth tokens cache for subsequ
 In order to integrate todocheck with your redmine server, you'll need to enable the server's rest API and, optionally, enable authentication - [See Docs](https://www.redmine.org/projects/redmine/wiki/rest_api#Authentication).
 
 ## [YouTrack](https://www.jetbrains.com/youtrack/)
-To integrate with a pivotal tracker project, specify the origin of your project and the `YOUTRACK` issue tracker in your `.todocheck.yaml` configuration.  
+To integrate with a youtrack project, specify the origin of your project and the `YOUTRACK` issue tracker in your `.todocheck.yaml` configuration.  
 You should also specify the `apitoken` as an auth type. 
 
 For YouTrack [InCloud](https://www.jetbrains.com/help/youtrack/incloud/YouTrack-InCloud.html):
