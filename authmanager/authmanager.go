@@ -14,11 +14,6 @@ import (
 )
 
 const (
-	githubAPITokenMsg  = "Please go to https://github.com/settings/tokens, create a read-only access token & paste it here:\nToken: "
-	gitlabAPITokenMsg  = "Please go to %s/profile/personal_access_tokens, create a read-only access token & paste it here:\nToken: "
-	pivotalAPITokenMsg = "Please go to https://www.pivotaltracker.com/profile, create a new API token & paste it here:\nToken: "
-	redmineAPITokenMsg = "Please go to %s/my/account, create a new API token & paste it here:\nToken: "
-
 	authTokenEnvVariable = "TODOCHECK_AUTH_TOKEN"
 )
 
