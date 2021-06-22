@@ -174,6 +174,51 @@ func TestPrivateRedmineIntegration(t *testing.T) {
 	}
 }
 
+func TestPublicAzureIntegration(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		OnlyRunOnCI().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/integrations/azureboards_public").
+		WithConfig("./test_configs/integrations/azureboards_public.yaml").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("./scenarios/integrations/azureboards_public/main.go", 3).
+				ExpectLine("// TODO: 1 A malformed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("./scenarios/integrations/azureboards_public/main.go", 7).
+				ExpectLine("// TODO 999: A non-existent issue")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestPrivateAzureIntegration(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		OnlyRunOnCI().
+		WithAuthTokenFromEnv("TESTS_AZURE_PRIVATE_APITOKEN").
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/integrations/azureboards_private").
+		WithConfig("./test_configs/integrations/azureboards_private.yaml").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("./scenarios/integrations/azureboards_private/main.go", 3).
+				ExpectLine("// TODO: 1 A malformed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("./scenarios/integrations/azureboards_private/main.go", 7).
+				ExpectLine("// TODO 999: A non-existent issue")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func baseGithubScenario() *scenariobuilder.TodocheckScenario {
 	return scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
