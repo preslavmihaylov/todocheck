@@ -18,6 +18,7 @@ See [How it works](#how-it-works) for more info.
   * [Jira](#jira)
   * [Pivotal Tracker](#pivotal-tracker)
   * [Redmine](#redmine)
+  * [YouTrack](#youtrack)
 - [Supported Programming Languages](#supported-programming-languages)
 - [Ignored Files & Directories](#ignored-files--directories)
 - [Custom todos](#custom-todos)
