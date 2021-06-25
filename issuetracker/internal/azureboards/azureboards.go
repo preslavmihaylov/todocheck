@@ -45,7 +45,7 @@ func (it *IssueTracker) InstrumentMiddleware(r *http.Request) error {
 	// Encode the token with Base64 and append ":". More on: https://bit.ly/35OZ4H8
 	uEnc := base64.URLEncoding.EncodeToString([]byte(":" + it.AuthCfg.Token))
 
-	r.Header.Add("Authorization", "Basic "+ uEnc)
+	r.Header.Add("Authorization", "Basic "+uEnc)
 	return nil
 }
 
