@@ -56,21 +56,22 @@ func traverseFile(filename string, callback lineCallback) error {
 
 	reader := bufio.NewReader(bytes.NewReader(buf))
 	for {
-		linecnt++
-		line, err = reader.ReadString('\n')
-		if err != nil {
+		if err == io.EOF {
 			break
 		}
 
-		linecnt += linesRead
-		err = callback(filename, line, linecnt)
-		if err != nil {
-			return err
-		}
-	}
+		linecnt++
+		line, err = reader.ReadString('\n')
 
-	if err != io.EOF {
-		return fmt.Errorf("encountered error while traversing file %s: %w", filename, err)
+		if err != nil && err != io.EOF {
+			return fmt.Errorf("encountered error while traversing file %s: %w", filename, err)
+		}
+
+		linecnt += linesRead
+		callbackErr := callback(filename, line, linecnt)
+		if callbackErr != nil {
+			return callbackErr
+		}
 	}
 
 	return nil
