@@ -1,6 +1,8 @@
 package comments
 
 import (
+	"strings"
+
 	"github.com/preslavmihaylov/todocheck/matchers"
 	"github.com/preslavmihaylov/todocheck/matchers/state"
 	"github.com/preslavmihaylov/todocheck/traverser/lines"
@@ -33,6 +35,10 @@ type Traverser struct {
 func (t *Traverser) TraversePath(path string) error {
 	var prev, curr, next rune
 	return lines.TraversePath(path, t.ignoredPaths, t.supportedFileExtensions, func(filename, line string, linecnt int) error {
+		if !strings.HasSuffix(line, "\n") {
+			line += "\n"
+		}
+
 		for _, b := range line {
 			curr = next
 			next = b

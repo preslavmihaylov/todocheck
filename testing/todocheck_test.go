@@ -829,3 +829,21 @@ func TestMultipleTodoMatchers(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+func TestIfLastLineTodoIsGettingProcessed(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/lastline_comment").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/lastline_comment/main.py", 2).
+				ExpectLine("# This is an invalid TODO on the last line of the file")).
+		Run()
+
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
