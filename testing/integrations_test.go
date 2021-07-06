@@ -215,7 +215,7 @@ func TestPrivateAzureIntegration(t *testing.T) {
 				ExpectLine("// TODO: 1 A malformed issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
-				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/integrations/azureboards_private/main.go", 5).
 				ExpectLine("// TODO 9: An issue in CLOSED column")).
 		ExpectTodoErr(
