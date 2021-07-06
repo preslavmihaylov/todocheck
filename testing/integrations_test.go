@@ -183,12 +183,12 @@ func TestPublicAzureIntegration(t *testing.T) {
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).
-				WithLocation("./scenarios/integrations/azureboards_public/main.go", 3).
+				WithLocation("scenarios/integrations/azureboards_public/main.go", 3).
 				ExpectLine("// TODO: 1 A malformed issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).
-				WithLocation("./scenarios/integrations/azureboards_public/main.go", 7).
+				WithLocation("scenarios/integrations/azureboards_public/main.go", 7).
 				ExpectLine("// TODO 999: A non-existent issue")).
 		Run()
 	if err != nil {
@@ -206,12 +206,12 @@ func TestPrivateAzureIntegration(t *testing.T) {
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).
-				WithLocation("./scenarios/integrations/azureboards_private/main.go", 3).
+				WithLocation("scenarios/integrations/azureboards_private/main.go", 3).
 				ExpectLine("// TODO: 1 A malformed issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).
-				WithLocation("./scenarios/integrations/azureboards_private/main.go", 7).
+				WithLocation("scenarios/integrations/azureboards_private/main.go", 7).
 				ExpectLine("// TODO 999: A non-existent issue")).
 		Run()
 	if err != nil {
