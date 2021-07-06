@@ -188,7 +188,7 @@ func TestPublicAzureIntegration(t *testing.T) {
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
-				WithLocation("scenarios/integrations/azureboards_private/main.go", 6).
+				WithLocation("scenarios/integrations/azureboards_public/main.go", 6).
 				ExpectLine("// TODO 3: An issue in CLOSED column")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
