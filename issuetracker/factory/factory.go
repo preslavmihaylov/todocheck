@@ -32,7 +32,7 @@ func NewIssueTrackerFrom(issueTrackerType config.IssueTracker, authCfg *config.A
 	case config.IssueTrackerYoutrack:
 		return youtrack.New(origin, authCfg)
 	case config.IssueTrackerAzure:
-		return azureboards.New(origin, authCfg)
+		return azureboards.NewIssueTrackerAzure(origin, authCfg)
 	}
 
 	return nil, errors.New("unknown issue tracker " + string(issueTrackerType))
