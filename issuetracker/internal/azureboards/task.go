@@ -1,6 +1,10 @@
 package azureboards
 
-import "github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
+import (
+	"fmt"
+
+	"github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
+)
 
 // Task model
 type Task struct {
@@ -12,9 +16,8 @@ type Task struct {
 
 // GetStatus of github task, based on underlying structure
 func (t *Task) GetStatus() taskstatus.TaskStatus {
+	fmt.Printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Got state %s", t.Fields.State)
 	switch t.Fields.State {
-	case "To Do":
-		fallthrough
 	case "Done":
 		return taskstatus.Closed
 	default:
