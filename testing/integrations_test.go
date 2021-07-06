@@ -184,12 +184,12 @@ func TestPublicAzureIntegration(t *testing.T) {
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).
 				WithLocation("scenarios/integrations/azureboards_public/main.go", 3).
-				ExpectLine("// TODO: 1 A malformed issue")).
+				ExpectLine("// TODO: MALFORMED Issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/integrations/azureboards_public/main.go", 7).
-				ExpectLine("// TODO 999: A non-existent issue")).
+				ExpectLine("// TODO 12345: A non-existent issue")).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
