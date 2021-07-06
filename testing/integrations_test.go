@@ -199,7 +199,7 @@ func TestPublicAzureIntegration(t *testing.T) {
 func TestPrivateAzureIntegration(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		OnlyRunOnCI().
-		WithAuthTokenFromEnv("TESTS_AZURE_PRIVATE_APITOKEN").
+		WithAuthTokenFromEnv("TESTS_AZUREBOARDS_PRIVATE_APITOKEN").
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/integrations/azureboards_private").
 		WithConfig("./test_configs/integrations/azureboards_private.yaml").
