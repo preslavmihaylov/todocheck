@@ -3,18 +3,22 @@ package azureboards
 import (
 	"encoding/base64"
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/preslavmihaylov/todocheck/common"
 	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/issuetracker"
-	"net/http"
-	"strings"
 )
 
-func New(origin string, authCfg *config.Auth) (*IssueTracker, error) {
+const supportedAPIVersion = 6.0
+const tokenAcquisitionURL = "https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page"
+
+func NewIssueTrackerAzure(origin string, authCfg *config.Auth) (*IssueTracker, error) {
 	return &IssueTracker{origin, authCfg}, nil
 }
 
-// IssueTracker implementation for integrating with public & private github issue trackers
+// IssueTracker implementation for integrating with public & private Azure Boards issue trackers
 type IssueTracker struct {
 	Origin  string
 	AuthCfg *config.Auth
@@ -50,25 +54,24 @@ func (it *IssueTracker) InstrumentMiddleware(r *http.Request) error {
 }
 
 // TokenAcquisitionInstructions returns instructions for manually acquiring the authentication token
-// for github and the given authentication type
+// for Azure Boards and the given authentication type
 func (it *IssueTracker) TokenAcquisitionInstructions() string {
 	if it.AuthCfg.Type == config.AuthTypeNone {
 		return ""
 	}
 
-	return "Please create a read-only access token at Microsoft Azure & paste it here."
+	return fmt.Sprintf("Please create a read-only access token at Microsoft Azure & paste it here. Learn more at %s", tokenAcquisitionURL)
 }
 
-// taskURLFrom taskID returns the url for the target github task ID to fetch
+// taskURLFrom taskID returns the url for the target Azure board task ID to fetch
 func (it *IssueTracker) taskURLFrom(taskID string) string {
 	if strings.HasPrefix(taskID, "#") {
 		return taskID[1:]
 	}
-	// TODO Remove hardcoded API version. Make it configurable through yaml
-	return fmt.Sprintf("/%s?api-version=6.0", taskID)
+	return fmt.Sprintf("/%s?api-version=%.1f", taskID, supportedAPIVersion)
 }
 
-// issueAPIOrigin returns the URL for github's issue-fetching API
+// issueAPIOrigin returns the URL for Azure Boards' issue-fetching API
 func (it *IssueTracker) issueAPIOrigin() string {
 	return fmt.Sprintf("%s/_apis/wit/workitems", it.repositoryURL())
 }
