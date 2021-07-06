@@ -2,8 +2,6 @@ name: master
 
 on:
   push:
-    branches:
-      - master
   pull_request_target:
     branches:
       - master
@@ -52,5 +50,4 @@ jobs:
           TESTS_REDMINE_PRIVATE_APITOKEN: ${{ secrets.TESTS_REDMINE_PRIVATE_APITOKEN }}
           TESTS_YOUTRACK_PUBLIC_INCLOUD_APITOKEN: ${{ secrets.TESTS_YOUTRACK_PUBLIC_INCLOUD_APITOKEN }}
           TESTS_AZUREBOARDS_PRIVATE_APITOKEN: ${{ secrets.TESTS_AZUREBOARDS_PRIVATE_APITOKEN }}
-          TESTS_AZURE_PRIVATE_APITOKEN: ${{ secrets.TESTS_AZURE_PRIVATE_APITOKEN }}
         run: make test
