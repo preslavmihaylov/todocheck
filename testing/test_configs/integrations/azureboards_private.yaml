@@ -1,4 +1,4 @@
-origin: https://dev.azureboards.com/todoerruser/private_todocheck
+origin: https://dev.azure.com/todoerruser/private_todocheck
 issue_tracker: AZURE
 auth:
   type: apitoken
