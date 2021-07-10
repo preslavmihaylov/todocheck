@@ -11,8 +11,8 @@ import (
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 )
 
-const supportedAPIVersion = 6.0
-const tokenAcquisitionURL = "https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page"
+const supportedAPIVersion = "6.0"
+const tokenAcquisitionURL = "https://bit.ly/3wxUbNF"
 
 func NewIssueTrackerAzure(origin string, authCfg *config.Auth) (*IssueTracker, error) {
 	return &IssueTracker{origin, authCfg}, nil
@@ -68,7 +68,7 @@ func (it *IssueTracker) taskURLFrom(taskID string) string {
 	if strings.HasPrefix(taskID, "#") {
 		return taskID[1:]
 	}
-	return fmt.Sprintf("/%s?api-version=%.1f", taskID, supportedAPIVersion)
+	return fmt.Sprintf("/%s?api-version=%s", taskID, supportedAPIVersion)
 }
 
 // issueAPIOrigin returns the URL for Azure Boards' issue-fetching API
@@ -77,13 +77,13 @@ func (it *IssueTracker) issueAPIOrigin() string {
 }
 
 func (it *IssueTracker) repositoryURL() string {
-	scheme, owner, repo := it.urlTokensFromOrigin()
+	scheme, owner, repo := it.urlTokensFromOrigin(it.Origin)
 	return fmt.Sprintf("%s//dev.azure.com/%s/%s", scheme, owner, repo)
 
 }
 
-func (it *IssueTracker) urlTokensFromOrigin() (scheme, owner, repo string) {
-	tokens := common.RemoveEmptyTokens(strings.Split(strings.ToLower(it.Origin), "/"))
+func (it *IssueTracker) urlTokensFromOrigin(origin string) (scheme, owner, repo string) {
+	tokens := common.RemoveEmptyTokens(strings.Split(strings.ToLower(origin), "/"))
 	if !strings.HasPrefix(tokens[0], "http") {
 		tokens = append([]string{"https:"}, tokens...)
 	}
