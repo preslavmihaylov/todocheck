@@ -3,6 +3,8 @@ package factory
 import (
 	"errors"
 
+	"github.com/preslavmihaylov/todocheck/issuetracker/internal/azureboards"
+
 	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 	"github.com/preslavmihaylov/todocheck/issuetracker/internal/github"
@@ -29,6 +31,8 @@ func NewIssueTrackerFrom(issueTrackerType config.IssueTracker, authCfg *config.A
 		return pivotaltracker.New(origin, authCfg)
 	case config.IssueTrackerYoutrack:
 		return youtrack.New(origin, authCfg)
+	case config.IssueTrackerAzure:
+		return azureboards.NewIssueTrackerAzure(origin, authCfg)
 	}
 
 	return nil, errors.New("unknown issue tracker " + string(issueTrackerType))
