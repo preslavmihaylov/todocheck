@@ -46,7 +46,7 @@ var originPatterns = map[IssueTracker]*regexp.Regexp{
 	IssueTrackerPivotal:  regexp.MustCompile(`^(https?://)?(www\.)?pivotaltracker\.com/n/projects/[0-9]+`),
 	IssueTrackerRedmine:  regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]+)+(:[0-9]+)?$`),
 	IssueTrackerYoutrack: regexp.MustCompile(`^(https?://)?(www\.)?[0-9A-z-]{2,}\/?.*$`),
-	IssueTrackerAzure:    regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-.]+/([a-zA-Z0-9]+)+/([a-zA-Z0-9]+)+.*$`),
+	IssueTrackerAzure:    regexp.MustCompile(`^(https?://)?(www\.)?dev\.azure\.com/([a-zA-Z0-9]+)+\/([a-zA-Z0-9]+)+.*$`),
 }
 
 // IsValid checks if the given issue tracker is among the valid enum values
