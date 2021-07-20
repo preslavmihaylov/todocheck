@@ -19,6 +19,7 @@ See [How it works](#how-it-works) for more info.
   * [Pivotal Tracker](#pivotal-tracker)
   * [Redmine](#redmine)
   * [YouTrack](#youtrack)
+  * [Azure Boards](#azure)
 - [Supported Programming Languages](#supported-programming-languages)
 - [Ignored Files & Directories](#ignored-files--directories)
 - [Custom todos](#custom-todos)
@@ -115,6 +116,7 @@ Currently, todocheck supports the following issue trackers:
 | [Pivotal Tracker](https://pivotaltracker.com/)  | Supported via an API token                                            |
 | [Redmine](https://redmine.org/)                 | Supports public access with no auth & private access via an API token |
 | [YouTrack](https://www.jetbrains.com/youtrack/) | Supported via an API token
+| [Azure Boards](https://bit.ly/2V2FLYU)          | Supports public access with no auth & private access via an API token |
 
 ## [Github](https://github.com)
 To integrate with a public github repository, there's no need to provide a `.todocheck.yaml` explicitly as it can automatically detect the issue tracker based on the git remote address.
@@ -234,6 +236,24 @@ The first time you run the application, it will ask for your [API Token](https:/
 
 After you've specified it, it will store it in the auth tokens cache for subsequent executions. See the [Authentication](#authentication) section for more info.
 
+## [Azure Boards](https://bit.ly/2V2FLYU)
+To integrate with a public Azure Boards project, you should specify the origin of your project and 'AZURE' as an issue tracker in your `.todocheck.yaml` configuration.
+```
+origin: https://dev.azure.com/your_user/your_public_project/
+issue_tracker: AZURE
+```
+
+To integrate with a private Azure Boards project, you'll also need to specify the `auth` section with the `apitoken` type:
+```
+origin: https://dev.azure.com/your_user/your_private_project/
+issue_tracker: AZURE
+auth:
+  type: apitoken
+```
+
+The first time you run the application, it will ask for your [API Token](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate).
+
+After you've specified it, it will store it in the auth tokens cache for subsequent executions. See the [Authentication](#authentication) section for more info.
 
 # Supported Programming Languages
 Currently, todocheck has parsers for three different types of comments:
