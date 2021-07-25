@@ -155,6 +155,9 @@ var supportedMatchers = map[string]*matcherFactory{
 	".ts":   standardMatcherFactory,
 
 	// file types, supporting standard comments \w nested multi-line comments
+	".kt":    standardMatcherWithNestedMultilineCommentsFactory,
+	".kts":   standardMatcherWithNestedMultilineCommentsFactory,
+	".ktm":   standardMatcherWithNestedMultilineCommentsFactory,
 	".rs":    standardMatcherWithNestedMultilineCommentsFactory,
 	".swift": standardMatcherWithNestedMultilineCommentsFactory,
 	".scala": standardMatcherWithNestedMultilineCommentsFactory,

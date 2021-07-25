@@ -591,7 +591,7 @@ func TestGroovyTodos(t *testing.T) {
 	}
 }
 
-// Also tests Rust TODOs as rust uses the same comment syntax
+// Also tests Rust and Kotlin TODOs as they use the same comment syntax
 func TestSwiftTodos(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
