@@ -765,6 +765,41 @@ func TestPrintingVersionFlagStopsProgram(t *testing.T) {
 	}
 }
 
+func TestNimTodos(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/nim").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("1", issuetracker.StatusOpen).
+		WithIssue("2", issuetracker.StatusOpen).
+		WithIssue("234", issuetracker.StatusClosed).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/nim/main.nim", 1).
+				ExpectLine("# This is a single-line malformed TODO")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/nim/main.nim", 6).
+				ExpectLine("# TODO 234: Invalid todo, with a closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/nim/main.nim", 9).
+				ExpectLine("#[ TODO 2: Another valid todo ]#")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/nim/main.nim", 13).
+				ExpectLine("#[ TODO 3: There is also a valid nested todo here! ]#")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestVueTodos(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
