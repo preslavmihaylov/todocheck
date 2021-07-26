@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/preslavmihaylov/todocheck/matchers/groovy"
+	"github.com/preslavmihaylov/todocheck/matchers/nim"
 	"github.com/preslavmihaylov/todocheck/matchers/php"
 	"github.com/preslavmihaylov/todocheck/matchers/python"
 	"github.com/preslavmihaylov/todocheck/matchers/scripts"
@@ -125,7 +126,6 @@ var (
 			return groovy.NewCommentMatcher(callback)
 		},
 	}
-
 	vueMatcherFactory = &matcherFactory{
 		func() func([]string) TodoMatcher {
 			var once sync.Once
@@ -140,6 +140,22 @@ var (
 		}(),
 		func(callback state.CommentCallback) CommentMatcher {
 			return vue.NewCommentMatcher(callback)
+		},
+	}
+	nimMatcherFactory = &matcherFactory{
+		func() func([]string) TodoMatcher {
+			var once sync.Once
+			var matcher TodoMatcher
+
+			return func(customTodos []string) TodoMatcher {
+				once.Do(func() {
+					matcher = nim.NewTodoMatcher(customTodos)
+				})
+				return matcher
+			}
+		}(),
+		func(callback state.CommentCallback) CommentMatcher {
+			return nim.NewCommentMatcher(callback)
 		},
 	}
 )
@@ -183,6 +199,9 @@ var supportedMatchers = map[string]*matcherFactory{
 
 	// file types, supporting js, html and css comments
 	".vue": vueMatcherFactory,
+
+	// file types, supporting nim comments
+	".nim": nimMatcherFactory,
 }
 
 // TodoMatcherForFile gets the correct todo matcher for the given filename
