@@ -8,11 +8,11 @@ type Task struct {
 }
 
 // GetStatus of github task, based on underlying structure
-func (t *Task) GetStatus() taskstatus.TaskStatus {
+func (t *Task) GetStatus() (taskstatus.TaskStatus, error) {
 	switch t.State {
 	case "closed":
-		return taskstatus.Closed
+		return taskstatus.Closed, nil
 	default:
-		return taskstatus.Open
+		return taskstatus.Open, nil
 	}
 }

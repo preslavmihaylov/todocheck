@@ -12,7 +12,7 @@ var ErrUnsupportedHealthCheck = errors.New("unsupported issue tracker for health
 
 // Task is an interface for generic task operations, decoupled from the specific platform's task structure
 type Task interface {
-	GetStatus() taskstatus.TaskStatus
+	GetStatus() (taskstatus.TaskStatus, error)
 }
 
 // IssueTracker is an interface, which all issue tracker integration components adhere to in order to

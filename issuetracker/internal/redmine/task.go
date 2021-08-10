@@ -12,7 +12,7 @@ type Task struct {
 }
 
 // GetStatus of redmine task, based on underlying structure
-func (t *Task) GetStatus() taskstatus.TaskStatus {
+func (t *Task) GetStatus() (taskstatus.TaskStatus, error) {
 	switch t.Issue.Status.Name {
 	case "Resolved":
 		fallthrough
@@ -21,8 +21,8 @@ func (t *Task) GetStatus() taskstatus.TaskStatus {
 	case "Feedback":
 		fallthrough
 	case "Rejected":
-		return taskstatus.Closed
+		return taskstatus.Closed, nil
 	default:
-		return taskstatus.Open
+		return taskstatus.Open, nil
 	}
 }

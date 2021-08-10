@@ -1,13 +1,15 @@
 package youtrack
 
 import (
+	"errors"
 	"github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 )
 
 const (
-	TaskStateIndex = 2
-	Value          = "value"
-	IsResolved     = "isResolved"
+	Value      = "value"
+	Type       = "$type"
+	StateType  = "StateIssueCustomField"
+	IsResolved = "isResolved"
 )
 
 type Task struct {
@@ -15,11 +17,23 @@ type Task struct {
 }
 
 // GetStatus of youtrack task, based on underlying structure
-func (t *Task) GetStatus() taskstatus.TaskStatus {
-	switch t.CustomFields[TaskStateIndex][Value].(map[string]interface{})[IsResolved].(bool) {
+func (t *Task) GetStatus() (taskstatus.TaskStatus, error) {
+	isResolved := false
+	// Loop through all fields to find status field
+	for _, node := range t.CustomFields {
+		if node[Type].(string) == StateType {
+			if node[Value] == nil {
+				return taskstatus.None, errors.New("couldn't fetch issue status from youtrack. This is probably on us, please file a bug report here: https://github.com/preslavmihaylov/todocheck/issues/new?title=failed%20get%20youtrack%20issue%20status&labels=bug")
+			}
+			isResolved = node[Value].(map[string]interface{})[IsResolved].(bool)
+			break
+		}
+	}
+
+	switch isResolved {
 	case true:
-		return taskstatus.Closed
+		return taskstatus.Closed, nil
 	default:
-		return taskstatus.Open
+		return taskstatus.Open, nil
 	}
 }

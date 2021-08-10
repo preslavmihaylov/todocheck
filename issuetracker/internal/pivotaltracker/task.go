@@ -8,7 +8,7 @@ type Task struct {
 }
 
 // GetStatus of pivotal tracker task, based on underlying structure
-func (t *Task) GetStatus() taskstatus.TaskStatus {
+func (t *Task) GetStatus() (taskstatus.TaskStatus, error) {
 	switch t.CurrentState {
 	case "finished":
 		fallthrough
@@ -17,8 +17,8 @@ func (t *Task) GetStatus() taskstatus.TaskStatus {
 	case "accepted":
 		fallthrough
 	case "rejected":
-		return taskstatus.Closed
+		return taskstatus.Closed, nil
 	default:
-		return taskstatus.Open
+		return taskstatus.Open, nil
 	}
 }
