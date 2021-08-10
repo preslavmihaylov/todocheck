@@ -5,9 +5,10 @@ import (
 )
 
 const (
-	TaskStateIndex = 2
-	Value          = "value"
-	IsResolved     = "isResolved"
+	Value      = "value"
+	Type       = "$type"
+	StateType  = "StateIssueCustomField"
+	IsResolved = "isResolved"
 )
 
 type Task struct {
@@ -16,7 +17,16 @@ type Task struct {
 
 // GetStatus of youtrack task, based on underlying structure
 func (t *Task) GetStatus() taskstatus.TaskStatus {
-	switch t.CustomFields[TaskStateIndex][Value].(map[string]interface{})[IsResolved].(bool) {
+	isResolved := false
+	// Loop through all fields to find status field
+	for _, node := range t.CustomFields {
+		if node[Type].(string) == StateType && node[Value] != nil {
+			isResolved = node[Value].(map[string]interface{})[IsResolved].(bool)
+			break
+		}
+	}
+
+	switch isResolved {
 	case true:
 		return taskstatus.Closed
 	default:
