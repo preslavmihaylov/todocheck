@@ -18,13 +18,13 @@ type Task struct {
 }
 
 // GetStatus of jira task, based on underlying structure
-func (t *Task) GetStatus() taskstatus.TaskStatus {
+func (t *Task) GetStatus() (taskstatus.TaskStatus, error) {
 	switch t.Fields.Status.Name {
 	case "Done":
 		fallthrough
 	case "Closed":
-		return taskstatus.Closed
+		return taskstatus.Closed, nil
 	default:
-		return taskstatus.Open
+		return taskstatus.Open, nil
 	}
 }

@@ -54,5 +54,5 @@ func (f *Fetcher) Fetch(taskID string) (taskstatus.TaskStatus, error) {
 		return taskstatus.None, fmt.Errorf("couldn't unmarshal response task JSON: %w", err)
 	}
 
-	return task.GetStatus(), nil
+	return task.GetStatus()
 }
