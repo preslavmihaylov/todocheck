@@ -1,0 +1,5 @@
+origin: https://pivotaltracker.com/n/projects/1
+issue_tracker: PIVOTAL_TRACKER
+auth:
+  type: offline
+  offline_url: https://pivotaltracker.com/n/projects/1/offline

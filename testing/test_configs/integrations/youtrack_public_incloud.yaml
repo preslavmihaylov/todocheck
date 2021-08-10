@@ -1,0 +1,4 @@
+origin: emcho-spassov.myjetbrains.com
+issue_tracker: YOUTRACK
+auth:
+  type: apitoken

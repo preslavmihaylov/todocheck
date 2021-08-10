@@ -10,6 +10,7 @@ import (
 	"github.com/preslavmihaylov/todocheck/matchers/scripts"
 	"github.com/preslavmihaylov/todocheck/matchers/standard"
 	"github.com/preslavmihaylov/todocheck/matchers/state"
+	"github.com/preslavmihaylov/todocheck/matchers/vue"
 )
 
 // TodoMatcher for todo comments
@@ -124,6 +125,23 @@ var (
 			return groovy.NewCommentMatcher(callback)
 		},
 	}
+
+	vueMatcherFactory = &matcherFactory{
+		func() func([]string) TodoMatcher {
+			var once sync.Once
+			var matcher TodoMatcher
+
+			return func(customTodos []string) TodoMatcher {
+				once.Do(func() {
+					matcher = vue.NewTodoMatcher(customTodos)
+				})
+				return matcher
+			}
+		}(),
+		func(callback state.CommentCallback) CommentMatcher {
+			return vue.NewCommentMatcher(callback)
+		},
+	}
 )
 
 var supportedMatchers = map[string]*matcherFactory{
@@ -159,6 +177,9 @@ var supportedMatchers = map[string]*matcherFactory{
 
 	// file types, supporting python comments
 	".py": pythonMatcherFactory,
+
+	// file types, supporting js, html and css comments
+	".vue": vueMatcherFactory,
 }
 
 // TodoMatcherForFile gets the correct todo matcher for the given filename

@@ -1,29 +1,38 @@
 package validation
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 
 	"github.com/fatih/color"
 	"github.com/preslavmihaylov/todocheck/config"
-	"github.com/preslavmihaylov/todocheck/fetcher"
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 )
 
 // Validate validates the values of given configuration
-func Validate(cfg *config.Local) []error {
+func Validate(cfg *config.Local, tracker issuetracker.IssueTracker) []error {
 	var errs []error
-
 	if err := validateIssueTracker(cfg); err != nil {
 		errs = append(errs, err)
 	}
 
-	if err := validateAuthOfflineURL(cfg); err != nil {
-		errs = append(errs, err)
+	if cfg.Auth.Type == config.AuthTypeOffline {
+		if err := validateAuthOfflineURLIsSet(cfg); err != nil {
+			errs = append(errs, err)
+		} else if err := validateAuthOfflineURL(cfg); err != nil {
+			errs = append(errs, err)
+		}
 	}
 
 	if err := validateIssueTrackerOrigin(cfg); err != nil {
+		errs = append(errs, err)
+	}
+
+	if err := validateIssueTrackerExists(cfg, tracker); err != nil {
+		errs = append(errs, err)
+	}
+
+	if err := validateIssueTrackerAuthType(cfg); err != nil {
 		errs = append(errs, err)
 	}
 
@@ -46,8 +55,16 @@ func validateIssueTracker(cfg *config.Local) error {
 }
 
 func validateAuthOfflineURL(cfg *config.Local) error {
-	if _, err := url.ParseRequestURI(cfg.Auth.OfflineURL); cfg.Auth.Type == config.AuthTypeOffline && err != nil {
+	if _, err := url.ParseRequestURI(cfg.Auth.OfflineURL); err != nil {
 		return fmt.Errorf("invalid offline URL: %q", cfg.Auth.OfflineURL)
+	}
+
+	return nil
+}
+
+func validateAuthOfflineURLIsSet(cfg *config.Local) error {
+	if cfg.Auth.OfflineURL == "" {
+		return fmt.Errorf("auth type chosen was %q but \"offline_url\" is not set", cfg.Auth.Type)
 	}
 
 	return nil
@@ -61,19 +78,22 @@ func validateIssueTrackerOrigin(cfg *config.Local) error {
 	return nil
 }
 
-func validateIssueTrackerExists(cfg *config.Local) error {
-	url, err := issuetracker.HealthcheckURL(cfg.IssueTracker, cfg.Origin)
-	if err != nil {
-		if errors.Is(err, issuetracker.ErrUnsupportedHealthCheck) {
-			return nil
-		}
-
-		return err
+func validateIssueTrackerExists(cfg *config.Local, tracker issuetracker.IssueTracker) error {
+	if tracker.Exists() {
+		return nil
 	}
 
-	if !fetcher.IsHealthy(cfg.IssueTracker, url) {
-		return fmt.Errorf("repository %s not found. Is the repository private? More info: https://github.com/preslavmihaylov/todocheck#github", url)
+	if cfg.IssueTracker == config.IssueTrackerGithub {
+		return fmt.Errorf("repository %s not found. Is the repository private? "+
+			"More info: https://github.com/preslavmihaylov/todocheck#github", cfg.Origin)
 	}
 
+	return fmt.Errorf("repository %s not found", cfg.Origin)
+}
+
+func validateIssueTrackerAuthType(cfg *config.Local) error {
+	if !cfg.IssueTracker.IsValidAuthType(cfg.Auth.Type) {
+		return fmt.Errorf("unsupported authentication type for %s: %s", cfg.IssueTracker, cfg.Auth.Type.String())
+	}
 	return nil
 }

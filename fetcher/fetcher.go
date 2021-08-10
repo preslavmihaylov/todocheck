@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/preslavmihaylov/todocheck/authmanager/authmiddleware"
-	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/issuetracker"
 	"github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 )
@@ -15,12 +13,11 @@ import (
 // Fetcher for task statuses by contacting task management web apps' rest api
 type Fetcher struct {
 	issuetracker.IssueTracker
-	authMiddleware authmiddleware.Func
 }
 
 // NewFetcher instance
-func NewFetcher(issueTracker issuetracker.IssueTracker, authMw authmiddleware.Func) *Fetcher {
-	return &Fetcher{issueTracker, authMw}
+func NewFetcher(issueTracker issuetracker.IssueTracker) *Fetcher {
+	return &Fetcher{issueTracker}
 }
 
 // Fetch a task's status based on task ID
@@ -30,7 +27,10 @@ func (f *Fetcher) Fetch(taskID string) (taskstatus.TaskStatus, error) {
 		return taskstatus.None, fmt.Errorf("failed creating new GET request: %w", err)
 	}
 
-	f.authMiddleware(req)
+	err = f.IssueTracker.InstrumentMiddleware(req)
+	if err != nil {
+		return taskstatus.None, fmt.Errorf("couldn't instrument authentication middleware: %w", err)
+	}
 
 	hclient := &http.Client{}
 	resp, err := hclient.Do(req)
@@ -55,27 +55,4 @@ func (f *Fetcher) Fetch(taskID string) (taskstatus.TaskStatus, error) {
 	}
 
 	return task.GetStatus(), nil
-}
-
-// IsHealthy returns true if the user has access to the repo
-func IsHealthy(issueTracker config.IssueTracker, url string) bool {
-	switch issueTracker {
-	case config.IssueTrackerGithub:
-		return healthCheck(url)
-	default:
-		return true
-	}
-}
-
-func healthCheck(url string) bool {
-	res, err := http.Head(url)
-	if err != nil {
-		return false
-	}
-
-	if res.StatusCode != http.StatusOK {
-		return false
-	}
-
-	return true
 }

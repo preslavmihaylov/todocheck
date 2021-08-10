@@ -1,0 +1,4 @@
+origin: https://gitlab.com/user/project
+issue_tracker: GITLAB
+auth:
+  type: apitoken

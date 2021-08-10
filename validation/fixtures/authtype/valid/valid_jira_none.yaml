@@ -1,0 +1,4 @@
+origin: https://any-domain.com
+issue_tracker: JIRA
+auth:
+  type: none

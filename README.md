@@ -18,6 +18,8 @@ See [How it works](#how-it-works) for more info.
   * [Jira](#jira)
   * [Pivotal Tracker](#pivotal-tracker)
   * [Redmine](#redmine)
+  * [YouTrack](#youtrack)
+  * [Azure Boards](#azure)
 - [Supported Programming Languages](#supported-programming-languages)
 - [Ignored Files & Directories](#ignored-files--directories)
 - [Custom todos](#custom-todos)
@@ -61,6 +63,12 @@ Only `TODO`s with valid, open issues are allowed to exist in the codebase.
 By integrating todocheck in your development workflow & CI pipeline, you can ensure that there will be no half-baked issue closed with pending `TODO`s in the codebase.  
 
 # Installation
+## Via homebrew
+```bash
+brew install preslavmihaylov/taps/todocheck
+```
+
+## Download prebuilt binary
 Download the binary for your OS from the [latest release](https://github.com/preslavmihaylov/todocheck/releases/latest).
 
 Optionally verify the `sha256` checksum:
@@ -107,6 +115,8 @@ Currently, todocheck supports the following issue trackers:
 | [Jira](https://www.atlassian.com/software/jira) | Supported via offline tokens                                          |
 | [Pivotal Tracker](https://pivotaltracker.com/)  | Supported via an API token                                            |
 | [Redmine](https://redmine.org/)                 | Supports public access with no auth & private access via an API token |
+| [YouTrack](https://www.jetbrains.com/youtrack/) | Supported via an API token
+| [Azure Boards](https://bit.ly/2V2FLYU)          | Supports public access with no auth & private access via an API token |
 
 ## [Github](https://github.com)
 To integrate with a public github repository, there's no need to provide a `.todocheck.yaml` explicitly as it can automatically detect the issue tracker based on the git remote address.
@@ -139,7 +149,7 @@ issue_tracker: GITLAB
 
 To integrate with a private gitlab repository, you'll also need to specify the `auth` section with the `apitoken` type:
 ```
-origin: github.com/user/repository
+origin: gitlab.com/user/repository
 issue_tracker: GITLAB
 auth:
   type: apitoken
@@ -202,6 +212,48 @@ After you've specified it, it will store it in the auth tokens cache for subsequ
 
 In order to integrate todocheck with your redmine server, you'll need to enable the server's rest API and, optionally, enable authentication - [See Docs](https://www.redmine.org/projects/redmine/wiki/rest_api#Authentication).
 
+## [YouTrack](https://www.jetbrains.com/youtrack/)
+To integrate with a youtrack project, specify the origin of your project and the `YOUTRACK` issue tracker in your `.todocheck.yaml` configuration.  
+You should also specify the `apitoken` as an auth type. 
+
+For YouTrack [InCloud](https://www.jetbrains.com/help/youtrack/incloud/YouTrack-InCloud.html):
+```
+origin: youtrack-instance.myjetbrains.com
+issue_tracker: YOUTRACK
+auth:
+  type: apitoken
+```
+
+For YouTrack [Standalone](https://www.jetbrains.com/help/youtrack/standalone/YouTrack-Documentation.html):
+```
+origin: youtrack-instance.com
+issue_tracker: YOUTRACK
+auth:
+  type: apitoken
+```
+
+The first time you run the application, it will ask for your [API Token](https://www.jetbrains.com/help/youtrack/standalone/Manage-Permanent-Token.html#obtain-permanent-token).
+
+After you've specified it, it will store it in the auth tokens cache for subsequent executions. See the [Authentication](#authentication) section for more info.
+
+## [Azure Boards](https://bit.ly/2V2FLYU)
+To integrate with a public Azure Boards project, you should specify the origin of your project and 'AZURE' as an issue tracker in your `.todocheck.yaml` configuration.
+```
+origin: https://dev.azure.com/your_user/your_public_project/
+issue_tracker: AZURE
+```
+
+To integrate with a private Azure Boards project, you'll also need to specify the `auth` section with the `apitoken` type:
+```
+origin: https://dev.azure.com/your_user/your_private_project/
+issue_tracker: AZURE
+auth:
+  type: apitoken
+```
+
+The first time you run the application, it will ask for your [API Token](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate).
+
+After you've specified it, it will store it in the auth tokens cache for subsequent executions. See the [Authentication](#authentication) section for more info.
 
 # Supported Programming Languages
 Currently, todocheck has parsers for three different types of comments:
@@ -226,7 +278,8 @@ Based on this, here are the supported languages:
 | R                     | `*.R` extension. Supports single-line `//` comments and multi-line `/* */` comments                                    |
 | Rust                  | `*.rs` extension. Supports single-line `//` comments and multi-line `/* */` comments                                   |
 | Scala                 | `*.scala`, `*.sc` extensions. Supports single-line `//` comments and multi-line `/* */` comments                                 |
-| Swift                 | `*.swift` extension. Supports single-line `//` comments and multi-line `/* */` comments                                |
+| Swift                 | `*.swift` extension. Supports single-line `//` comments and multi-line `/* */` comments
+| Vue                 | `*.vue` extension. Supports single-line `//` comments, multi-line `/* */` comments and multi-line `<!-- -->` HTML comments                                |
 
 If you don't see your favorite language in this table, but it does use one of the supported comment formats, submit an issue [here](https://github.com/preslavmihaylov/todocheck/issues/new)
 
@@ -244,7 +297,7 @@ Ignored files/folders can be specified via standard pattern-matching.
 Hidden files (dotfiles, i.e. `.git`, `.gitignore`, etc) are ignored by default.
 
 # Custom Todos
-By default, `todocheck` looks for todos in the format `// TODO #231: ...` Most projects stick to this format.
+By default, `todocheck` looks for todos in the format `// TODO 231: ...` Most projects stick to this format.
 
 However, if you have some special todo format, which is different from the default one, you can specify a list of custom todo formats in your `.todocheck.yaml`  
 ```
@@ -259,8 +312,8 @@ Note that this list adds additional formats the tool should match, but doesn't s
 
 With the above configuration, `todocheck` will start matching todo comments in the following formats:
 ```
-// @fix #234: a leftover task...
-// ToDo #15: A funky-looking todo comment
+// @fix 234: a leftover task...
+// ToDo 15: A funky-looking todo comment
 ```
 
 

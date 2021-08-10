@@ -9,7 +9,6 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/preslavmihaylov/todocheck/authmanager"
-	"github.com/preslavmihaylov/todocheck/authmanager/authmiddleware"
 	todocheckerrors "github.com/preslavmihaylov/todocheck/checker/errors"
 	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/fetcher"
@@ -46,12 +45,17 @@ func main() {
 		log.Fatalf("couldn't open configuration file: %s\n", err)
 	}
 
-	err = authmanager.AcquireToken(localCfg)
+	tracker, err := factory.NewIssueTrackerFrom(localCfg.IssueTracker, localCfg.Auth, localCfg.Origin)
+	if err != nil {
+		log.Fatalf("couldn't create new issue tracker: %s\n", err)
+	}
+
+	err = authmanager.AcquireToken(localCfg, tracker)
 	if err != nil {
 		log.Fatalf("couldn't acquire token from config: %s\n", err)
 	}
 
-	if errors := validation.Validate(localCfg); len(errors) > 0 {
+	if errors := validation.Validate(localCfg, tracker); len(errors) > 0 {
 		for _, err := range errors {
 			log.Println(err)
 		}
@@ -59,12 +63,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	tracker, err := factory.NewIssueTrackerFrom(localCfg.IssueTracker, localCfg.Origin)
-	if err != nil {
-		log.Fatalf("couldn't create new issue tracker: %s\n", err)
-	}
-
-	f := fetcher.NewFetcher(tracker, authmiddleware.For(localCfg))
+	f := fetcher.NewFetcher(tracker)
 
 	todoErrs := []*todocheckerrors.TODO{}
 	traverser := todoerrs.NewTraverser(f, localCfg.IgnoredPaths, localCfg.CustomTodos, func(todoErr *todocheckerrors.TODO) error {

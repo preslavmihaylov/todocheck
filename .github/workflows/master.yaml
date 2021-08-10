@@ -7,8 +7,24 @@ on:
       - master
 
 jobs:
+  gofmt-check:
+    name: checking format against gofmt rules
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout new code
+        uses: actions/checkout@v2
+        with: # code from pull request
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+      - name: gofmt test run
+        id: gofmt_run
+        run: |
+          sh ./scripts/gofmt_check.sh
+      - name: gofmt test output
+        run: echo ${{steps.gofmt_run.outputs.gofmt-test}}
   build:
     runs-on: ubuntu-latest
+    needs: gofmt-check
     steps:
       - uses: actions/checkout@v2
         with: # code from pull request
@@ -18,6 +34,7 @@ jobs:
         run: make build
   tests:
     runs-on: ubuntu-latest
+    needs: gofmt-check
     steps:
       - uses: actions/checkout@v2
         with:
@@ -30,4 +47,7 @@ jobs:
           TESTS_GITHUB_APITOKEN: ${{ secrets.TESTS_GITHUB_APITOKEN }}
           TESTS_GITLAB_APITOKEN: ${{ secrets.TESTS_GITLAB_APITOKEN }}
           TESTS_PIVOTALTRACKER_APITOKEN: ${{ secrets.TESTS_PIVOTALTRACKER_APITOKEN }}
+          TESTS_REDMINE_PRIVATE_APITOKEN: ${{ secrets.TESTS_REDMINE_PRIVATE_APITOKEN }}
+          TESTS_YOUTRACK_PUBLIC_INCLOUD_APITOKEN: ${{ secrets.TESTS_YOUTRACK_PUBLIC_INCLOUD_APITOKEN }}
+          TESTS_AZUREBOARDS_PRIVATE_APITOKEN: ${{ secrets.TESTS_AZUREBOARDS_PRIVATE_APITOKEN }}
         run: make test

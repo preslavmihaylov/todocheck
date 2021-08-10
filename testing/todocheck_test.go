@@ -4,10 +4,8 @@ import (
 	"testing"
 
 	"github.com/preslavmihaylov/todocheck/checker/errors"
-	"github.com/preslavmihaylov/todocheck/config"
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder"
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder/issuetracker"
-	"github.com/preslavmihaylov/todocheck/validation"
 )
 
 func TestSingleLineMalformedTodos(t *testing.T) {
@@ -405,65 +403,6 @@ func TestInvalidGithubAccess(t *testing.T) {
 	}
 }
 
-func TestInvalidOrigins(t *testing.T) {
-	invalidConfigPaths := []string{
-		"./test_configs/invalid_github_https.yaml",
-		"./test_configs/invalid_github_origin.yaml",
-		"./test_configs/invalid_github_www.yaml",
-		"./test_configs/invalid_gitlab_origin.yaml",
-		"./test_configs/invalid_gitlab_port.yaml",
-		"./test_configs/invalid_issue_tracker.yaml",
-		"./test_configs/invalid_jira_origin.yaml",
-		"./test_configs/invalid_jira_port.yaml",
-		"./test_configs/invalid_offline_url.yaml",
-		"./test_configs/invalid_pivotal_origin.yaml",
-		"./test_configs/invalid_redmine_origin.yaml",
-		"./test_configs/invalid_redmine_port.yaml",
-	}
-
-	for _, path := range invalidConfigPaths {
-		cfg, err := config.NewLocal(path, ".")
-		if err != nil {
-			t.Errorf("%s", err)
-			continue
-		}
-		errors := validation.Validate(cfg)
-		if 0 == len(errors) {
-			t.Errorf("%s should be invalid", path)
-		}
-	}
-}
-
-func TestValidOrigins(t *testing.T) {
-	validConfigPaths := []string{
-		"./test_configs/valid_github_https.yaml",
-		"./test_configs/valid_github_origin.yaml",
-		"./test_configs/valid_github_www.yaml",
-		"./test_configs/valid_gitlab_origin.yaml",
-		"./test_configs/valid_gitlab_port.yaml",
-		"./test_configs/valid_gitlab_subdomain.yaml",
-		"./test_configs/valid_jira_origin.yaml",
-		"./test_configs/valid_jira_port.yaml",
-		"./test_configs/valid_jira_subdomain.yaml",
-		"./test_configs/valid_pivotal_origin.yaml",
-		"./test_configs/valid_redmine_origin.yaml",
-		"./test_configs/valid_redmine_port.yaml",
-		"./test_configs/valid_redmine_subdomain.yaml",
-	}
-
-	for _, path := range validConfigPaths {
-		cfg, err := config.NewLocal(path, ".")
-		if err != nil {
-			t.Errorf("%s", err)
-			continue
-		}
-		errors := validation.Validate(cfg)
-		if len(errors) > 0 {
-			t.Errorf("%s should be valid but has errors: %v", path, errors)
-		}
-	}
-}
-
 func TestInvalidOfflineURL(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
@@ -803,6 +742,66 @@ func TestPrintingVersionFlagStopsProgram(t *testing.T) {
 	}
 }
 
+func TestVueTodos(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/vue").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("1", issuetracker.StatusOpen).
+		WithIssue("2", issuetracker.StatusClosed).
+		WithIssue("3", issuetracker.StatusOpen).
+		WithIssue("4", issuetracker.StatusOpen).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/vue/main.vue", 1).
+				ExpectLine("// oneline comment, malformed TODO")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/vue/main.vue", 3).
+				ExpectLine("// TODO 2: oneline comment with Issue closed")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/vue/main.vue", 6).
+				ExpectLine("<!-- TODO 2: wellformed HTML multiline entry, BUT issue closed -->")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/vue/main.vue", 7).
+				ExpectLine("<!-- TODO: missing number -->")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/vue/main.vue", 10).
+				ExpectLine("/* TODO 2: wellformed CS/JS multiline entry, BUT issue closed */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/vue/main.vue", 15).
+				ExpectLine("/*").
+				ExpectLine("TODO: malformed CS/JS multline entry, missing number").
+				ExpectLine("*/")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/vue/main.vue", 49).
+				ExpectLine("  color: blue; // TODO 2: online comment wellformed in code, BUT issue closed")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/vue/main.vue", 53).
+				ExpectLine("<!--").
+				ExpectLine("TODO : malformed HTML multiline entry").
+				ExpectLine("-->")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 // Testing multiple todo matchers created for different file types
 func TestMultipleTodoMatchers(t *testing.T) {
 	err := scenariobuilder.NewScenario().
@@ -826,6 +825,24 @@ func TestMultipleTodoMatchers(t *testing.T) {
 				WithLocation("scenarios/multiple_matchers/file3.go", 3).
 				ExpectLine("// TODO: This is a todo in a file of other type with different matcher")).
 		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
+func TestIfLastLineTodoIsGettingProcessed(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/lastline_comment").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/lastline_comment/main.py", 2).
+				ExpectLine("# This is an invalid TODO on the last line of the file")).
+		Run()
+
 	if err != nil {
 		t.Errorf("%s", err)
 	}

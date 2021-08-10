@@ -1,0 +1,5 @@
+origin: https://gitlab.com/user/project
+issue_tracker: GITLAB
+auth:
+  type: offline
+  offline_url: https://gitlab.com/user/project/offline
