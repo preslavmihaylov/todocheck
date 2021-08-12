@@ -600,6 +600,7 @@ func TestSwiftTodos(t *testing.T) {
 		WithIssueTracker(issuetracker.Jira).
 		WithIssue("1", issuetracker.StatusOpen).
 		WithIssue("2", issuetracker.StatusClosed).
+		// Swift
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).
@@ -633,6 +634,19 @@ func TestSwiftTodos(t *testing.T) {
 				ExpectLine("    /* TODO 2: invalid todo as issue is closed */").
 				ExpectLine(" */").
 				ExpectLine("*/")).
+		// Rust
+		ExpectTodoErr(scenariobuilder.NewTodoErr().
+			WithType(errors.TODOErrTypeIssueClosed).
+			WithLocation("scenarios/swift/main.rs", 3).
+			ExpectLine("/* TODO 2: Closed issue */")).
+		ExpectTodoErr(scenariobuilder.NewTodoErr().
+			WithType(errors.TODOErrTypeMalformed).
+			WithLocation("scenarios/swift/main.rs", 5).
+			ExpectLine("// This is a malformed TODO")).
+		ExpectTodoErr(scenariobuilder.NewTodoErr().
+			WithType(errors.TODOErrTypeMalformed).
+			WithLocation("scenarios/swift/main.rs", 7).
+			ExpectLine("/* This is /* another malformed */ TODO 3 */")).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
