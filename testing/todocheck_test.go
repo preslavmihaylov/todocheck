@@ -647,6 +647,15 @@ func TestSwiftTodos(t *testing.T) {
 			WithType(errors.TODOErrTypeMalformed).
 			WithLocation("scenarios/swift/main.rs", 7).
 			ExpectLine("/* This is /* another malformed */ TODO 3 */")).
+		// Kotlin
+		ExpectTodoErr(scenariobuilder.NewTodoErr().
+			WithType(errors.TODOErrTypeIssueClosed).
+			WithLocation("scenarios/swift/main.kt", 2).
+			ExpectLine("// TODO 2: This one is closed though")).
+		ExpectTodoErr(scenariobuilder.NewTodoErr().
+			WithType(errors.TODOErrTypeMalformed).
+			WithLocation("scenarios/swift/main.kt", 5).
+			ExpectLine("/* TODO: 3 /* Document main, because it's magic (and this is malformed) */ */")).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
