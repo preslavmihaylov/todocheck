@@ -1,23 +1,25 @@
 package nim
 
 import (
+	"fmt"
 	"regexp"
 
 	"github.com/preslavmihaylov/todocheck/common"
 	"github.com/preslavmihaylov/todocheck/matchers/errors"
 )
 
-// NewTodoMatcher for python comments
+// NewTodoMatcher for Nim comments
 func NewTodoMatcher(todos []string) *TodoMatcher {
 	pattern := common.ArrayAsRegexAnyMatchExpression(todos)
+	fmt.Println(pattern)
 
 	// Single line
-	singleLineTodoPattern := regexp.MustCompile(`^\s*#.*` + pattern)
-	singleLineValidTodoPattern := regexp.MustCompile(`^\s*# ` + pattern + ` (#?[a-zA-Z0-9\-]+):.*`)
+	singleLineTodoPattern := regexp.MustCompile(`(?m)^\s*#[^\[].*` + pattern)
+	singleLineValidTodoPattern := regexp.MustCompile(`(?m)^\s*#[^\[] ?` + pattern + ` (#?[a-zA-Z0-9\-]+):.*`)
 
 	// Multiline line
-	multiLineTodoPattern := regexp.MustCompile(`(?s)^\s*("""|''').*` + pattern)
-	multiLineValidTodoPattern := regexp.MustCompile(`(?s)^\s*("""|''').*` + pattern + ` (#?[a-zA-Z0-9\-]+):.*`)
+	multiLineTodoPattern := regexp.MustCompile(`(?s)^\s*(#\[).*` + pattern)
+	multiLineValidTodoPattern := regexp.MustCompile(`(?s)^\s*(\]#).*` + pattern + ` (#?[a-zA-Z0-9\-]+):.*`)
 
 	return &TodoMatcher{
 		singleLineTodoPattern:      singleLineTodoPattern,
@@ -27,7 +29,7 @@ func NewTodoMatcher(todos []string) *TodoMatcher {
 	}
 }
 
-// TodoMatcher for python comments
+// TodoMatcher for Nim comments
 type TodoMatcher struct {
 	singleLineTodoPattern      *regexp.Regexp
 	singleLineValidTodoPattern *regexp.Regexp
@@ -35,7 +37,7 @@ type TodoMatcher struct {
 	multiLineValidTodoPattern  *regexp.Regexp
 }
 
-// IsMatch checks if the current expression matches a python comment
+// IsMatch checks if the current expression matches a Nim comment
 func (m *TodoMatcher) IsMatch(expr string) bool {
 	return m.singleLineTodoPattern.Match([]byte(expr)) || m.multiLineTodoPattern.Match([]byte(expr))
 }

@@ -211,6 +211,7 @@ func (s *TodocheckScenario) Run() error {
 		return fmt.Errorf("couldn't initialize todocheck config: %w", err)
 	}
 
+	fmt.Println(s.binaryLoc, "--basepath", s.basepath, "--config", s.cfgPath)
 	cmd := exec.Command(s.binaryLoc, "--basepath", s.basepath, "--config", s.cfgPath)
 	if s.versionFlagRequested {
 		cmd.Args = append(cmd.Args, "--version")

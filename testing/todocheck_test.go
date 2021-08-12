@@ -787,6 +787,11 @@ func TestNimTodos(t *testing.T) {
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/nim/main.nim", 7).
+				ExpectLine("# TODO 234: Invalid todo, with a closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/nim/main.nim", 9).
 				ExpectLine("#[ TODO 2: Another valid todo ]#")).
 		ExpectTodoErr(
