@@ -591,7 +591,7 @@ func TestGroovyTodos(t *testing.T) {
 	}
 }
 
-// Also tests Rust TODOs as rust uses the same comment syntax
+// Also tests Rust and Kotlin TODOs as they use the same comment syntax
 func TestSwiftTodos(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
@@ -600,6 +600,7 @@ func TestSwiftTodos(t *testing.T) {
 		WithIssueTracker(issuetracker.Jira).
 		WithIssue("1", issuetracker.StatusOpen).
 		WithIssue("2", issuetracker.StatusClosed).
+		// Swift
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).
@@ -633,6 +634,28 @@ func TestSwiftTodos(t *testing.T) {
 				ExpectLine("    /* TODO 2: invalid todo as issue is closed */").
 				ExpectLine(" */").
 				ExpectLine("*/")).
+		// Rust
+		ExpectTodoErr(scenariobuilder.NewTodoErr().
+			WithType(errors.TODOErrTypeIssueClosed).
+			WithLocation("scenarios/swift/main.rs", 3).
+			ExpectLine("/* TODO 2: Closed issue */")).
+		ExpectTodoErr(scenariobuilder.NewTodoErr().
+			WithType(errors.TODOErrTypeMalformed).
+			WithLocation("scenarios/swift/main.rs", 5).
+			ExpectLine("// This is a malformed TODO")).
+		ExpectTodoErr(scenariobuilder.NewTodoErr().
+			WithType(errors.TODOErrTypeMalformed).
+			WithLocation("scenarios/swift/main.rs", 7).
+			ExpectLine("/* This is /* another malformed */ TODO 3 */")).
+		// Kotlin
+		ExpectTodoErr(scenariobuilder.NewTodoErr().
+			WithType(errors.TODOErrTypeIssueClosed).
+			WithLocation("scenarios/swift/main.kt", 2).
+			ExpectLine("// TODO 2: This one is closed though")).
+		ExpectTodoErr(scenariobuilder.NewTodoErr().
+			WithType(errors.TODOErrTypeMalformed).
+			WithLocation("scenarios/swift/main.kt", 5).
+			ExpectLine("/* TODO: 3 /* Document main, because it's magic (and this is malformed) */ */")).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)

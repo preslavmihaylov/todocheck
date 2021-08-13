@@ -273,6 +273,7 @@ Based on this, here are the supported languages:
 | Groovy                | `*.groovy`, `*.gvy`, `*.gy`, `*.gsh` extensions. Supports single-line `//` comments and multi-line `/* */` comments    |
 | Java                  | `*.java` extension. Supports single-line `//` comments and multi-line `/* */` comments                                 |
 | JavaScript/Typescript | `*.js/*.ts` extension. Supports single-line `//` comments and multi-line `/* */` comments                              |
+| Kotlin                | `*.kt/*.kts/*.ktm` extension. Supports single-line `//` comments and multi-line `/* */` comments                              |
 | PHP                   | `*.php` extension. Supports single-line `#` and `//` comments and multi-line `/* */` comments                          |
 | Python                | `*.py` extension. Supports single-line `#` comments and multi-line `"""` comments                                      |
 | R                     | `*.R` extension. Supports single-line `//` comments and multi-line `/* */` comments                                    |
