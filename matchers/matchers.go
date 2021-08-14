@@ -201,7 +201,9 @@ var supportedMatchers = map[string]*matcherFactory{
 	".vue": vueMatcherFactory,
 
 	// file types, supporting nim comments
-	".nim": nimMatcherFactory,
+	".nim":    nimMatcherFactory,
+	".nims":   nimMatcherFactory,
+	".nimble": nimMatcherFactory,
 }
 
 // TodoMatcherForFile gets the correct todo matcher for the given filename
