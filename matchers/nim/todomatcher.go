@@ -1,7 +1,6 @@
 package nim
 
 import (
-	"fmt"
 	"regexp"
 
 	"github.com/preslavmihaylov/todocheck/common"
@@ -19,11 +18,6 @@ func NewTodoMatcher(todos []string) *TodoMatcher {
 	// Multiline line
 	multiLineTodoPattern := regexp.MustCompile(`(?s)^\s*(#\[).*` + pattern)
 	multiLineValidTodoPattern := regexp.MustCompile(`(?s)^\s*(#\[).*` + pattern + ` (#?[a-zA-Z0-9\-]+):.*`)
-
-	fmt.Println(singleLineTodoPattern)
-	fmt.Println(singleLineValidTodoPattern)
-	fmt.Println(multiLineTodoPattern)
-	fmt.Println(multiLineValidTodoPattern)
 
 	return &TodoMatcher{
 		singleLineTodoPattern:      singleLineTodoPattern,
