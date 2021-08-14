@@ -772,7 +772,7 @@ func TestNimTodos(t *testing.T) {
 		WithConfig("./test_configs/no_issue_tracker.yaml").
 		WithIssueTracker(issuetracker.Jira).
 		WithIssue("1", issuetracker.StatusOpen).
-		WithIssue("2", issuetracker.StatusOpen).
+		WithIssue("2", issuetracker.StatusClosed).
 		WithIssue("3", issuetracker.StatusClosed).
 		WithIssue("234", issuetracker.StatusClosed).
 		ExpectTodoErr(
@@ -794,7 +794,9 @@ func TestNimTodos(t *testing.T) {
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/nim/main.nim", 12).
-				ExpectLine("#[ TODO 3: There is also a valid nested todo here! ]#")).
+				ExpectLine("#[").
+				ExpectLine("#[ TODO 3: There is also a valid nested todo here! ]#").
+				ExpectLine("]#")).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)

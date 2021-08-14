@@ -9,4 +9,6 @@ when isMainModule:
 #[ TODO 2: Another valid todo ]#
 
     discard "Magic here, magic there!"
+#[
 #[ TODO 3: There is also a valid nested todo here! ]#
+]#
