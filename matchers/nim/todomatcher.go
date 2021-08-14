@@ -11,15 +11,19 @@ import (
 // NewTodoMatcher for Nim comments
 func NewTodoMatcher(todos []string) *TodoMatcher {
 	pattern := common.ArrayAsRegexAnyMatchExpression(todos)
-	fmt.Println(pattern)
 
 	// Single line
-	singleLineTodoPattern := regexp.MustCompile(`(?m)^\s*#[^\[].*` + pattern)
-	singleLineValidTodoPattern := regexp.MustCompile(`(?m)^\s*#[^\[] ?` + pattern + ` (#?[a-zA-Z0-9\-]+):.*`)
+	singleLineTodoPattern := regexp.MustCompile(`^\s*#[^\[].*` + pattern)
+	singleLineValidTodoPattern := regexp.MustCompile(`^\s*#[^\[]` + pattern + ` (#?[a-zA-Z0-9\-]+):.*`)
 
 	// Multiline line
 	multiLineTodoPattern := regexp.MustCompile(`(?s)^\s*(#\[).*` + pattern)
-	multiLineValidTodoPattern := regexp.MustCompile(`(?s)^\s*(\]#).*` + pattern + ` (#?[a-zA-Z0-9\-]+):.*`)
+	multiLineValidTodoPattern := regexp.MustCompile(`(?s)^\s*(#\[).*` + pattern + ` (#?[a-zA-Z0-9\-]+):.*`)
+
+	fmt.Println(singleLineTodoPattern)
+	fmt.Println(singleLineValidTodoPattern)
+	fmt.Println(multiLineTodoPattern)
+	fmt.Println(multiLineValidTodoPattern)
 
 	return &TodoMatcher{
 		singleLineTodoPattern:      singleLineTodoPattern,
