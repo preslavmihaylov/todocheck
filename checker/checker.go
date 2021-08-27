@@ -49,9 +49,9 @@ func (c *Checker) Check(
 
 	switch status {
 	case taskstatus.Closed:
-		return checkererrors.IssueClosedErr(filename, lines, linecnt), nil
+		return checkererrors.IssueClosedErr(filename, lines, linecnt, taskID), nil
 	case taskstatus.NonExistent:
-		return checkererrors.IssueNonExistentErr(filename, lines, linecnt), nil
+		return checkererrors.IssueNonExistentErr(filename, lines, linecnt, taskID), nil
 	}
 
 	return nil, nil
