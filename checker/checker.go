@@ -47,11 +47,23 @@ func (c *Checker) Check(
 		return nil, fmt.Errorf("couldn't fetch task status: %w", err)
 	}
 
+	// Extract message by slicing off the necessary tokens ("TODO {taskId}: ")
+	colonPos := func() int {
+		for i := range comment {
+			if comment[i] == ':' {
+				return i
+			}
+		}
+		// Cannot happen as TODO format guarantees presence of colon
+		return -1
+	}()
+	message := comment[colonPos+2:]
+
 	switch status {
 	case taskstatus.Closed:
-		return checkererrors.IssueClosedErr(filename, lines, linecnt, taskID), nil
+		return checkererrors.IssueClosedErr(filename, lines, linecnt, taskID, message), nil
 	case taskstatus.NonExistent:
-		return checkererrors.IssueNonExistentErr(filename, lines, linecnt, taskID), nil
+		return checkererrors.IssueNonExistentErr(filename, lines, linecnt, taskID, message), nil
 	}
 
 	return nil, nil
