@@ -3,6 +3,7 @@ package comments
 import (
 	"strings"
 
+	"github.com/preslavmihaylov/todocheck/logger"
 	"github.com/preslavmihaylov/todocheck/matchers"
 	"github.com/preslavmihaylov/todocheck/matchers/state"
 	"github.com/preslavmihaylov/todocheck/traverser/lines"
@@ -42,14 +43,19 @@ func (t *Traverser) TraversePath(path string) error {
 		for _, b := range line {
 			curr = next
 			next = b
-			t.handleStateChange(filename, line, linecnt, prev, curr, next)
-
+			err := t.handleStateChange(filename, line, linecnt, prev, curr, next)
+			if err != nil {
+				logger.Info("Error Occured during handleStateChange of file:" + filename + " at line: " + line)
+			}
 			prev = curr
 		}
 
 		curr = next
 		next = 0
-		t.handleStateChange(filename, line, linecnt, prev, curr, next)
+		err := t.handleStateChange(filename, line, linecnt, prev, curr, next)
+		if err != nil {
+			logger.Info("Error Occured during handleStateChange of file:" + filename + " at line: " + line)
+		}
 
 		prev = curr
 
