@@ -7,6 +7,15 @@ on:
       - master
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: 'latest'
+          skip-go-installation: true
   build:
     runs-on: ubuntu-latest
     needs: lint
@@ -36,12 +45,3 @@ jobs:
           TESTS_YOUTRACK_PUBLIC_INCLOUD_APITOKEN: ${{ secrets.TESTS_YOUTRACK_PUBLIC_INCLOUD_APITOKEN }}
           TESTS_AZUREBOARDS_PRIVATE_APITOKEN: ${{ secrets.TESTS_AZUREBOARDS_PRIVATE_APITOKEN }}
         run: make test
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v2
-        with:
-          version: 'latest'
-          skip-go-installation: true
