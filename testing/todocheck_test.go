@@ -913,7 +913,8 @@ func TestCaseInsensitiveTODOMatcher(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
 		WithBasepath("./scenarios/case_insensitive_matcher").
-		WithConfig("./test_configs/case_insensitive.yaml").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithIssueTracker(issuetracker.Jira).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).

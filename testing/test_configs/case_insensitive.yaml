@@ -1,5 +1,5 @@
-origin: https://github.com/preslavmihaylov/todocheck
-issue_tracker: GITHUB
+origin: emcho-spassov.myjetbrains.com
+issue_tracker: YOUTRACK
 match_case_sensitive: false
 auth:
-  type: none
+  type: apitoken
