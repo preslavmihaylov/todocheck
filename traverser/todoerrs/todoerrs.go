@@ -7,6 +7,7 @@ import (
 	"github.com/preslavmihaylov/todocheck/checker/errors"
 	"github.com/preslavmihaylov/todocheck/fetcher"
 	"github.com/preslavmihaylov/todocheck/matchers"
+	"github.com/preslavmihaylov/todocheck/matchers/caseInsensitive"
 	"github.com/preslavmihaylov/todocheck/matchers/state"
 	"github.com/preslavmihaylov/todocheck/traverser/comments"
 )
@@ -15,9 +16,9 @@ import (
 type TodoErrCallback func(todoerr *errors.TODO) error
 
 // NewTraverser for todo errors
-func NewTraverser(f *fetcher.Fetcher, ignoredPaths, customTodos []string, callback TodoErrCallback) *Traverser {
+func NewTraverser(f *fetcher.Fetcher, ignoredPaths, customTodos []string, matchCaseSensitive bool, callback TodoErrCallback) *Traverser {
 	return &Traverser{
-		comments.NewTraverser(ignoredPaths, commentsCallback(checker.New(f), customTodos, callback)),
+		comments.NewTraverser(ignoredPaths, commentsCallback(checker.New(f), customTodos, matchCaseSensitive, callback)),
 	}
 }
 
@@ -26,9 +27,14 @@ type Traverser struct {
 	commentsTraverser *comments.Traverser
 }
 
-func commentsCallback(chk *checker.Checker, customTodos []string, todoErrCallback TodoErrCallback) state.CommentCallback {
+func commentsCallback(chk *checker.Checker, customTodos []string, matchCaseSensitive bool, todoErrCallback TodoErrCallback) state.CommentCallback {
 	return func(comment, filepath string, lines []string, linecnt int) error {
-		todoErr, err := chk.Check(matchers.TodoMatcherForFile(filepath, customTodos), comment, filepath, lines, linecnt)
+		matcher := matchers.TodoMatcherForFile(filepath, customTodos)
+		if !matchCaseSensitive {
+			matcher = caseInsensitive.NewTodoMatcherCaseInsensitive(matcher)
+		}
+
+		todoErr, err := chk.Check(matcher, comment, filepath, lines, linecnt)
 		if err != nil {
 			return fmt.Errorf("couldn't check todo line: %w", err)
 		} else if todoErr != nil {

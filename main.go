@@ -66,7 +66,7 @@ func main() {
 	f := fetcher.NewFetcher(tracker)
 
 	todoErrs := []*todocheckerrors.TODO{}
-	traverser := todoerrs.NewTraverser(f, localCfg.IgnoredPaths, localCfg.CustomTodos, func(todoErr *todocheckerrors.TODO) error {
+	traverser := todoerrs.NewTraverser(f, localCfg.IgnoredPaths, localCfg.CustomTodos, localCfg.MatchCaseSensitive, func(todoErr *todocheckerrors.TODO) error {
 		todoErrs = append(todoErrs, todoErr)
 		return nil
 	})
