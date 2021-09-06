@@ -20,12 +20,12 @@ var (
 
 // Local todocheck configuration struct definition
 type Local struct {
-	Origin             string       `yaml:"origin"`
-	IssueTracker       IssueTracker `yaml:"issue_tracker"`
-	IgnoredPaths       []string     `yaml:"ignored"`
-	CustomTodos        []string     `yaml:"custom_todos"`
-	Auth               *Auth        `yaml:"auth"`
-	MatchCaseSensitive bool         `yaml:"match_case_sensitive"`
+	Origin               string       `yaml:"origin"`
+	IssueTracker         IssueTracker `yaml:"issue_tracker"`
+	IgnoredPaths         []string     `yaml:"ignored"`
+	CustomTodos          []string     `yaml:"custom_todos"`
+	Auth                 *Auth        `yaml:"auth"`
+	MatchCaseInsensitive bool         `yaml:"match_case_insensitive"`
 }
 
 // NewLocal configuration from a given file path

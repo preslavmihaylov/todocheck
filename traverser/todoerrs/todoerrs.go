@@ -16,9 +16,9 @@ import (
 type TodoErrCallback func(todoerr *errors.TODO) error
 
 // NewTraverser for todo errors
-func NewTraverser(f *fetcher.Fetcher, ignoredPaths, customTodos []string, matchCaseSensitive bool, callback TodoErrCallback) *Traverser {
+func NewTraverser(f *fetcher.Fetcher, ignoredPaths, customTodos []string, matchCaseInsensitive bool, callback TodoErrCallback) *Traverser {
 	return &Traverser{
-		comments.NewTraverser(ignoredPaths, commentsCallback(checker.New(f), customTodos, matchCaseSensitive, callback)),
+		comments.NewTraverser(ignoredPaths, commentsCallback(checker.New(f), customTodos, matchCaseInsensitive, callback)),
 	}
 }
 
@@ -27,10 +27,10 @@ type Traverser struct {
 	commentsTraverser *comments.Traverser
 }
 
-func commentsCallback(chk *checker.Checker, customTodos []string, matchCaseSensitive bool, todoErrCallback TodoErrCallback) state.CommentCallback {
+func commentsCallback(chk *checker.Checker, customTodos []string, matchCaseInsensitive bool, todoErrCallback TodoErrCallback) state.CommentCallback {
 	return func(comment, filepath string, lines []string, linecnt int) error {
 		matcher := matchers.TodoMatcherForFile(filepath, customTodos)
-		if !matchCaseSensitive {
+		if matchCaseInsensitive {
 			matcher = caseInsensitive.NewTodoMatcherCaseInsensitive(matcher)
 		}
 
