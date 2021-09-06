@@ -1,0 +1,5 @@
+origin: https://github.com/preslavmihaylov/todocheck
+issue_tracker: GITHUB
+match_case_sensitive: false
+auth:
+  type: none
