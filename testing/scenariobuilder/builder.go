@@ -15,7 +15,6 @@ import (
 	"regexp"
 
 	"github.com/preslavmihaylov/todocheck/config"
-	"github.com/preslavmihaylov/todocheck/logger"
 	"github.com/preslavmihaylov/todocheck/testing/scenariobuilder/issuetracker"
 )
 
@@ -338,7 +337,7 @@ func (s *TodocheckScenario) setupMockIssueTrackerServer() (teardownFunc, error) 
 			if r.URL.Path == issuetracker.IssueURLFrom(s.issueTracker, issue) {
 				_, err := w.Write(issuetracker.BuildResponseFor(s.issueTracker, issue, s.issues[issue]))
 				if err != nil {
-					logger.Info("Error " + err.Error() + " occured, when writing issuetracker response of issue:" + issue)
+					panic(err);	
 				}
 				return
 			}
