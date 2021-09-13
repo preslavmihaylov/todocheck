@@ -6,7 +6,6 @@ import (
 	"github.com/preslavmihaylov/todocheck/checker"
 	"github.com/preslavmihaylov/todocheck/checker/errors"
 	"github.com/preslavmihaylov/todocheck/fetcher"
-	"github.com/preslavmihaylov/todocheck/logger"
 	"github.com/preslavmihaylov/todocheck/matchers"
 	"github.com/preslavmihaylov/todocheck/matchers/state"
 	"github.com/preslavmihaylov/todocheck/traverser/comments"
@@ -35,7 +34,7 @@ func commentsCallback(chk *checker.Checker, customTodos []string, todoErrCallbac
 		} else if todoErr != nil {
 			err = todoErrCallback(todoErr)
 			if err != nil {
-				logger.Info("couldn't run todo error callback: " + err.Error())
+				return fmt.Errorf("received error from todo err callback: %w", err)
 			}
 		}
 
