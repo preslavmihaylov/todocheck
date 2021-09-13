@@ -79,7 +79,7 @@ func main() {
 	if len(todoErrs) > 0 {
 		err = printTodoErrs(todoErrs, *format)
 		if err != nil {
-			logger.Info("Error when printing todo errors" + err.Error())
+			panic(err);
 		}
 		os.Exit(2)
 	}
