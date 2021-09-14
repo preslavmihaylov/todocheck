@@ -12,6 +12,7 @@ type TodoErrScenario struct {
 	sourceFile    string
 	sourceLineNum int
 	contents      []string
+	message       string
 	metadata      map[string]string
 }
 
@@ -66,6 +67,12 @@ func (s *TodoErrScenario) WithJSONMetadataEntry(key string, value string) *TodoE
 	return s
 }
 
+// WithMessage stores the expected extracted message.
+func (s *TodoErrScenario) WithMessage(message string) *TodoErrScenario {
+	s.message = message
+	return s
+}
+
 func (s *TodoErrScenario) String() string {
 	str := fmt.Sprintf("ERROR: %s", s.errType)
 	for i := 0; i < len(s.contents); i++ {
@@ -113,7 +120,7 @@ func (s *TodoErrScenario) ToTodoErrForJSON() *TodoErrForJSON {
 		Type:     string(s.errType),
 		Filename: s.sourceFile,
 		Line:     s.sourceLineNum,
-		Message:  "",
+		Message:  s.message,
 		Metadata: s.metadata,
 	}
 
