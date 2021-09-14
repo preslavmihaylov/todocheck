@@ -3,6 +3,7 @@ package checker
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	checkererrors "github.com/preslavmihaylov/todocheck/checker/errors"
 	"github.com/preslavmihaylov/todocheck/fetcher"
@@ -47,17 +48,7 @@ func (c *Checker) Check(
 		return nil, fmt.Errorf("couldn't fetch task status: %w", err)
 	}
 
-	// Extract message by slicing off the necessary tokens ("TODO {taskId}: ")
-	colonPos := func() int {
-		for i := range comment {
-			if comment[i] == ':' {
-				return i
-			}
-		}
-		// Cannot happen as TODO format guarantees presence of colon
-		return -1
-	}()
-	message := comment[colonPos+2:]
+	message := strings.Join(strings.Split(comment, "\n"), "")
 
 	switch status {
 	case taskstatus.Closed:
