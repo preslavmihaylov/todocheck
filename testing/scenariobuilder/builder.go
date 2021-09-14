@@ -42,6 +42,7 @@ type TodocheckScenario struct {
 	issues                 map[string]issuetracker.Status
 	envVariables           map[string]string
 	todoErrScenarios       []*TodoErrScenario
+	todoMetadata           map[string]string
 }
 
 // NewScenario to execute against the todocheck program
@@ -52,6 +53,7 @@ func NewScenario() *TodocheckScenario {
 		issues:           map[string]issuetracker.Status{},
 		envVariables:     map[string]string{},
 		expectedExitCode: 0,
+		todoMetadata:     map[string]string{},
 	}
 }
 
