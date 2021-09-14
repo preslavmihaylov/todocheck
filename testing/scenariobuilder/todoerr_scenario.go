@@ -87,6 +87,23 @@ type TodoErrForJSON struct {
 	Metadata map[string]string `json:"metadata"`
 }
 
+func (s *TodoErrForJSON) isEqual(other *TodoErrForJSON) bool {
+	basic := s.Type == other.Type &&
+		s.Filename == other.Filename &&
+		s.Line == other.Line &&
+		s.Message == other.Message
+	if !basic {
+		return false
+	}
+	for k, v := range s.Metadata {
+		if other.Metadata[k] != v {
+			return false
+		}
+	}
+
+	return true
+}
+
 func (s *TodoErrScenario) ToTodoErrForJSON() *TodoErrForJSON {
 	res := &TodoErrForJSON{
 		Type:     string(s.errType),

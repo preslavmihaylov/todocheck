@@ -61,7 +61,7 @@ func validateJSONTodoErrs(programOutput string, scenarios []*TodoErrScenario) va
 		for _, elem := range elements {
 			removeIdx := -1
 			for j, expected := range scenarioJSONObjs {
-				if elem == *expected {
+				if elem.isEqual(expected) {
 					removeIdx = j
 					break
 				}
