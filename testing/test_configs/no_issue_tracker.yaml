@@ -1,4 +1,4 @@
-origin: http://myjira.com
+origin: http://127.0.0.1:34335
 issue_tracker: JIRA
 auth: 
   type: none

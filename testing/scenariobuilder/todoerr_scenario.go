@@ -91,7 +91,8 @@ func (s *TodoErrForJSON) isEqual(other *TodoErrForJSON) bool {
 	basic := s.Type == other.Type &&
 		s.Filename == other.Filename &&
 		s.Line == other.Line &&
-		s.Message == other.Message
+		s.Message == other.Message &&
+		len(s.Metadata) == len(other.Metadata)
 	if !basic {
 		return false
 	}

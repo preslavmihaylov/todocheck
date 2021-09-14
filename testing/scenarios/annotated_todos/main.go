@@ -20,3 +20,6 @@ package main
  * TODO J456:
  * This issue doesn't exist
  */
+
+/* This is a malformed TODO:
+ */
