@@ -134,7 +134,8 @@ func TestAnnotatedTodos(t *testing.T) {
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/annotated_todos/main.go", 3).
-				ExpectLine("// TODO J123: This is a todo, annotated with a closed issue")).
+				ExpectLine("// TODO J123: This is a todo, annotated with a closed issue").
+				WithMetadataEntry("issueID", "123")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).

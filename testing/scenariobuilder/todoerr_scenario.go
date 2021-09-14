@@ -12,11 +12,14 @@ type TodoErrScenario struct {
 	sourceFile    string
 	sourceLineNum int
 	contents      []string
+	metadata      map[string]string
 }
 
 // NewTodoErr returns a new todo err scenario
 func NewTodoErr() *TodoErrScenario {
-	return &TodoErrScenario{}
+	return &TodoErrScenario{
+		metadata: map[string]string{},
+	}
 }
 
 // WithType specifies the expected todo err type for the given scenario
@@ -48,6 +51,21 @@ func (s *TodoErrScenario) ExpectLine(line string) *TodoErrScenario {
 	return s
 }
 
+// WithMetadata extends existing metadata with a multiple of key value pairs
+// expected within the `metadata` field of the TODOs
+func (s *TodoErrScenario) WithMetadata(metadata *map[string]string) *TodoErrScenario {
+	for k, v := range *metadata {
+		s.metadata[k] = v
+	}
+	return s
+}
+
+// WithMetadataEntry stores a single key-value pair that is expected in the `metadata` field
+func (s *TodoErrScenario) WithMetadataEntry(key string, value string) *TodoErrScenario {
+	s.metadata[key] = value
+	return s
+}
+
 func (s *TodoErrScenario) String() string {
 	str := fmt.Sprintf("ERROR: %s", s.errType)
 	for i := 0; i < len(s.contents); i++ {
@@ -62,10 +80,11 @@ func (s *TodoErrScenario) String() string {
 }
 
 type TodoErrForJSON struct {
-	Type     string `json:"type"`
-	Filename string `json:"filename"`
-	Line     int    `json:"line"`
-	Message  string `json:"message"`
+	Type     string            `json:"type"`
+	Filename string            `json:"filename"`
+	Line     int               `json:"line"`
+	Message  string            `json:"message"`
+	Metadata map[string]string `json:"metadata"`
 }
 
 func (s *TodoErrScenario) ToTodoErrForJSON() *TodoErrForJSON {
@@ -74,6 +93,7 @@ func (s *TodoErrScenario) ToTodoErrForJSON() *TodoErrForJSON {
 		Filename: s.sourceFile,
 		Line:     s.sourceLineNum,
 		Message:  "",
+		Metadata: s.metadata,
 	}
 
 	if s.errType == errors.TODOErrTypeMalformed {
