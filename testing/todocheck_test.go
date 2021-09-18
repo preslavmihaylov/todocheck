@@ -181,22 +181,22 @@ func TestAnnotatedTodosWithJSONOutput(t *testing.T) {
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/annotated_todos/main.go", 3).
-				WithMetadataEntry("issueID", "J123")).
+				WithJSONMetadataEntry("issueID", "J123")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/annotated_todos/main.go", 7).
-				WithMetadataEntry("issueID", "J456")).
+				WithJSONMetadataEntry("issueID", "J456")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/annotated_todos/main.go", 14).
-				WithMetadataEntry("issueID", "J123")).
+				WithJSONMetadataEntry("issueID", "J123")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/annotated_todos/main.go", 19).
-				WithMetadataEntry("issueID", "J456")).
+				WithJSONMetadataEntry("issueID", "J456")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeMalformed).

@@ -51,17 +51,17 @@ func (s *TodoErrScenario) ExpectLine(line string) *TodoErrScenario {
 	return s
 }
 
-// WithMetadata extends existing metadata with a multiple of key value pairs
+// WithJSONMetadata extends existing metadata with a multiple of key value pairs
 // expected within the `metadata` field of the TODOs
-func (s *TodoErrScenario) WithMetadata(metadata *map[string]string) *TodoErrScenario {
-	for k, v := range *metadata {
+func (s *TodoErrScenario) WithJSONMetadata(metadata map[string]string) *TodoErrScenario {
+	for k, v := range metadata {
 		s.metadata[k] = v
 	}
 	return s
 }
 
-// WithMetadataEntry stores a single key-value pair that is expected in the `metadata` field
-func (s *TodoErrScenario) WithMetadataEntry(key string, value string) *TodoErrScenario {
+// WithJSONMetadataEntry stores a single key-value pair that is expected in the `metadata` field
+func (s *TodoErrScenario) WithJSONMetadataEntry(key string, value string) *TodoErrScenario {
 	s.metadata[key] = value
 	return s
 }
@@ -87,22 +87,25 @@ type TodoErrForJSON struct {
 	Metadata map[string]string `json:"metadata"`
 }
 
-func (s *TodoErrForJSON) isEqual(other *TodoErrForJSON) bool {
-	basic := s.Type == other.Type &&
-		s.Filename == other.Filename &&
-		s.Line == other.Line &&
-		s.Message == other.Message &&
-		len(s.Metadata) == len(other.Metadata)
-	if !basic {
+func metadatasMatch(this, other *TodoErrForJSON) bool {
+	if len(this.Metadata) != len(other.Metadata) {
 		return false
 	}
-	for k, v := range s.Metadata {
+	for k, v := range this.Metadata {
 		if other.Metadata[k] != v {
 			return false
 		}
 	}
 
 	return true
+}
+
+func (s *TodoErrForJSON) equals(other *TodoErrForJSON) bool {
+	return s.Type == other.Type &&
+		s.Filename == other.Filename &&
+		s.Line == other.Line &&
+		s.Message == other.Message &&
+		metadatasMatch(s, other)
 }
 
 func (s *TodoErrScenario) ToTodoErrForJSON() *TodoErrForJSON {
