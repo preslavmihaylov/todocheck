@@ -42,15 +42,13 @@ func (t *Traverser) TraversePath(path string) error {
 		for _, b := range line {
 			curr = next
 			next = b
-			t.handleStateChange(filename, line, linecnt, prev, curr, next)
-
+			_ = t.handleStateChange(filename, line, linecnt, prev, curr, next)
 			prev = curr
 		}
 
 		curr = next
 		next = 0
-		t.handleStateChange(filename, line, linecnt, prev, curr, next)
-
+		_ = t.handleStateChange(filename, line, linecnt, prev, curr, next)
 		prev = curr
 
 		return t.callbackErr

@@ -9,14 +9,14 @@ type IssueTracker string
 
 // Issue tracker types
 const (
-	IssueTrackerInvalid  IssueTracker = ""
-	IssueTrackerJira                  = "JIRA"
-	IssueTrackerGithub                = "GITHUB"
-	IssueTrackerGitlab                = "GITLAB"
-	IssueTrackerPivotal               = "PIVOTAL_TRACKER"
-	IssueTrackerRedmine               = "REDMINE"
-	IssueTrackerYoutrack              = "YOUTRACK"
-	IssueTrackerAzure                 = "AZURE"
+	IssueTrackerInvalid  = ""
+	IssueTrackerJira     = "JIRA"
+	IssueTrackerGithub   = "GITHUB"
+	IssueTrackerGitlab   = "GITLAB"
+	IssueTrackerPivotal  = "PIVOTAL_TRACKER"
+	IssueTrackerRedmine  = "REDMINE"
+	IssueTrackerYoutrack = "YOUTRACK"
+	IssueTrackerAzure    = "AZURE"
 )
 
 var ValidIssueTrackerAuthTypes = map[IssueTracker][]AuthType{
