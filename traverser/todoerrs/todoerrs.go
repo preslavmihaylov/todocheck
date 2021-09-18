@@ -32,7 +32,10 @@ func commentsCallback(chk *checker.Checker, customTodos []string, todoErrCallbac
 		if err != nil {
 			return fmt.Errorf("couldn't check todo line: %w", err)
 		} else if todoErr != nil {
-			todoErrCallback(todoErr)
+			err = todoErrCallback(todoErr)
+			if err != nil {
+				return fmt.Errorf("received error from todo err callback: %w", err)
+			}
 		}
 
 		return nil

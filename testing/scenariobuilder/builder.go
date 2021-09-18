@@ -335,7 +335,10 @@ func (s *TodocheckScenario) setupMockIssueTrackerServer() (teardownFunc, error) 
 
 		for issue := range s.issues {
 			if r.URL.Path == issuetracker.IssueURLFrom(s.issueTracker, issue) {
-				w.Write(issuetracker.BuildResponseFor(s.issueTracker, issue, s.issues[issue]))
+				_, err := w.Write(issuetracker.BuildResponseFor(s.issueTracker, issue, s.issues[issue]))
+				if err != nil {
+					panic(err)
+				}
 				return
 			}
 		}

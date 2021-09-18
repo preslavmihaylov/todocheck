@@ -77,7 +77,10 @@ func main() {
 	}
 
 	if len(todoErrs) > 0 {
-		printTodoErrs(todoErrs, *format)
+		err = printTodoErrs(todoErrs, *format)
+		if err != nil {
+			panic(err)
+		}
 		os.Exit(2)
 	}
 }
@@ -91,11 +94,13 @@ func printTodoErrs(errs []*todocheckerrors.TODO, format string) error {
 		return nil
 	}
 
-	if format == "standard" {
+	switch format {
+	case "standard":
 		for _, err := range errs {
 			fmt.Fprintln(color.Error, err.Error())
 		}
-	} else if format == "json" {
+		return nil
+	case "json":
 		out := fmt.Sprintf("[%s", must(errs[0].ToJSON()))
 		for _, err := range errs[1:] {
 			out += fmt.Sprintf(",%s", must(err.ToJSON()))
@@ -103,6 +108,7 @@ func printTodoErrs(errs []*todocheckerrors.TODO, format string) error {
 
 		out += "]"
 		fmt.Println(out)
+		return nil
 	}
 
 	return errors.New("unrecognized output format: " + format)
