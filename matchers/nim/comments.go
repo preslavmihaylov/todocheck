@@ -33,7 +33,7 @@ func (m *CommentMatcher) NonCommentState(
 		m.buffer += string(currToken)
 		m.lines = []string{line}
 		m.lineCount = lineCount
-		m.depth += 1
+		m.depth++
 		return state.MultiLineComment, nil
 	} else if currToken == '"' || currToken == '\'' || currToken == '`' {
 		m.stringToken = currToken
@@ -49,9 +49,9 @@ func (m *CommentMatcher) MultiLineCommentState(
 	m.buffer += string(currToken)
 	if isMultiLineOpener(currToken, nextToken) {
 		// Capture nested comments
-		m.depth += 1
+		m.depth++
 	} else if isMultiLineCloser(currToken, nextToken) {
-		m.depth -= 1
+		m.depth--
 	}
 
 	if m.depth == 0 {

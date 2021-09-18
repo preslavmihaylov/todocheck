@@ -62,9 +62,7 @@ func (it *IssueTracker) TokenAcquisitionInstructions() string {
 
 // TaskURLFrom taskID returns the url for the target Youtrack task ID to fetch
 func (it *IssueTracker) taskURLFrom(taskID string) string {
-	if strings.HasPrefix(taskID, "#") {
-		taskID = taskID[1:]
-	}
+	taskID = strings.TrimPrefix(taskID, "#")
 	return fmt.Sprintf("%s?fields=customFields(value(isResolved))", taskID)
 }
 
