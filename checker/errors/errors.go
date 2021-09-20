@@ -23,20 +23,23 @@ type TODO struct {
 	filename string
 	lines    []string
 	linecnt  int
+	metadata map[string]string
 }
 
 // ToJSON converts the todo error into json format
 func (err *TODO) ToJSON() ([]byte, error) {
 	res := &struct {
-		Type     string `json:"type"`
-		Filename string `json:"filename"`
-		Line     int    `json:"line"`
-		Message  string `json:"message"`
+		Type     string            `json:"type"`
+		Filename string            `json:"filename"`
+		Line     int               `json:"line"`
+		Message  string            `json:"message"`
+		Metadata map[string]string `json:"metadata"`
 	}{
 		Type:     string(err.errType),
 		Filename: err.filename,
 		Line:     err.linecnt,
 		Message:  "",
+		Metadata: err.metadata,
 	}
 
 	if err.errType == TODOErrTypeMalformed {
@@ -67,26 +70,33 @@ func MalformedTODOErr(filename string, lines []string, linecnt int) *TODO {
 		filename: filename,
 		lines:    lines,
 		linecnt:  linecnt,
+		metadata: make(map[string]string),
 	}
 }
 
 // IssueClosedErr when referenced todo issue is closed
-func IssueClosedErr(filename string, lines []string, linecnt int) *TODO {
+func IssueClosedErr(filename string, lines []string, linecnt int, issueID string) *TODO {
 	return &TODO{
 		errType:  TODOErrTypeIssueClosed,
 		filename: filename,
 		lines:    lines,
 		linecnt:  linecnt,
+		metadata: map[string]string{
+			"issueID": issueID,
+		},
 	}
 }
 
 // IssueNonExistentErr when referenced todo issue doesn't exist
-func IssueNonExistentErr(filename string, lines []string, linecnt int) *TODO {
+func IssueNonExistentErr(filename string, lines []string, linecnt int, issueID string) *TODO {
 	return &TODO{
 		errType:  TODOErrTypeNonExistentIssue,
 		filename: filename,
 		lines:    lines,
 		linecnt:  linecnt,
+		metadata: map[string]string{
+			"issueID": issueID,
+		},
 	}
 }
 

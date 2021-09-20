@@ -156,6 +156,12 @@ func TestAnnotatedTodos(t *testing.T) {
 				ExpectLine(" * TODO J456:").
 				ExpectLine(" * This issue doesn't exist").
 				ExpectLine(" */")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/annotated_todos/main.go", 24).
+				ExpectLine("/* This is a malformed TODO:").
+				ExpectLine(" */")).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
@@ -174,19 +180,27 @@ func TestAnnotatedTodosWithJSONOutput(t *testing.T) {
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
-				WithLocation("scenarios/annotated_todos/main.go", 3)).
+				WithLocation("scenarios/annotated_todos/main.go", 3).
+				WithJSONMetadataEntry("issueID", "J123")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).
-				WithLocation("scenarios/annotated_todos/main.go", 7)).
+				WithLocation("scenarios/annotated_todos/main.go", 7).
+				WithJSONMetadataEntry("issueID", "J456")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
-				WithLocation("scenarios/annotated_todos/main.go", 14)).
+				WithLocation("scenarios/annotated_todos/main.go", 14).
+				WithJSONMetadataEntry("issueID", "J123")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).
-				WithLocation("scenarios/annotated_todos/main.go", 19)).
+				WithLocation("scenarios/annotated_todos/main.go", 19).
+				WithJSONMetadataEntry("issueID", "J456")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/annotated_todos/main.go", 24)).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
