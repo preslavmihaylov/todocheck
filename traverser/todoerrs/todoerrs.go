@@ -7,7 +7,7 @@ import (
 	"github.com/preslavmihaylov/todocheck/checker/errors"
 	"github.com/preslavmihaylov/todocheck/fetcher"
 	"github.com/preslavmihaylov/todocheck/matchers"
-	"github.com/preslavmihaylov/todocheck/matchers/caseInsensitive"
+	"github.com/preslavmihaylov/todocheck/matchers/case_insensitive"
 	"github.com/preslavmihaylov/todocheck/matchers/state"
 	"github.com/preslavmihaylov/todocheck/traverser/comments"
 )
@@ -31,7 +31,7 @@ func commentsCallback(chk *checker.Checker, customTodos []string, matchCaseInsen
 	return func(comment, filepath string, lines []string, linecnt int) error {
 		matcher := matchers.TodoMatcherForFile(filepath, customTodos)
 		if matchCaseInsensitive {
-			matcher = caseInsensitive.NewTodoMatcherCaseInsensitive(matcher)
+			matcher = case_insensitive.NewTodoMatcher(matcher)
 		}
 
 		todoErr, err := chk.Check(matcher, comment, filepath, lines, linecnt)
