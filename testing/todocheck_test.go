@@ -922,3 +922,35 @@ func TestIfLastLineTodoIsGettingProcessed(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+func TestCaseInsensitiveTODOMatcher(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/case_insensitive_matcher").
+		WithConfig("./test_configs/no_issue_tracker_case_insensitive.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/case_insensitive_matcher/main.go", 3).
+				ExpectLine("// TODO WrongId: Standard todo")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/case_insensitive_matcher/main.go", 4).
+				ExpectLine("// tOdO WrongId: Case insensitive todo")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/case_insensitive_matcher/main.go", 5).
+				ExpectLine("// TODO - malformed todo")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/case_insensitive_matcher/main.go", 6).
+				ExpectLine("// TodO WrongId: Another case insensitive todo")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}

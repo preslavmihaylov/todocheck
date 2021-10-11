@@ -1,0 +1,5 @@
+origin: http://myjira.com
+issue_tracker: JIRA
+match_case_insensitive: true
+auth: 
+  type: none
