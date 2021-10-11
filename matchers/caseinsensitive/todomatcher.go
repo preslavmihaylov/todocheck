@@ -1,4 +1,4 @@
-package case_insensitive
+package caseinsensitive
 
 import (
 	"regexp"
