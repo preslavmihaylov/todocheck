@@ -281,3 +281,26 @@ func TestPublicYoutrackIntegration(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+func TestJIRA_APIToken_Integration(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		OnlyRunOnCI().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/integrations/jira_apitoken").
+		WithAuthTokenFromEnv("TESTS_JIRA_APITOKEN").
+		WithConfig("./test_configs/integrations/jira_apitoken.yaml").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/integrations/jira_apitoken/main.go", 9).
+				ExpectLine("// TODO TT-3: closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/integrations/jira_apitoken/main.go", 10).
+				ExpectLine("// TODO TT-999: non-existent issue")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}

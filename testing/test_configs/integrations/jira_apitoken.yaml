@@ -1,0 +1,6 @@
+origin: https://todocheck.atlassian.net
+issue_tracker: JIRA
+auth:
+  type: apitoken
+  options:
+    username: todochecktests@gmail.com
