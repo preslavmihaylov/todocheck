@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 
@@ -41,6 +42,12 @@ func Validate(cfg *config.Local, tracker issuetracker.IssueTracker) []error {
 			"WARNING: Github has API rate limits for all requests which do not contain a token.\n"+
 				"         Please create a read-only access token to increase that limit.\n"+
 				"         Go to https://developer.github.com/v3/#rate-limiting for more information."))
+	}
+
+	if cfg.IssueTracker == config.IssueTrackerJira && cfg.Auth.Type == config.AuthTypeAPIToken {
+		if _, ok := cfg.Auth.Options["username"]; !ok {
+			errs = append(errs, errors.New("api token authentication for JIRA requires username to be set - https://github.com/preslavmihaylov/todocheck#jira"))
+		}
 	}
 
 	return errs
