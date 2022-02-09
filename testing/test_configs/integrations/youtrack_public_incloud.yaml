@@ -1,4 +1,4 @@
-origin: emcho-spassov.myjetbrains.com
+origin: pmihaylov.myjetbrains.com
 issue_tracker: YOUTRACK
 auth:
   type: apitoken
