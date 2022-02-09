@@ -270,7 +270,7 @@ func TestPublicYoutrackIntegration(t *testing.T) {
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeIssueClosed).
 				WithLocation("scenarios/integrations/youtrack_public_incloud/main.go", 4).
-				ExpectLine("// TODO DEMO-20: A closed issue")).
+				ExpectLine("// TODO DEMO-1: A closed issue")).
 		ExpectTodoErr(
 			scenariobuilder.NewTodoErr().
 				WithType(errors.TODOErrTypeNonExistentIssue).
