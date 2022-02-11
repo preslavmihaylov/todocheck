@@ -25,15 +25,17 @@ func defaultAuthCfg() *Auth {
 	return &Auth{
 		Type:        AuthTypeNone,
 		TokensCache: DefaultTokensCache(),
+		Options:     map[string]string{},
 	}
 }
 
 // Auth configuration section for specifying issue tracker auth options
 type Auth struct {
-	Type        AuthType `yaml:"type"`
-	OfflineURL  string   `yaml:"offline_url"`
-	TokensCache string   `yaml:"tokens_cache,omitempty"`
-	Token       string   `yaml:"-"`
+	Type        AuthType          `yaml:"type"`
+	OfflineURL  string            `yaml:"offline_url"`
+	TokensCache string            `yaml:"tokens_cache,omitempty"`
+	Token       string            `yaml:"-"`
+	Options     map[string]string `yaml:"options"`
 }
 
 // DefaultTokensCache for storing auth tokens

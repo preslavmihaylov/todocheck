@@ -160,7 +160,30 @@ The first time you run the application, it will ask for your [personal access to
 After you've specified it, it will store it in the auth tokens cache for subsequent executions. See the [Authentication](#authentication) section for more info.
 
 ## [Jira](https://www.atlassian.com/software/jira)
-To integrate with your organization's Jira, you'll need to specify `JIRA` as your issue tracker, the origin of your jira server instance, along with an [offline token](#api-tokenoffline-token):
+To integrate with your organization's Jira, you'll need to specify `JIRA` as your issue tracker, the origin of your jira server instance.
+
+Along with that, you'll need to setup auth based on your preferred authentication method.
+
+### API Token
+To use JIRA with an API token, you'll need to have an Atlassian user which you can use to [issue an API token](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/).  
+You'll also need to specify your Atlassian username.
+
+Example:
+```
+origin: https://myawesomeorg.atlassian.net
+issue_tracker: JIRA
+auth:
+  type: apitoken
+  options:
+    username: hello@gmail.com
+```
+
+For more info on how authentication works, see the [Authentication](#authentication) section.
+
+### Offline Token
+For more info, see [offline token](#api-tokenoffline-token).
+
+Example:
 ```
 origin: https://myjira.awesomeorg.com
 issue_tracker: JIRA

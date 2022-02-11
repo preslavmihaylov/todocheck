@@ -19,12 +19,12 @@ type Status string
 
 // Possible issue statuses to specify for your test scenarios
 const (
-	StatusClosed Status = "Closed"
+	StatusClosed Status = "Done"
 	StatusOpen   Status = "Open"
 )
 
 var trackerToIssuePath = map[Type]string{
-	Jira: "/rest/api/latest/issue/",
+	Jira: "/rest/api/2/issue/",
 }
 
 // IssueURLFrom builds the appropriate expected issue url, given the issue tracker type & issue id
@@ -44,7 +44,9 @@ func BuildResponseFor(t Type, issue string, status Status) []byte {
 		return must(json.Marshal(&jira.Task{
 			Fields: jira.Fields{
 				Status: jira.Status{
-					Name: string(status),
+					StatusCategory: jira.StatusCategory{
+						Name: string(status),
+					},
 				},
 			},
 		}))

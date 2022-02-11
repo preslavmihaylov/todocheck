@@ -59,6 +59,7 @@ func acquireToken(authCfg *config.Auth, tokenKey string, instructions string) er
 		return fmt.Errorf("couldn't acquire token: %w", err)
 	}
 
+	fmt.Println()
 	return setAndPersistToken(authCfg, store, tokenKey, strings.TrimSpace(string(tokenBs)))
 }
 
