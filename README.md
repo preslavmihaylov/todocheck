@@ -341,6 +341,19 @@ With the above configuration, `todocheck` will start matching todo comments in t
 // ToDo 15: A funky-looking todo comment
 ```
 
+In addition to that, you can specify the `match_case_insensitive` flag to match TODOs in any casing:
+```
+origin: some.origin.com
+issue_tracker: JIRA
+match_case_insensitive: true
+```
+
+With this configuration, `todocheck` will match comments in similar formats:
+```
+// TODO 15: some comment
+// ToDO 14: another comment
+// tOdO 13: yet another one
+```
 
 # Supported Output Formats
 Currently, todocheck supports two kinds of output - standard & json.  
