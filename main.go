@@ -25,13 +25,22 @@ var version string
 // * Add a --closes option which indicates that an issue is to be closed as a result of a PR
 // * Add caching for task statuses
 func main() {
-	var basepath = flag.String("basepath", ".", "The path for the project to todocheck. Defaults to current directory")
-	var cfgPath = flag.String("config", "", "The project configuration file to use. Will use the one from the basepath if not specified")
-	var format = flag.String("format", "standard", "The output format to use. Available formats - standard, json")
-	var verboseRequested = flag.Bool("verbose", false, "Make todocheck more talkative")
-	var versionRequested = flag.Bool("version", false, "Show the current version of todocheck")
-	flag.BoolVar(versionRequested, "v", *versionRequested, "Show the current version of todocheck (shorthand)")
-	flag.Parse()
+	fs := flag.NewFlagSet("", flag.ExitOnError)
+	var basepath = fs.String("basepath", ".", "The path for the project to todocheck. Defaults to current directory")
+	var cfgPath = fs.String("config", "", "The project configuration file to use. Will use the one from the basepath if not specified")
+	var format = fs.String("format", "standard", "The output format to use. Available formats - standard, json")
+	var verboseRequested = fs.Bool("verbose", false, "Make todocheck more talkative")
+	var versionRequested = fs.Bool("version", false, "Show the current version of todocheck")
+	fs.BoolVar(versionRequested, "v", *versionRequested, "Show the current version of todocheck (shorthand)")
+	//flag.Parse()
+
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		log.Fatal(err)
+	}
+
+	if args := fs.Args(); len(args) > 0 {
+		log.Fatalf("Unexpected arguments: %s\n", args)
+	}
 
 	logger.Setup(*verboseRequested)
 
