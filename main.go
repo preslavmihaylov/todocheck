@@ -32,7 +32,6 @@ func main() {
 	var verboseRequested = fs.Bool("verbose", false, "Make todocheck more talkative")
 	var versionRequested = fs.Bool("version", false, "Show the current version of todocheck")
 	fs.BoolVar(versionRequested, "v", *versionRequested, "Show the current version of todocheck (shorthand)")
-	//flag.Parse()
 
 	if err := fs.Parse(os.Args[1:]); err != nil {
 		log.Fatal(err)
