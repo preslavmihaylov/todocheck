@@ -45,11 +45,11 @@ func acquireToken(authCfg *config.Auth, tokenKey string, instructions string) er
 		return fmt.Errorf("couldn't read auth tokens config: %w", err)
 	}
 
-	if store.Tokens[tokenKey] != "" {
-		authCfg.Token = store.Tokens[tokenKey]
-		return nil
-	} else if envToken := os.Getenv(authTokenEnvVariable); envToken != "" {
+	if envToken := os.Getenv(authTokenEnvVariable); envToken != "" {
 		authCfg.Token = envToken
+		return nil
+	} else if store.Tokens[tokenKey] != "" {
+		authCfg.Token = store.Tokens[tokenKey]
 		return nil
 	}
 

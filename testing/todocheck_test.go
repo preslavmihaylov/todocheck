@@ -320,6 +320,21 @@ func TestAuthTokensCache(t *testing.T) {
 	}
 }
 
+func TestAuthTokenEnvOverride(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/auth_tokens_cache").
+		WithConfig("./test_configs/auth_tokens.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithEnvVariable("TODOCHECK_AUTH_TOKEN", "654321").
+		RequireAuthToken("654321").
+		WithIssue("J123", issuetracker.StatusOpen).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestOfflineToken(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
