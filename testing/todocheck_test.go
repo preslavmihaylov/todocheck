@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/preslavmihaylov/todocheck/checker/errors"
@@ -967,5 +968,68 @@ func TestCaseInsensitiveTODOMatcher(t *testing.T) {
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)
+	}
+}
+
+// Testing that when a token is missing the instructions to get it are correct
+func TestTokenAcquisitionInstructions(t *testing.T) {
+	tokenAcquisitionInstructionsTests := []struct {
+		issueTracker, config, instructions string
+	}{
+		{
+			issueTracker: "jira_offline",
+			config:       "./test_configs/auth_tokens.yaml",
+			instructions: "Please go to http://localhost:8080/offline and paste the offline token below.",
+		},
+		{
+			issueTracker: "jira",
+			config:       "./test_configs/integrations/jira_apitoken.yaml",
+			instructions: "Please go to https://id.atlassian.com/manage-profile/security/api-tokens and paste the api token below.",
+		},
+		{
+			issueTracker: "github",
+			config:       "./test_configs/integrations/github_private.yaml",
+			instructions: "Please go to https://github.com/settings/tokens, create a read-only access token & paste it here.",
+		},
+		{
+			issueTracker: "gitlab",
+			config:       "./test_configs/integrations/gitlab_private.yaml",
+			instructions: "Please go to https://gitlab.com/profile/personal_access_tokens, create a read-only access token & paste it here.",
+		},
+		{
+			issueTracker: "azureboards",
+			config:       "./test_configs/integrations/azureboards_private.yaml",
+			instructions: "Please create a read-only access token at Microsoft Azure & paste it here. Learn more at https://bit.ly/3wxUbNF",
+		},
+		{
+			issueTracker: "pivotaltracker",
+			config:       "./test_configs/integrations/pivotaltracker.yaml",
+			instructions: "Please go to https://www.pivotaltracker.com/profile, create a new API token & paste it here.",
+		},
+		{
+			issueTracker: "redmine",
+			config:       "./test_configs/integrations/redmine_private.yaml",
+			instructions: "Please go to https://lannisport.pmihaylov.com:3000/my/account, create a new API token & paste it here.",
+		},
+		{
+			issueTracker: "youtrack",
+			config:       "./test_configs/integrations/youtrack_public_incloud.yaml",
+			instructions: "Please go to https://pmihaylov.myjetbrains.com/youtrack/users/me, create a new API token & paste it here.\n(More info - https://www.jetbrains.com/help/youtrack/standalone/Manage-Permanent-Token.html).",
+		},
+	}
+
+	for _, tt := range tokenAcquisitionInstructionsTests {
+		t.Run(tt.issueTracker, func(t *testing.T) {
+			err := scenariobuilder.NewScenario().
+				WithBinary("../todocheck").
+				WithConfig(tt.config).
+				ExpectOutputText(fmt.Sprintf("%s\nToken: ", tt.instructions)). // Standard append for all instructions
+				ExpectExecutionError().
+				Run()
+			if err != nil {
+				t.Errorf("%s", err)
+			}
+
+		})
 	}
 }
