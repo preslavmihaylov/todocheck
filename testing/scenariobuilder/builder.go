@@ -38,6 +38,7 @@ type TodocheckScenario struct {
 	deleteTokensCacheAfter bool
 	expectedExitCode       int
 	expectJSONFormat       bool
+	expectedOutputText     string
 	issueTracker           issuetracker.Type
 	issues                 map[string]issuetracker.Status
 	envVariables           map[string]string
@@ -198,6 +199,12 @@ func (s *TodocheckScenario) WithJSONOutput() *TodocheckScenario {
 	return s
 }
 
+// ExpectOutputText sets the expected output
+func (s *TodocheckScenario) ExpectOutputText(output string) *TodocheckScenario {
+	s.expectedOutputText = output
+	return s
+}
+
 // Run sets up the environment & executes the configured scenario
 func (s *TodocheckScenario) Run() error {
 	if s.onlyRunOnCI && os.Getenv("TODOCHECK_ENV") != "ci" {
@@ -247,8 +254,15 @@ func (s *TodocheckScenario) Run() error {
 	cmd.Stderr = &stderr
 
 	err = cmd.Run()
-	fmt.Println("(standard output follows. Standard output is ignored & not validated...)")
-	fmt.Println(stdout.String())
+	if s.expectedOutputText != "" {
+		output := stdout.String()
+		if output != s.expectedOutputText {
+			return fmt.Errorf("Expected standard output to be:\n %s\ngot:\n %s", s.expectedOutputText, output)
+		}
+	} else {
+		fmt.Println("(standard output follows. Standard output is ignored & not validated...)")
+		fmt.Println(stdout.String())
+	}
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); !ok || exitError.ExitCode() != s.expectedExitCode {
 			fmt.Println("(unexpected error occurred. standard error output follows...)")
