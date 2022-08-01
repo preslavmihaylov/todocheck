@@ -13,11 +13,13 @@ import (
 // Fetcher for task statuses by contacting task management web apps' rest api
 type Fetcher struct {
 	issuetracker.IssueTracker
+	sendRequest func(req *http.Request) (*http.Response, error)
 }
 
 // NewFetcher instance
 func NewFetcher(issueTracker issuetracker.IssueTracker) *Fetcher {
-	return &Fetcher{issueTracker}
+	httpClient := &http.Client{}
+	return &Fetcher{issueTracker, httpClient.Do}
 }
 
 // Fetch a task's status based on task ID
@@ -32,8 +34,7 @@ func (f *Fetcher) Fetch(taskID string) (taskstatus.TaskStatus, error) {
 		return taskstatus.None, fmt.Errorf("couldn't instrument authentication middleware: %w", err)
 	}
 
-	hclient := &http.Client{}
-	resp, err := hclient.Do(req)
+	resp, err := f.sendRequest(req)
 	if err != nil {
 		return taskstatus.None, fmt.Errorf("couldn't execute GET request: %w", err)
 	}
