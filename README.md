@@ -292,6 +292,7 @@ Based on this, here are the supported languages:
 | C                     | `*.c` extension. Supports single-line `//` comments and multi-line `/* */` comments                                    |
 | C++                   | `*.cpp` extension. Supports single-line `//` comments and multi-line `/* */` comments                                  |
 | CSharp                | `*.cs` extension. Supports single-line `//` comments and multi-line `/* */` comments                                   |
+| Dart                  | `*.dart` extension. Supports single-line `//` comments and multi-line `/* */` comments
 | Golang                | `*.go` extension. Supports single-line `//` comments and multi-line `/* */` comments                                   |
 | Groovy                | `*.groovy`, `*.gvy`, `*.gy`, `*.gsh` extensions. Supports single-line `//` comments and multi-line `/* */` comments    |
 | Java                  | `*.java` extension. Supports single-line `//` comments and multi-line `/* */` comments                                 |

@@ -307,6 +307,29 @@ func TestPythonTodos(t *testing.T) {
 	}
 }
 
+func TestDartTodos(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/dart").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/dart/main.dart", 2).
+				ExpectLine("// This is a single-line malformed TODO")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/dart/main.dart", 3).
+				ExpectLine("/*").
+				ExpectLine("This is a multiline malformed TODO").
+				ExpectLine("It should be parsed properly").
+				ExpectLine("*/")).Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestAuthTokensCache(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
