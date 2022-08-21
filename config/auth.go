@@ -14,7 +14,7 @@ const (
 	AuthTypeAPIToken AuthType = "apitoken"
 )
 
-//ValidAuthTypes is used for validation of auth type
+// ValidAuthTypes is used for validation of auth type
 var ValidAuthTypes = []AuthType{
 	AuthTypeNone,
 	AuthTypeOffline,
