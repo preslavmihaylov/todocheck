@@ -169,6 +169,7 @@ var supportedMatchers = map[string]*matcherFactory{
 	".cs":   standardMatcherFactory,
 	".js":   standardMatcherFactory,
 	".ts":   standardMatcherFactory,
+	".dart": standardMatcherFactory,
 
 	// file types, supporting standard comments \w nested multi-line comments
 	".kt":    standardMatcherWithNestedMultilineCommentsFactory,
