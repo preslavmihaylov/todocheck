@@ -57,7 +57,10 @@ func TestCheck(t *testing.T) {
 				t.Logf("Recovered in %v", r)
 			}
 		}()
-		checker.Check(matcher, "InvalidExtract", "", testLines, testLineCnt)
+		_, err := checker.Check(matcher, "InvalidExtract", "", testLines, testLineCnt)
+		if err != nil {
+			t.Errorf("Expected err to be nil, got %v", err)
+		}
 		t.Errorf("Expected code to panic")
 	})
 }
@@ -66,16 +69,10 @@ type mockMatcher struct {
 }
 
 func (m mockMatcher) IsMatch(expr string) bool {
-	if expr == "NotMatch" {
-		return false
-	}
-	return true
+	return expr != "NotMatch"
 }
 func (m mockMatcher) IsValid(expr string) bool {
-	if expr == "NotValid" {
-		return false
-	}
-	return true
+	return expr != "NotValid"
 }
 func (m mockMatcher) ExtractIssueRef(expr string) (string, error) {
 	if expr == "InvalidExtract" {

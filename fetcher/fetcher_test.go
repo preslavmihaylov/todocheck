@@ -12,11 +12,11 @@ import (
 	"github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 )
 
-var testErr = errors.New("")
+var errTest = errors.New("")
 
 func TestFetch(t *testing.T) {
 	fetcher := NewFetcher(mockIssueTracker{})
-	testJson, err := json.Marshal(mockTask{})
+	testJSON, err := json.Marshal(mockTask{})
 	if err != nil {
 		t.Fatalf("Test json is bad")
 	}
@@ -29,51 +29,51 @@ func TestFetch(t *testing.T) {
 	}{
 		{
 			Task:   "GoodFetch",
-			Client: mockClient{StatusCode: 200, Body: io.NopCloser(bytes.NewReader(testJson)), Err: nil},
+			Client: mockClient{StatusCode: 200, Body: io.NopCloser(bytes.NewReader(testJSON)), Err: nil},
 			Status: 1,
 			Err:    nil,
 		},
 		{
 			Task:   "BadURL",
-			Client: mockClient{StatusCode: 200, Body: io.NopCloser(bytes.NewReader(testJson)), Err: nil},
+			Client: mockClient{StatusCode: 200, Body: io.NopCloser(bytes.NewReader(testJSON)), Err: nil},
 			Status: 0,
-			Err:    testErr,
+			Err:    errTest,
 		},
 		{
 			Task:   "MiddlewareFailure",
-			Client: mockClient{StatusCode: 200, Body: io.NopCloser(bytes.NewReader(testJson)), Err: nil},
+			Client: mockClient{StatusCode: 200, Body: io.NopCloser(bytes.NewReader(testJSON)), Err: nil},
 			Status: 0,
-			Err:    testErr,
+			Err:    errTest,
 		},
 		{
 			Task:   "FailedSendingRequest",
-			Client: mockClient{StatusCode: 200, Body: io.NopCloser(bytes.NewReader(testJson)), Err: testErr},
+			Client: mockClient{StatusCode: 200, Body: io.NopCloser(bytes.NewReader(testJSON)), Err: errTest},
 			Status: 0,
-			Err:    testErr,
+			Err:    errTest,
 		},
 		{
 			Task:   "BadReader",
 			Client: mockClient{StatusCode: 200, Body: errReader(0), Err: nil},
 			Status: 0,
-			Err:    testErr,
+			Err:    errTest,
 		},
 		{
 			Task:   "ResponseStatusNotFound",
-			Client: mockClient{StatusCode: 404, Body: io.NopCloser(bytes.NewReader(testJson)), Err: nil},
+			Client: mockClient{StatusCode: 404, Body: io.NopCloser(bytes.NewReader(testJSON)), Err: nil},
 			Status: 3,
 			Err:    nil,
 		},
 		{
 			Task:   "ResponseBadStatus",
-			Client: mockClient{StatusCode: 405, Body: io.NopCloser(bytes.NewReader(testJson)), Err: nil},
+			Client: mockClient{StatusCode: 405, Body: io.NopCloser(bytes.NewReader(testJSON)), Err: nil},
 			Status: 0,
-			Err:    testErr,
+			Err:    errTest,
 		},
 		{
 			Task:   "BadJson",
 			Client: mockClient{StatusCode: 200, Body: io.NopCloser(bytes.NewReader([]byte{})), Err: nil},
 			Status: 0,
-			Err:    testErr,
+			Err:    errTest,
 		},
 	}
 	for _, tt := range testData {
@@ -121,7 +121,7 @@ func (it mockIssueTracker) Exists() bool { // Never called
 
 func (it mockIssueTracker) InstrumentMiddleware(r *http.Request) error {
 	if r.URL.Path == "MiddlewareFailure" { // The taskID is set as URL path, so we're using that as our fail trigger
-		return testErr
+		return errTest
 	}
 	return nil
 }
@@ -147,7 +147,7 @@ func (c mockClient) sendRequest(req *http.Request) (*http.Response, error) {
 type errReader int
 
 func (r errReader) Read(body []byte) (int, error) {
-	return 0, testErr
+	return 0, errTest
 }
 
 func (r errReader) Close() error {
