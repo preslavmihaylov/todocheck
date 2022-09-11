@@ -5,18 +5,21 @@ import (
 	"fmt"
 
 	checkererrors "github.com/preslavmihaylov/todocheck/checker/errors"
-	"github.com/preslavmihaylov/todocheck/fetcher"
 	"github.com/preslavmihaylov/todocheck/issuetracker/taskstatus"
 	"github.com/preslavmihaylov/todocheck/matchers"
 )
 
+type Fetcher interface {
+	Fetch(taskID string) (taskstatus.TaskStatus, error)
+}
+
 // Checker for todo lines
 type Checker struct {
-	statusFetcher *fetcher.Fetcher
+	statusFetcher Fetcher
 }
 
 // New checker
-func New(statusFetcher *fetcher.Fetcher) *Checker {
+func New(statusFetcher Fetcher) *Checker {
 	return &Checker{statusFetcher}
 }
 
