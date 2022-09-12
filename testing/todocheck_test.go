@@ -241,6 +241,36 @@ func TestScriptsTodos(t *testing.T) {
 				WithType(errors.TODOErrTypeNonExistentIssue).
 				WithLocation("scenarios/scripts/script.bash", 9).
 				ExpectLine("curl \"localhost:8080\" # TODO 567: This is an invalid todo, marked against a non-existent issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/scripts/file.yaml", 3).
+				ExpectLine("# A malformed TODO comment")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/scripts/file.yaml", 7).
+				ExpectLine("# TODO 321: This is an invalid todo, marked against a closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/scripts/file.yaml", 9).
+				ExpectLine("foo: bar # TODO 567: This is an invalid todo, marked against a non-existent issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/scripts/file.yml", 3).
+				ExpectLine("# A malformed TODO comment")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/scripts/file.yml", 7).
+				ExpectLine("# TODO 321: This is an invalid todo, marked against a closed issue")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/scripts/file.yml", 9).
+				ExpectLine("foo: bar # TODO 567: This is an invalid todo, marked against a non-existent issue")).
 		Run()
 	if err != nil {
 		t.Errorf("%s", err)

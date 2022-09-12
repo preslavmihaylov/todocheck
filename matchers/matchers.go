@@ -191,6 +191,8 @@ var supportedMatchers = map[string]*matcherFactory{
 	".bash": scriptsMatcherFactory,
 	".zsh":  scriptsMatcherFactory,
 	".R":    scriptsMatcherFactory,
+	".yaml": scriptsMatcherFactory,
+	".yml":  scriptsMatcherFactory,
 
 	// file types, supporting php comments
 	".php": phpMatcherFactory,
