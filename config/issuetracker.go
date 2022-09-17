@@ -40,7 +40,7 @@ var validIssueTrackers = []IssueTracker{
 }
 
 var originPatterns = map[IssueTracker]*regexp.Regexp{
-	IssueTrackerJira:     regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)+(:[0-9]+)?$`),
+	IssueTrackerJira:     regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-\.]+(:[0-9]+)?$`),
 	IssueTrackerGithub:   regexp.MustCompile(`^(https?://)?(www\.)?github\.com/[\w-]+/[\w-]+`),
 	IssueTrackerGitlab:   regexp.MustCompile(`^(https?://)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)+(:[0-9]+)?/[\w-]+/[\w-]+$`),
 	IssueTrackerPivotal:  regexp.MustCompile(`^(https?://)?(www\.)?pivotaltracker\.com/n/projects/[0-9]+`),
