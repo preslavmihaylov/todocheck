@@ -122,7 +122,7 @@ Currently, todocheck supports the following issue trackers:
 |-------------------------------------------------|-----------------------------------------------------------------------|
 | [Github](https://github.com)                    | Both public & private repositories are supported                      |
 | [Gitlab](https://gitlab.com/)                   | Both public & private repositories are supported                      |
-| [Jira](https://www.atlassian.com/software/jira) | Supported via offline tokens                                          |
+| [Jira](https://www.atlassian.com/software/jira) | Supported via offline and API tokens                                  |
 | [Pivotal Tracker](https://pivotaltracker.com/)  | Supported via an API token                                            |
 | [Redmine](https://redmine.org/)                 | Supports public access with no auth & private access via an API token |
 | [YouTrack](https://www.jetbrains.com/youtrack/) | Supported via an API token
