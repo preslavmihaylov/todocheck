@@ -1,8 +1,8 @@
 name: master
 
 on:
-  push:
   pull_request_target:
+    types: [labeled]
     branches:
       - master
 
@@ -27,6 +27,9 @@ jobs:
         run: make build
   tests:
     runs-on: ubuntu-latest
+
+    # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+    if: contains(github.event.pull_request.labels.*.name, 'safe to test')
     needs: lint
     steps:
       - uses: actions/checkout@v2
