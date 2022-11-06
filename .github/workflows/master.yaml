@@ -35,6 +35,8 @@ jobs:
           repository: ${{github.event.pull_request.head.repo.full_name}}
           persist-credentials: false
       - name: Run tests
+        # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+        if: contains(github.event.pull_request.labels.*.name, 'safe to test') 
         env:
           TODOCHECK_ENV: "ci"
           TESTS_GITHUB_APITOKEN: ${{ secrets.TESTS_GITHUB_APITOKEN }}
