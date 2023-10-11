@@ -190,28 +190,6 @@ auth:
 
 For more info on how authentication works, see the [Authentication](#authentication) section.
 
-### Offline Token
-For more info, see [offline token](#api-tokenoffline-token).
-
-Example:
-```
-origin: https://myjira.awesomeorg.com
-issue_tracker: JIRA
-auth:
-  type: offline
-  offline_url: https://myjira.awesomeorg.com/offline
-```
-
-After you run todocheck for the first time, it will request your offline token:
-![Offline token prompt example](images/offline-token-prompt.png)
-
-Example offline token page:
-![Offline token page example](images/offline-token-page.png)
-
-After you've given the offline token to `todocheck`'s prompt, it will store it in the auth tokens cache for subsequent executions.  
-
-See the [Authentication](#authentication) section for more info.
-
 ## [Pivotal Tracker](https://pivotaltracker.com/)
 To integrate with a pivotal tracker project, specify the origin of your project and the `PIVOTAL_TRACKER` issue tracker in your `.todocheck.yaml` configuration.  
 You should also specify the `apitoken` as an auth type:
