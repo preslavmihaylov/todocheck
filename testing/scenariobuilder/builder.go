@@ -6,7 +6,6 @@ package scenariobuilder
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -127,7 +126,7 @@ func (s *TodocheckScenario) setupGitConfig() error {
 		}
 	}
 
-	return ioutil.WriteFile(filepath.Join(gitDir, "config"), []byte(gitConfig), 0644)
+	return os.WriteFile(filepath.Join(gitDir, "config"), []byte(gitConfig), 0644)
 }
 
 func (s *TodocheckScenario) teardownGitConfig() {
@@ -257,7 +256,7 @@ func (s *TodocheckScenario) Run() error {
 	if s.expectedOutputText != "" {
 		output := stdout.String()
 		if output != s.expectedOutputText {
-			return fmt.Errorf("Expected standard output to be:\n %s\ngot:\n %s", s.expectedOutputText, output)
+			return fmt.Errorf("expected standard output to be:\n %s\ngot:\n %s", s.expectedOutputText, output)
 		}
 	} else {
 		fmt.Println("(standard output follows. Standard output is ignored & not validated...)")
@@ -373,20 +372,20 @@ func (s *TodocheckScenario) setupMockIssueTrackerServer() (teardownFunc, error) 
 
 func setupMockIssueTrackerCfg(cfgPath string, mockOrigin string) (teardownFunc, error) {
 	patt := regexp.MustCompile("origin: \"?[a-zA-Z0-9._:/]+\"?")
-	origBs, err := ioutil.ReadFile(cfgPath)
+	origBs, err := os.ReadFile(cfgPath)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't read config file %s: %w", cfgPath, err)
 	}
 
 	mockBs := patt.ReplaceAll(origBs, []byte(fmt.Sprintf("origin: %s", mockOrigin)))
 
-	err = ioutil.WriteFile(cfgPath, mockBs, 0755)
+	err = os.WriteFile(cfgPath, mockBs, 0755)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't writeback mock issue tracker origin in file %s: %w", cfgPath, err)
 	}
 
 	return func() {
-		err := ioutil.WriteFile(cfgPath, origBs, 0755)
+		err := os.WriteFile(cfgPath, origBs, 0755)
 		if err != nil {
 			panic("couldn't teardown mock issue tracker: " + err.Error())
 		}

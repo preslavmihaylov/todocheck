@@ -1,14 +1,18 @@
+linters-settings:
+  revive:
+    rules:
+      - name: unused-parameter
+        severity: warning
+        disabled: true
 linters:
   enable:
-    - deadcode
     - errcheck
+    - unused
     - gosimple
     - govet
     - ineffassign
     - staticcheck
-    - structcheck
     - typecheck
     - unused
-    - varcheck
     - gofmt
     - revive
