@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -45,7 +44,7 @@ func TraversePath(path string, ignoredPaths, supportedFileExtensions []string, c
 }
 
 func traverseFile(filename string, callback lineCallback) error {
-	buf, err := ioutil.ReadFile(filename)
+	buf, err := os.ReadFile(filename)
 	if err != nil {
 		return fmt.Errorf("failed to open file %s: %w", filename, err)
 	}
@@ -55,11 +54,7 @@ func traverseFile(filename string, callback lineCallback) error {
 	linecnt := 0
 
 	reader := bufio.NewReader(bytes.NewReader(buf))
-	for {
-		if err == io.EOF {
-			break
-		}
-
+	for err != io.EOF {
 		linecnt++
 		line, err = reader.ReadString('\n')
 

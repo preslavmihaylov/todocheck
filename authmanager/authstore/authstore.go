@@ -2,7 +2,6 @@ package authstore
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -21,7 +20,7 @@ type Config struct {
 
 // FromFile extracts the tokens configuration from the given file
 func FromFile(filename string) (*Config, error) {
-	bs, err := ioutil.ReadFile(filename)
+	bs, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't open %s: %w", filename, err)
 	}
@@ -47,7 +46,7 @@ func (cfg *Config) SaveWithPerms(filename string, perms os.FileMode) error {
 		return fmt.Errorf("failed to marshal tokens config: %w", err)
 	}
 
-	err = ioutil.WriteFile(filename, bs, perms)
+	err = os.WriteFile(filename, bs, perms)
 	if err != nil {
 		return fmt.Errorf("failed to save marshaled tokens config: %w", err)
 	}
