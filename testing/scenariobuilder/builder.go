@@ -256,7 +256,7 @@ func (s *TodocheckScenario) Run() error {
 	if s.expectedOutputText != "" {
 		output := stdout.String()
 		if output != s.expectedOutputText {
-			return fmt.Errorf("expected standard output to be:\n %s\ngot:\n %s", s.expectedOutputText, output)
+			return fmt.Errorf("Expected standard output to be:\n %s\ngot:\n %s", s.expectedOutputText, output)
 		}
 	} else {
 		fmt.Println("(standard output follows. Standard output is ignored & not validated...)")
