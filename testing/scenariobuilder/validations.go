@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/preslavmihaylov/todocheck/authmanager/authstore"
@@ -89,7 +89,7 @@ func validateAuthTokensCache(tokensCache string, url, expectedToken string) vali
 			return errors.New("tokens_cache is not set in the configuration. It must be set for auth token scenarios")
 		}
 
-		authTokensBs, err := ioutil.ReadFile(tokensCache)
+		authTokensBs, err := os.ReadFile(tokensCache)
 		if err != nil {
 			return fmt.Errorf("couldn't read auth tokens config file %s: %w", tokensCache, err)
 		}

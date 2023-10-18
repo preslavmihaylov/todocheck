@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
@@ -64,7 +63,7 @@ func NewLocal(cfgPath, basepath string) (*Local, error) {
 }
 
 func fromFile(cfgPath string) (*Local, error) {
-	bs, err := ioutil.ReadFile(cfgPath)
+	bs, err := os.ReadFile(cfgPath)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't open local configuration (%s): %w", cfgPath, err)
 	}
@@ -79,7 +78,7 @@ func fromFile(cfgPath string) (*Local, error) {
 }
 
 func autoDetect(basepath string) (*Local, error) {
-	bs, err := ioutil.ReadFile(basepath + "/.git/config")
+	bs, err := os.ReadFile(basepath + "/.git/config")
 	if err != nil {
 		return nil, err
 	}
