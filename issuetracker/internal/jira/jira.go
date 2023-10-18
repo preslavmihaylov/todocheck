@@ -97,21 +97,6 @@ func (it *IssueTracker) InstrumentMiddleware(r *http.Request) error {
 	return nil
 }
 
-// TokenAcquisitionInstructions returns instructions for manually acquiring the authentication token
-// for jira and the given authentication type
-func (it *IssueTracker) TokenAcquisitionInstructions() string {
-	switch it.AuthCfg.Type {
-	case config.AuthTypeOffline:
-		return fmt.Sprintf("Please go to %s and paste the offline token below.", it.AuthCfg.OfflineURL)
-	case config.AuthTypeAPIToken:
-		return "Please go to https://id.atlassian.com/manage-profile/security/api-tokens and paste the api token below."
-	default:
-		common.Assert(false, fmt.Sprintf(
-			"token acquisition requested for unsupported authentication type: %s", it.AuthCfg.Type))
-		return ""
-	}
-}
-
 // TaskURLFrom taskID returns the url for the target Jira task ID to fetch
 func (it *IssueTracker) taskURLFrom(taskID string) string {
 	return taskID

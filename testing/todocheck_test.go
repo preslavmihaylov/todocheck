@@ -1038,11 +1038,6 @@ func TestTokenAcquisitionInstructions(t *testing.T) {
 		issueTracker, config, instructions string
 	}{
 		{
-			issueTracker: "jira_offline",
-			config:       "./test_configs/auth_tokens.yaml",
-			instructions: "Please go to http://localhost:8080/offline and paste the offline token below.",
-		},
-		{
 			issueTracker: "jira",
 			config:       "./test_configs/integrations/jira_apitoken.yaml",
 			instructions: "Please go to https://id.atlassian.com/manage-profile/security/api-tokens and paste the api token below.",
