@@ -11,6 +11,7 @@ import (
 	"github.com/preslavmihaylov/todocheck/matchers/scripts"
 	"github.com/preslavmihaylov/todocheck/matchers/standard"
 	"github.com/preslavmihaylov/todocheck/matchers/state"
+	"github.com/preslavmihaylov/todocheck/matchers/twig"
 	"github.com/preslavmihaylov/todocheck/matchers/vue"
 )
 
@@ -158,6 +159,22 @@ var (
 			return nim.NewCommentMatcher(callback)
 		},
 	}
+	twigMatcherFactory = &matcherFactory{
+		func() func([]string) TodoMatcher {
+			var once sync.Once
+			var matcher TodoMatcher
+
+			return func(customTodos []string) TodoMatcher {
+				once.Do(func() {
+					matcher = twig.NewTodoMatcher(customTodos)
+				})
+				return matcher
+			}
+		}(),
+		func(callback state.CommentCallback) CommentMatcher {
+			return twig.NewCommentMatcher(callback)
+		},
+	}
 )
 
 var supportedMatchers = map[string]*matcherFactory{
@@ -207,6 +224,9 @@ var supportedMatchers = map[string]*matcherFactory{
 	".nim":    nimMatcherFactory,
 	".nims":   nimMatcherFactory,
 	".nimble": nimMatcherFactory,
+
+	// file types, supporting twig and html comments
+	".twig": twigMatcherFactory,
 }
 
 // TodoMatcherForFile gets the correct todo matcher for the given filename

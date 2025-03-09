@@ -894,6 +894,71 @@ func TestNimTodos(t *testing.T) {
 	}
 }
 
+func TestTwigTodos(t *testing.T) {
+	err := scenariobuilder.NewScenario().
+		WithBinary("../todocheck").
+		WithBasepath("./scenarios/twig").
+		WithConfig("./test_configs/no_issue_tracker.yaml").
+		WithIssueTracker(issuetracker.Jira).
+		WithIssue("1", issuetracker.StatusOpen).
+		WithIssue("2", issuetracker.StatusClosed).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/twig/main.html.twig", 1).
+				ExpectLine("{# TODO: malformed todo #}")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/twig/main.html.twig", 3).
+				ExpectLine("{# TODO 2: The issue is closed #}")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/twig/main.html.twig", 4).
+				ExpectLine("{# TODO 3: The issue is non-existent #}")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/twig/main.html.twig", 6).
+				ExpectLine("{#").
+				ExpectLine("    TODO: malformed todo").
+				ExpectLine("#}")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/twig/main.html.twig", 14).
+				ExpectLine("{#").
+				ExpectLine("    TODO 2: The issue is closed").
+				ExpectLine("#}")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/twig/main.html.twig", 18).
+				ExpectLine("{#").
+				ExpectLine("    TODO 3: The issue is non-existent").
+				ExpectLine("#}")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeMalformed).
+				WithLocation("scenarios/twig/main.html.twig", 22).
+				ExpectLine("<!-- TODO: malformed todo -->")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeIssueClosed).
+				WithLocation("scenarios/twig/main.html.twig", 24).
+				ExpectLine("<!-- TODO 2: The issue is closed -->")).
+		ExpectTodoErr(
+			scenariobuilder.NewTodoErr().
+				WithType(errors.TODOErrTypeNonExistentIssue).
+				WithLocation("scenarios/twig/main.html.twig", 25).
+				ExpectLine("<!-- TODO 3: The issue is non-existent -->")).
+		Run()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
+
 func TestVueTodos(t *testing.T) {
 	err := scenariobuilder.NewScenario().
 		WithBinary("../todocheck").
