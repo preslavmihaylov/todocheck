@@ -78,8 +78,8 @@ func (it *IssueTracker) issueAPIOrigin() string {
 		tokens = append([]string{"https:"}, tokens...)
 	}
 
-	scheme, host, owner, repo := tokens[0], tokens[1], tokens[2], tokens[3]
-	urlEncodedProject := url.QueryEscape(fmt.Sprintf("%s/%s", owner, repo))
+	scheme, host, repositoryPath := tokens[0], tokens[1], tokens[2:]
+	urlEncodedProject := url.QueryEscape(strings.Join(repositoryPath, "/"))
 	return fmt.Sprintf("%s//%s/api/v4/projects/%s/issues/", scheme, host, urlEncodedProject)
 }
 

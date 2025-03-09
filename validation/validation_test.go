@@ -72,6 +72,7 @@ func TestValidOrigins(t *testing.T) {
 		"./fixtures/origin/valid/valid_gitlab_origin.yaml",
 		"./fixtures/origin/valid/valid_gitlab_port.yaml",
 		"./fixtures/origin/valid/valid_gitlab_subdomain.yaml",
+		"./fixtures/origin/valid/valid_gitlab_group.yaml",
 		"./fixtures/origin/valid/valid_jira_origin.yaml",
 		"./fixtures/origin/valid/valid_jira_port.yaml",
 		"./fixtures/origin/valid/valid_jira_subdomain.yaml",
