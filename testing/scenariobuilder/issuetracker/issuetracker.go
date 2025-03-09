@@ -41,7 +41,7 @@ func IssueURLFrom(t Type, issue string) string {
 func BuildResponseFor(t Type, issue string, status Status) []byte {
 	switch t {
 	case Jira:
-		return must(json.Marshal(&jira.Task{
+		res, err := json.Marshal(&jira.Task{
 			Fields: jira.Fields{
 				Status: jira.Status{
 					StatusCategory: jira.StatusCategory{
@@ -49,7 +49,8 @@ func BuildResponseFor(t Type, issue string, status Status) []byte {
 					},
 				},
 			},
-		}))
+		})
+		return must(res, err)
 	default:
 		panic("unknown issue tracker received: " + string(t))
 	}

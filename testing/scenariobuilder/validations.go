@@ -10,7 +10,7 @@ import (
 	"github.com/preslavmihaylov/todocheck/authmanager/authstore"
 	"github.com/preslavmihaylov/todocheck/common"
 	"github.com/preslavmihaylov/todocheck/config"
-	"gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v2"
 )
 
 func validateStandardTodoErrs(programOutput string, scenarios []*TodoErrScenario) validateFunc {
