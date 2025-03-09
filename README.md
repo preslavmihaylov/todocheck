@@ -296,27 +296,28 @@ Currently, todocheck has parsers for three different types of comments:
 
 Based on this, here are the supported languages:
 
-| Supported Languages   | Description                                                                                                            |
-|-----------------------|------------------------------------------------------------------------------------------------------------------------|
-| Bash/Zsh              | `*.sh/*.bash/*.zsh` extension. Supports `#` single-line comments                                                       |
-| C                     | `*.c` extension. Supports single-line `//` comments and multi-line `/* */` comments                                    |
-| C++                   | `*.cpp` extension. Supports single-line `//` comments and multi-line `/* */` comments                                  |
-| CSharp                | `*.cs` extension. Supports single-line `//` comments and multi-line `/* */` comments                                   |
-| Dart                  | `*.dart` extension. Supports single-line `//` comments and multi-line `/* */` comments
-| Golang                | `*.go` extension. Supports single-line `//` comments and multi-line `/* */` comments                                   |
-| Groovy                | `*.groovy`, `*.gvy`, `*.gy`, `*.gsh` extensions. Supports single-line `//` comments and multi-line `/* */` comments    |
-| Java                  | `*.java` extension. Supports single-line `//` comments and multi-line `/* */` comments                                 |
-| JavaScript/Typescript | `*.js/*.ts` extension. Supports single-line `//` comments and multi-line `/* */` comments                              |
-| Kotlin                | `*.kt/*.kts/*.ktm` extension. Supports single-line `//` comments and multi-line `/* */` comments                              |
-| Nim                   | `*.{nim, nims, nimble}` extension. Supports single-line `#` comments and multi-line `#[ ]#` comments                          |
-| PHP                   | `*.php` extension. Supports single-line `#` and `//` comments and multi-line `/* */` comments                          |
-| Python                | `*.py` extension. Supports single-line `#` comments and multi-line `"""` comments                                      |
-| R                     | `*.R` extension. Supports single-line `//` comments and multi-line `/* */` comments                                    |
-| Rust                  | `*.rs` extension. Supports single-line `//` comments and multi-line `/* */` comments                                   |
-| Scala                 | `*.scala`, `*.sc` extensions. Supports single-line `//` comments and multi-line `/* */` comments                                 |
-| Swift                 | `*.swift` extension. Supports single-line `//` comments and multi-line `/* */` comments
-| Vue                 | `*.vue` extension. Supports single-line `//` comments, multi-line `/* */` comments and multi-line `<!-- -->` HTML comments                                |
-| Yaml                  | `*.yaml`, `*.yml` extension. Supports `#` single-line comments                                                         |
+| Supported Languages   | Description                                                                                                                |
+|-----------------------|----------------------------------------------------------------------------------------------------------------------------|
+| Bash/Zsh              | `*.sh/*.bash/*.zsh` extension. Supports `#` single-line comments                                                           |
+| C                     | `*.c` extension. Supports single-line `//` comments and multi-line `/* */` comments                                        |
+| C++                   | `*.cpp` extension. Supports single-line `//` comments and multi-line `/* */` comments                                      |
+| CSharp                | `*.cs` extension. Supports single-line `//` comments and multi-line `/* */` comments                                       |
+| Dart                  | `*.dart` extension. Supports single-line `//` comments and multi-line `/* */` comments                                     |
+| Golang                | `*.go` extension. Supports single-line `//` comments and multi-line `/* */` comments                                       |
+| Groovy                | `*.groovy`, `*.gvy`, `*.gy`, `*.gsh` extensions. Supports single-line `//` comments and multi-line `/* */` comments        |
+| Java                  | `*.java` extension. Supports single-line `//` comments and multi-line `/* */` comments                                     |
+| JavaScript/Typescript | `*.js/*.ts` extension. Supports single-line `//` comments and multi-line `/* */` comments                                  |
+| Kotlin                | `*.kt/*.kts/*.ktm` extension. Supports single-line `//` comments and multi-line `/* */` comments                           |
+| Nim                   | `*.{nim, nims, nimble}` extension. Supports single-line `#` comments and multi-line `#[ ]#` comments                       |
+| PHP                   | `*.php` extension. Supports single-line `#` and `//` comments and multi-line `/* */` comments                              |
+| Python                | `*.py` extension. Supports single-line `#` comments and multi-line `"""` comments                                          |
+| R                     | `*.R` extension. Supports single-line `//` comments and multi-line `/* */` comments                                        |
+| Rust                  | `*.rs` extension. Supports single-line `//` comments and multi-line `/* */` comments                                       |
+| Scala                 | `*.scala`, `*.sc` extensions. Supports single-line `//` comments and multi-line `/* */` comments                           |
+| Swift                 | `*.swift` extension. Supports single-line `//` comments and multi-line `/* */` comments                                    |
+| Twig                  | `*.twig` extension. Supports multi-line `{# #}` and HTML `<!-- -->` comments                                               |
+| Vue                   | `*.vue` extension. Supports single-line `//` comments, multi-line `/* */` comments and multi-line `<!-- -->` HTML comments |
+| Yaml                  | `*.yaml`, `*.yml` extension. Supports `#` single-line comments                                                             |
 
 If you don't see your favorite language in this table, but it does use one of the supported comment formats, submit an issue [here](https://github.com/preslavmihaylov/todocheck/issues/new)
 
